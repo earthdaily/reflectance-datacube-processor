@@ -106,14 +106,14 @@ To set up the project, follow these steps:
 1. Clone the project repository:
     
     ```
-    git clone https://github.com/GEOSYS/impacted-areas-identification
+    git clone https://github.com/GEOSYS/earthdaily-data-processor
 
     ```
 
 2. Change the directory:
 
     ```
-    cd impacted-areas-identification
+    cd earthdaily-data-processor
     ```
 3. Fill the environment variable (.env)
 
