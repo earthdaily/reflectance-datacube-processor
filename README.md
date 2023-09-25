@@ -241,7 +241,6 @@ To use Jupyter Notebook of the project, please follow these steps:
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- PROJECT ORGANIZATION -->
 ## Project Organization
