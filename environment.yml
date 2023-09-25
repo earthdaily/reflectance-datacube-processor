@@ -1,11 +1,10 @@
-name: stackfox-processor
+name: earthdaily-processor
 channels:
  - conda-forge
  - defaults
 dependencies:
   - python=3.10
   - ipykernel
-# external requirements
   - click
   - Sphinx
   - coverage
@@ -19,7 +18,6 @@ dependencies:
   - geojson
   - shapely
   - rasterio
-  - xarray
   - pyproj
   - matplotlib 
   - zarr
@@ -27,21 +25,14 @@ dependencies:
   - gdal
   - pandas
   - geopandas
-  - pystac-client
-  - requests
   - matplotlib
   - xarray
   - rioxarray
-  - h5netcdf 
   - netcdf4
-  - pystac
-  - stackstac
-  - odc-stac
   - pip:
-    - fastapi
-    - hypercorn[trio]==0.14.3
     # aws
     - boto3
     # azure
     - azure-storage-blob
     - geosyspy
+    - earthdaily

@@ -10,7 +10,6 @@ RUN pip cache purge
 
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
-RUN pip install --pre --trusted-host python-package-server.geosys-na.local --extra-index-url http://python-package-server.geosys-na.local/ stackfox 
 RUN pip cache purge; exit 0
 
 COPY ./src .

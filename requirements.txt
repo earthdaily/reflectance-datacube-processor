@@ -28,6 +28,7 @@ netcdf4
 pystac
 stackstac
 odc-stac
+earthdaily
 # aws
 boto3
 

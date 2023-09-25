@@ -6,7 +6,6 @@ Created on Sep 12
 """
 #%%
 import logging
-from geosyspy.utils.constants import SatelliteImageryCollection
 import os
 from dateutil.relativedelta import relativedelta
 from dotenv import load_dotenv
@@ -18,7 +17,7 @@ import geopandas as gpd
 
 import xarray as xr
 from xarray import DataArray, Dataset
-import stackfox
+from earthdaily import earthdatastore
 import shapely
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -27,26 +26,13 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 #%%
-class StackfoxDatacube:
+class EarthDailyData:
 
-    def __init__(self, 
-                 enum_env: enumerate,
-                 enum_region: enumerate = Region.NA,
-                 priority_queue: str = "realtime",
-                 ):
+    def __init__(self):
         
         load_dotenv()
-        self.region: str = enum_region.value
-        self.env: str = enum_env.value
-        self.priority_queue: str = priority_queue
-        self.__client: Geosys = Geosys(os.getenv('API_CLIENT_ID'),
-                                       os.getenv('API_CLIENT_SECRET'),
-                                       os.getenv('API_USERNAME'),
-                                       os.getenv('API_PASSWORD'),
-                                       enum_env,
-                                       enum_region,
-                                       priority_queue)
-        self.__client_skyfox = stackfox.SkyFox()
+        self.__client_eds = earthdatastore.Auth()
+        
     def generate_datacube_optic(self,
                                 polygon,
                                 start_date: str,
@@ -82,9 +68,9 @@ class StackfoxDatacube:
             
         for sens in collections:
             try:
-                logging.info(f"AnalyticsDatacube:generate_datacube_optic: Get dataset for {sens}")
+                logging.info(f"EarthDailyData:generate_datacube_optic: Get dataset for {sens}")
                 if sens =="sentinel-2-l2a":
-                    data_cube = self.__client_skyfox.datacube(
+                    data_cube = self.__client_eds.datacube(
                         sens,
                         intersects=dataframe_pol,
                         datetime=[start_date, end_date],
@@ -110,7 +96,7 @@ class StackfoxDatacube:
                         band_adjusted.remove('rededge3')
                         
                     #get datacube
-                    data_cube = self.__client_skyfox.datacube(
+                    data_cube = self.__client_eds.datacube(
                         sens,
                         intersects=dataframe_pol,
                         datetime=[start_date, end_date],
@@ -129,7 +115,7 @@ class StackfoxDatacube:
                     
                 elif sens=='venus-l2a':
                     lst_venus_assets = self.get_venus_asset(assets)
-                    data_cube = self.__client_skyfox.datacube(
+                    data_cube = self.__client_eds.datacube(
                         sens,
                         intersects=dataframe_pol,
                         datetime=[start_date, end_date],
@@ -152,7 +138,7 @@ class StackfoxDatacube:
         if lst :
             #not ok for now : band lwir11 not accessible 
             try:
-                data_cube = self.__client_skyfox.datacube(
+                data_cube = self.__client_eds.datacube(
                     'landsat-c2l2-st',
                     intersects=dataframe_pol,
                     datetime=[start_date, end_date],

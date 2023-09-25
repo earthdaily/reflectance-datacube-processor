@@ -1,23 +1,21 @@
 import logging
-import os
 from typing import List
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.openapi.docs import get_swagger_ui_html
 import time
-
-from analytics_datacube.utils import dataset_to_zarr_format_indep_sensor,dataset_to_zarr_format_sensor
-from api.constants import CloudStorageRepo, Bands,Collections,CloudMask,Question
+from earthdaily_data_processor.processor import EarthDailyData
+from earthdaily_data_processor.utils import dataset_to_zarr_format_indep_sensor,dataset_to_zarr_format_sensor
+from api.constants import CloudStorageRepo, Bands, Collections, CloudMask, Question
 from cloud_storage import cloud_storage_aws, cloud_storage_azure
 from fastapi.staticfiles import StaticFiles
 from geosyspy.geosys import Region, Env
 from pydantic import BaseModel
 import datetime as dt
-import xarray
 from pydantic import BaseModel, Field
 import numpy as np
-from analytics_datacube.processor import StackfoxDatacube
+
 
 app = FastAPI(
     docs_url=None,
@@ -57,7 +55,7 @@ async def create_analytics_datacube(item: Item, cloud_storage_repo: CloudStorage
                                     cloud_mask: CloudMask = Query(...),
                                     SensorCrossCalibration:Question=Query(...)):
     start_time = time.time()
-    client = StackfoxDatacube(Env.PROD)
+    client = EarthDailyData()
     start_date = dt.datetime(item.startDate.year, item.startDate.month, item.startDate.day)
     end_date = dt.datetime(item.endDate.year, item.endDate.month, item.endDate.day)
 
