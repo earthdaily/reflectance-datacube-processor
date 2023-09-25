@@ -117,22 +117,14 @@ To set up the project, follow these steps:
     ```
 3. Fill the environment variable (.env)
 
-Ensure that you populate the .env file with your credentials. If you haven't acquired the credentials yet, please [click](https://earthdailyagro.com/geosys-registration) here to obtain them.
+Ensure that you populate the .env file with your credentials.=
+To access and use our Catalog STAC named EarthDataStore, please ensure that you have the following environment variables set in your .env file:
 
 ```
-API_CLIENT_ID = <your client id>
-API_CLIENT_SECRET = <your client id>
-API_USERNAME = <your username>
-API_PASSWORD = <your password>
-```
-
-To access and use our Catalog STAC named "Skyfox," please ensure that you have the following environment variables set in your .env file:
-
-```
-SKYFOX_URL = https://api.eds.earthdaily.com/archive/v1/stac/v1
-SKYFOX_AUTH_URL = <skyfox auth url>
-SKYFOX_CLIENT_ID =  <your client id>
-SKYFOX_SECRET = <your client id>
+EDS_API_URL = https://api.eds.earthdaily.com/archive/v1/stac/v1
+EDS_AUTH_URL = <skyfox auth url>
+EDS_CLIENT_ID =  <your client id>
+EDS_SECRET = <your client id>
 ```
 
 To publish results on cloud storage, please add your credentials allowing the processor to write outputs:
