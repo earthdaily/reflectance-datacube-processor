@@ -24,6 +24,7 @@ class Collections(Enum):
     Sentinel_2 = "sentinel-2-l2a"
     Landsat = "landsat-c2l2-sr"
     Venus = "venus-l2a"
+    ED_simulated = "earthdaily-simulated-cloudless-l2a-cog-edagro"
 
 class CloudMask(Enum):
     """
