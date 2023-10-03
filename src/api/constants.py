@@ -1,4 +1,5 @@
 from enum import Enum
+from pydantic import BaseModel
 
 
 class Bands(Enum):
@@ -40,4 +41,3 @@ class CloudStorageRepo(Enum):
 class Question(Enum):
     no = 'No'
     yes = 'Yes'
-    

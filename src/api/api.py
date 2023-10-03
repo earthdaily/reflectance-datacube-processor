@@ -42,18 +42,19 @@ load_dotenv()
 
 class Item(BaseModel):
     geometry: str = Field(...,
-                          example="POLYGON ((1.26 43.427, 1.263 43.428, 1.263 43.426, 1.26 43.426, 1.26 43.427))")
+                        example="POLYGON ((1.26 43.427, 1.263 43.428, 1.263 43.426, 1.26 43.426, 1.26 43.427))")
     startDate: dt.date = Field(..., example="2019-05-01")
     endDate: dt.date = Field(..., example="2019-05-31")
     EntityID: str=Field(...,example='entity_1') 
 
 
 @app.post("/earthdaily-data-processor", tags=["Datacube Computation"])
-async def create_analytics_datacube(item: Item, cloud_storage_repo: CloudStorageRepo = Query(...),
-                                    collections: List[Collections] = Query(...),
-                                    assets: List[Bands] = Query(...),
-                                    cloud_mask: CloudMask = Query(...),
-                                    SensorCrossCalibration:Question=Query(...)):
+async def create_analytics_datacube(item: Item, CloudStorage: CloudStorageRepo = Query(...),
+                                    Collections: List[Collections] = Query(...),
+                                    Assets: List[Bands] = Query(...),
+                                    CloudMask: CloudMask = Query(...),
+                                    SensorCrossCalibration:Question=Query(...),
+                                    CloudClearPercent: int = Query(default=0,allow_inf_nan=False,examples=[0,10,50,80,90,100])):
     start_time = time.time()
     client = EarthDailyData()
     start_date = dt.datetime(item.startDate.year, item.startDate.month, item.startDate.day)
@@ -61,56 +62,44 @@ async def create_analytics_datacube(item: Item, cloud_storage_repo: CloudStorage
 
     # generate analytics datacube
     datacubes, collections_done = client.generate_datacube_optic(polygon=item.geometry, start_date=start_date, end_date=end_date,
-                                                            collections=[collection.value for collection in collections],
-                                                            assets=[asset.value for asset in assets],
-                                                            cloud_mask=cloud_mask.value)
+                                                            collections=[collection.value for collection in Collections],
+                                                            assets=[asset.value for asset in Assets],
+                                                            cloud_mask=CloudMask.value,
+                                                            clear_percent=CloudClearPercent)
     
     links=[]
     if len(datacubes)>0:
-        if SensorCrossCalibration.value == 'yes':
-            #create megacube
-            if "sentinel-2-l2a" in collections_done and "landsat-c2l2-sr" in collections_done and 'venus-l2a' in collections_done:
-                cube = client.cross_calibration_collections(datacubes[0],datacubes[1],datacubes[2])
-                
-
-            elif "sentinel-2-l2a" in collections_done and "landsat-c2l2-sr" in collections_done:
-                cube = client.cross_calibration_collections(datacubes[0],datacubes[1])
-
-            elif  "sentinel-2-l2a" in collections_done and 'venus-l2a' in collections_done:
-                cube = client.cross_calibration_collections(datacubes[0],datacubes[1])
-
-            else:
-                cube = datacubes[0]
-                
+        if SensorCrossCalibration.value == 'Yes':
+            cube = client.cross_calibration_collections(*datacubes)
             zarr_path = dataset_to_zarr_format_indep_sensor(cube,item.EntityID,item.startDate,item.endDate)
             try:
                 # upload result on chosen CloudStorage provider (AWS or Azure)
-                if cloud_storage_repo == CloudStorageRepo.AWS and cloud_storage_aws.upload_folder_to_aws_s3(zarr_path):
+                if CloudStorage == CloudStorageRepo.AWS and cloud_storage_aws.upload_folder_to_aws_s3(zarr_path):
                     logger.info("EarthDaily DataCube uploaded to AWS S3")
                     links.append(cloud_storage_aws.get_s3_uri_path(zarr_path))
-                elif cloud_storage_repo == CloudStorageRepo.AZURE and cloud_storage_azure.upload_directory_to_azure_blob_storage(
+                elif CloudStorage == CloudStorageRepo.AZURE and cloud_storage_azure.upload_directory_to_azure_blob_storage(
                         zarr_path):
                     logger.info("EarthDaily DataCube uploaded to Azure Blob Storage")
                     links.append(cloud_storage_azure.get_azure_blob_url_path(zarr_path))
             except Exception as exc:
-                logging.error(f"Error while uploading folder to {cloud_storage_repo.value}: {exc}")
-                raise HTTPException(status_code=500, detail=f"Error while uploading folder to {cloud_storage_repo.value} : {exc}")
+                logging.error(f"Error while uploading folder to {CloudStorage.value}: {exc}")
+                raise HTTPException(status_code=500, detail=f"Error while uploading folder to {CloudStorage.value} : {exc}")
         else: 
             for datacube in range(len(datacubes)):
                 # convert the generated datacube in zarr file
                 zarr_path = dataset_to_zarr_format_sensor(datacubes[datacube],item.EntityID,item.startDate,item.endDate,collections_done[datacube])
                 try:
-                        # upload result on chosen CloudStorage provider (AWS or Azure)
-                    if cloud_storage_repo == CloudStorageRepo.AWS and cloud_storage_aws.upload_folder_to_aws_s3(zarr_path):
+                        # upload CloudStorage on chosen CloudStorage provider (AWS or Azure)
+                    if CloudStorage == CloudStorageRepo.AWS and cloud_storage_aws.upload_folder_to_aws_s3(zarr_path):
                         logger.info("EarthDaily DataCube uploaded to AWS S3")
                         links.append(cloud_storage_aws.get_s3_uri_path(zarr_path))
-                    elif cloud_storage_repo == CloudStorageRepo.AZURE and cloud_storage_azure.upload_directory_to_azure_blob_storage(
+                    elif CloudStorage == CloudStorageRepo.AZURE and cloud_storage_azure.upload_directory_to_azure_blob_storage(
                             zarr_path):
                         logger.info("EarthDaily DataCube uploaded to Azure Blob Storage")
                         links.append(cloud_storage_azure.get_azure_blob_url_path(zarr_path))
                 except Exception as exc:
-                    logging.error(f"Error while uploading folder to {cloud_storage_repo.value}: {exc}")
-                    raise HTTPException(status_code=500, detail=f"Error while uploading folder to {cloud_storage_repo.value} : {exc}")
+                    logging.error(f"Error while uploading folder to {CloudStorage.value}: {exc}")
+                    raise HTTPException(status_code=500, detail=f"Error while uploading folder to {CloudStorage.value} : {exc}")
                     
         return {"Storage_links": links,
                 "Execution time":(f"--- {int(np.round((time.time() - start_time)/60))} minutes {int(np.round(np.round((time.time() - start_time))%60))} seconds ---" )}

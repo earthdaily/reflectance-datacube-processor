@@ -12,7 +12,6 @@ from dotenv import load_dotenv
 from geosyspy import Geosys
 from geosyspy.utils.constants import *
 
-import requests
 import geopandas as gpd
 
 import xarray as xr
@@ -32,14 +31,25 @@ class EarthDailyData:
         
         load_dotenv()
         self.__client_eds = earthdatastore.Auth()
-        
+    
+    
+    def check_client_auth(self,) :
+        '''
+        Function to check the EarthDataStore authentication. If needed, the function will re-authenticate.
+        '''
+        try:
+            collections  = [i.id for i in list(self.__client_eds.get_all_collections())]
+        except: 
+            self.__init__()
+        return(None)
     def generate_datacube_optic(self,
                                 polygon,
                                 start_date: str,
                                 end_date: str,
                                 collections: [str],
                                 assets: [str],
-                                cloud_mask: str):
+                                cloud_mask: str,
+                                clear_percent:int=80):
         """
             Get a xarray.Dataset with indicators values for each pixel and for each date of images found between start and end dates.
 
@@ -47,9 +57,9 @@ class EarthDailyData:
                 - polygon: WKT
                 - start_date: beginning of the period
                 - end_date: end of the period
-                - collections : sensor to use : "sentinel-2-l2a",landsat-c2l2-sr
-                - assets : list of band to get, among : ["red", "green", "blue",  "nir08", "swir16", "swir22"]
-                - cloud_mask : cloud mask to use : "scl" or 
+                - collections : sensor to use : "sentinel-2-l2a",landsat-c2l2-sr, venus-l2a
+                - assets : list of band to get, among : ["red", "green", "blue",  "nir08", "swir16", "swir22","lst]
+                - cloud_mask : cloud mask to use : "native" or "ag_cloud_mask"
             Returns:
                 xarray.Dataset
         """
@@ -60,109 +70,202 @@ class EarthDailyData:
         dataframe_pol.set_geometry('geometry',inplace=True)
         dataframe_pol.set_crs('epsg:4326',inplace=True)
         sensor_done = []
-        if 'lst' in assets and "landsat-c2l2-sr" in collections:
+        
+        if 'lst' in assets :
             lst=True
             assets.remove('lst')
         else:
             lst=False
             
+        #re authenticate if needed
+        self.check_client_auth()
+        
+        #datacube creation for each collections wanted
         for sens in collections:
             try:
                 logging.info(f"EarthDailyData:generate_datacube_optic: Get dataset for {sens}")
                 if sens =="sentinel-2-l2a":
-                    data_cube = self.__client_eds.datacube(
-                        sens,
-                        intersects=dataframe_pol,
-                        datetime=[start_date, end_date],
-                        assets=assets,
-                        rescale=True,
-                        mask_with=cloud_mask,  
-                        mask_statistics=True
-                    ) 
-                    if cloud_mask == 'native':
-                        data_cube = data_cube.sel(time=data_cube.time[data_cube.clear_percent_scl > 80])
-                    elif cloud_mask =='ag_cloud_mask':
-                        data_cube = data_cube.sel(time=data_cube.time[data_cube.clear_percent_ag_cloud_mask > 80])
-                    sensors_datasets.append(data_cube) 
-                             
+                    sensors_datasets.append((self.get_sentinel(polygon = dataframe_pol,assets = assets,cloud_mask = cloud_mask,
+                                            dates = [start_date, end_date], clear_percent= clear_percent))) 
+                    
                 elif  sens =="landsat-c2l2-sr":
-                    #deal with rededge bands for landsat
-                    band_adjusted = assets.copy()
-                    if 'rededge1' in assets:
-                        band_adjusted.remove('rededge1')
-                    if 'rededge2' in assets:
-                        band_adjusted.remove('rededge2')
-                    if 'rededge3' in assets:
-                        band_adjusted.remove('rededge3')
-                        
-                    #get datacube
-                    data_cube = self.__client_eds.datacube(
-                        sens,
-                        intersects=dataframe_pol,
-                        datetime=[start_date, end_date],
-                        assets=band_adjusted,
-                        mask_with=cloud_mask,  
-                        mask_statistics=True,
-                        resolution=sensors_datasets[0].rio.resolution()[0],
-                        epsg=sensors_datasets[0].rio.crs.to_epsg()
-                    ) 
-                    if cloud_mask == 'native':
-                        data_cube = data_cube.sel(time=data_cube.time[data_cube.clear_percent_qa_pixel > 80])
-                    elif cloud_mask =='ag_cloud_mask':
-                        data_cube = data_cube.sel(time=data_cube.time[data_cube.clear_percent_ag_cloud_mask > 80])
-                    sensors_datasets.append(data_cube) 
-                    sensors_datasets.append(data_cube)
+                    sensors_datasets.append(self.get_landsat(polygon = dataframe_pol,assets = assets,cloud_mask = cloud_mask,
+                                            dates = [start_date, end_date],base_dataset = sensors_datasets[0], clear_percent= clear_percent,lst_band=lst))
+                
                     
                 elif sens=='venus-l2a':
-                    lst_venus_assets = self.get_venus_asset(assets)
-                    data_cube = self.__client_eds.datacube(
-                        sens,
-                        intersects=dataframe_pol,
-                        datetime=[start_date, end_date],
-                        assets=lst_venus_assets,
-                        mask_with=cloud_mask,  
-                        mask_statistics=True,
-                        resolution=sensors_datasets[0].rio.resolution()[0],
-                        epsg=sensors_datasets[0].rio.crs.to_epsg()
-                    ) 
-                    if cloud_mask == 'native':
-                        data_cube = data_cube.sel(time=data_cube.time[data_cube.clear_percent_detailed_cloud_mask > 80])
-                    elif cloud_mask =='ag_cloud_mask':
-                        data_cube = data_cube.sel(time=data_cube.time[data_cube.clear_percent_ag_cloud_mask > 80])
-                    sensors_datasets.append(data_cube)
+                    sensors_datasets.append(self.get_venus(polygon = dataframe_pol,assets = assets,cloud_mask = cloud_mask,
+                                            dates = [start_date, end_date],base_dataset = sensors_datasets[0], clear_percent= clear_percent))
+                
+                elif sens=='earthdaily-simulated-cloudless-l2a-cog-edagro':
+                    sensors_datasets.append(self.get_ed_simulated(polygon = dataframe_pol,assets = assets,
+                                            dates = [start_date, end_date],base_dataset = sensors_datasets[0]))
                 else:
-                    print(f'Sensor {sens} not supported yet')    
+                    print(f'Sensor {sens} not supported yet')  
+                
                 sensor_done.append(sens)                                                       
             except Exception as exc:
                 logging.error(f"Error while generating dataset for {sens} indicator: {str(exc)}")
-        if lst :
-            #not ok for now : band lwir11 not accessible 
-            try:
-                data_cube = self.__client_eds.datacube(
-                    'landsat-c2l2-st',
-                    intersects=dataframe_pol,
-                    datetime=[start_date, end_date],
-                    assets=['lwir11'],
-                    mask_with=cloud_mask,  
-                    mask_statistics=True,
-                    search_kwargs=dict(query={"platform": {"in_": ["LANDSAT_8", "LANDSAT_9"]}}),
-                    resolution=sensors_datasets[0].rio.resolution()[0],
-                    epsg=sensors_datasets[0].rio.crs.to_epsg()
-                ) 
-                if cloud_mask == 'native':
-                    data_cube = data_cube.sel(time=data_cube.time[data_cube.clear_percent_qa_pixel > 80])
-                elif cloud_mask =='ag_cloud_mask':
-                    data_cube = data_cube.sel(time=data_cube.time[data_cube.clear_percent_ag_cloud_mask > 80])
-                data_cube_landsat_st = sensors_datasets[1]
-                data_cube_landsat_all = xr.concat([data_cube_landsat_st,data_cube], dim="band")
-                sensors_datasets.remove(data_cube_landsat_st)
-                sensors_datasets.insert(1,data_cube_landsat_all)
-            except Exception as exc:
-                logging.error(f"Error while generating dataset for LST indicator: {str(exc)}")
         
         return sensors_datasets, sensor_done
+    
+    def get_sentinel(self, 
+                polygon: gpd.GeoDataFrame,
+                assets: [str],
+                cloud_mask: str,
+                dates: [str],
+                clear_percent:int
+                ) ->Dataset:
+        '''
+        Function to retrieve a landsat datacube.
+        Parameters:
+            - polygon : GeoDataFrame, polygon to extract the data for.
+            - assets : [str], assets to extract.
+            - cloud_mask : str, cloud mask to use, either 'native' or 'ag_cloud_mask'.
+            - dates : [str], dates to extract the data for.
+            - clear_percent: int, cloud free percentage wanted.
+            
+        Returns:
+        xarray.Dataset 
+        '''
+        data_cube = self.__client_eds.datacube(
+                    "sentinel-2-l2a",
+                    intersects=polygon,
+                    datetime=dates,
+                    assets=assets,
+                    rescale=True,
+                    mask_with=cloud_mask,  
+                    mask_statistics=True,
+                    prefer_alternate="download"
+                    ) 
 
-    def get_venus_asset(self, bands):
+        if cloud_mask == 'native':
+            data_cube = data_cube.sel(time=data_cube.time[data_cube.clear_percent_scl >= clear_percent])
+        elif cloud_mask =='ag_cloud_mask':
+            data_cube = data_cube.sel(time=data_cube.time[data_cube.clear_percent_ag_cloud_mask >= clear_percent])
+        return(data_cube)
+    
+    def get_landsat(self, 
+                    polygon: gpd.GeoDataFrame,
+                    assets: [str],
+                    cloud_mask: str,
+                    dates: [str],
+                    base_dataset: Dataset,
+                    clear_percent:int,
+                    lst_band: bool
+                    ) ->Dataset:
+        '''
+        Function to retrieve a landsat datacube.
+        Parameters:
+            - polygon : GeoDataFrame, polygon to extract the data for.
+            - assets : [str], assets to extract.
+            - cloud_mask : str, cloud mask to use, either 'native' or 'ag_cloud_mask'.
+            - dates : [str], dates to extract the data for.
+            - base_dataset: xarray.Dataset, first dataset computed to scale the datacube with.
+            - clear_percent: int, cloud free percentage wanted.
+            
+        Returns:
+        xarray.Dataset 
+        '''
+        #deal with rededge bands for landsat
+        band_adjusted = assets.copy()
+        if 'rededge1' in assets:
+            band_adjusted.remove('rededge1')
+        if 'rededge2' in assets:
+            band_adjusted.remove('rededge2')
+        if 'rededge3' in assets:
+            band_adjusted.remove('rededge3')
+            
+        #get datacube
+        data_cube = self.__client_eds.datacube(
+                    "landsat-c2l2-sr",
+                    intersects=polygon,
+                    datetime=dates,
+                    assets=band_adjusted,
+                    mask_with=cloud_mask,  
+                    mask_statistics=True,
+                    resolution=base_dataset.rio.resolution()[0],
+                    epsg=base_dataset.rio.crs.to_epsg()
+                ) 
+        if cloud_mask == 'native':
+            data_cube = data_cube.sel(time=data_cube.time[data_cube.clear_percent_qa_pixel >= clear_percent])
+        elif cloud_mask =='ag_cloud_mask':
+            data_cube = data_cube.sel(time=data_cube.time[data_cube.clear_percent_ag_cloud_mask >= clear_percent])
+        if lst_band :
+            
+            data_cube_lst = self.__client_eds.datacube(
+                            'landsat-c2l2-st',
+                            intersects=polygon,
+                            datetime=dates,
+                            assets=['lwir11'],
+                            mask_with=cloud_mask,  
+                            mask_statistics=True,
+                            search_kwargs=dict(query={"platform": {"in_": ["LANDSAT_8", "LANDSAT_9"]}}),
+                            resolution=base_dataset.rio.resolution()[0],
+                            epsg=base_dataset.rio.crs.to_epsg()
+                        ) 
+            if cloud_mask == 'native':
+                data_cube_lst = data_cube_lst.sel(time=data_cube_lst.time[data_cube_lst.clear_percent_qa_pixel >= clear_percent])
+            elif cloud_mask =='ag_cloud_mask':
+                data_cube_lst = data_cube_lst.sel(time=data_cube_lst.time[data_cube_lst.clear_percent_ag_cloud_mask >= clear_percent])
+            data_cube_landsat_all = xr.merge([data_cube,data_cube_lst],compat="no_conflicts")
+        
+        else:
+            data_cube_landsat_all = data_cube.copy()
+        return(data_cube_landsat_all)  
+    
+    def get_ed_simulated(self, 
+                polygon: gpd.GeoDataFrame,
+                assets: [str],
+                dates: [str],
+                base_dataset: Dataset,
+                ) ->Dataset:
+        '''
+        Function to retrieve a cloudless EarthDaily simulated datacube.
+        Parameters:
+            - polygon : GeoDataFrame, polygon to extract the data for.
+            - assets : [str], assets to extract.
+            - dates : [str], dates to extract the data for.
+            - base_dataset: xarray.Dataset, first dataset computed to scale the datacube with.
+            
+        Returns:
+        xarray.Dataset 
+        '''
+        data_cube = self.__client_eds.datacube(
+                        'earthdaily-simulated-cloudless-l2a-cog-edagro',
+                        intersects = polygon,
+                        datetime = dates,
+                        assets = assets,
+                        resolution = base_dataset.rio.resolution()[0],
+                        epsg = base_dataset.rio.crs.to_epsg(),
+                        prefer_alternate="download"
+                    ) 
+
+        return(data_cube)
+        
+        
+        
+    def get_venus(self, 
+                polygon: gpd.GeoDataFrame,
+                assets: [str],
+                cloud_mask: str,
+                dates: [str],
+                base_dataset: Dataset,
+                clear_percent:int
+                ) ->Dataset:
+        '''
+        Function to retrieve a Venus datacube.
+        Parameters:
+            - polygon : GeoDataFrame, polygon to extract the data for.
+            - assets : [str], assets to extract.
+            - cloud_mask : str, cloud mask to use, either 'native' or 'ag_cloud_mask'.
+            - dates : [str], dates to extract the data for.
+            - base_dataset: xarray.Dataset, first dataset computed to scale the datacube with.
+            - clear_percent: int, cloud free percentage wanted.
+            
+        Returns:
+        xarray.Dataset 
+        '''
         venus_assets = dict(
             blue='image_file_SRE_B3',
             green="image_file_SRE_B4",
@@ -182,52 +285,33 @@ class EarthDailyData:
         
         
         lst_venus_assets = []
-        for band in bands:
+        for band in assets:
             try:
                 lst_venus_assets.append(venus_assets[f'{band}'])
             except:
                 pass
         dict_venus_assets = {i:venus_assets_reversed[f'{i}'] for i in lst_venus_assets}
-        return(dict_venus_assets)
-    
-    def get_assets(self):
-        cols_optic = [ 'sentinel-2-l2a','landsat-c2l2-sr','venus-l2a','earthdaily-simulated-cloudless-l2a-cog-edagro']
-        collections  = [i.id for i in list(self.__client_skyfox.client.get_all_collections())]
-        for collection in collections:
-            if collection in cols_optic:
-                try:      
-                    assets = self.__client_skyfox.explore(collection).assets()
-                    assets_common_name = []
-                    for asset in assets:
-                        common_name = self.__client_skyfox.explore(collection).assets(asset).get('eo:bands',[{}])[0].get('common_name','')
-                        assets_common_name.append(common_name)
-                    return(dict(zip(assets,assets_common_name)))
-                except:
-                    pass
+        
+        data_cube = self.__client_eds.datacube(
+                        'venus-l2a',
+                        intersects = polygon,
+                        datetime = dates,
+                        assets = dict_venus_assets,
+                        mask_with = cloud_mask,  
+                        mask_statistics = True,
+                        resolution = base_dataset.rio.resolution()[0],
+                        epsg = base_dataset.rio.crs.to_epsg(),
+                        prefer_alternate="download"
+                    ) 
+        if cloud_mask == 'native':
+            data_cube = data_cube.sel(time=data_cube.time[data_cube.clear_percent_detailed_cloud_mask >= clear_percent])
+        elif cloud_mask =='ag_cloud_mask':
+            data_cube = data_cube.sel(time=data_cube.time[data_cube.clear_percent_ag_cloud_mask >= clear_percent])
+        return(data_cube)
+        
     def cross_calibration_collections(self,
                        *list_datacube: Dataset,
-                       ):
+                        ):
         
-        final_cube = stackfox.metacube(*list_datacube, concat_dim="time", by="time.date", how="mean")
+        final_cube = earthdatastore.metacube(*list_datacube, concat_dim="time", by="time.date", how="mean")
         return(final_cube)
-                  
-# #%%
-# initalize = StackfoxDatacube(Env.PROD)
-# polygon = "POLYGON ((1.26 43.427, 1.263 43.428, 1.263 43.426, 1.26 43.426, 1.26 43.427))"
-# data,sensors = initalize.generate_datacube_optic(
-#                                     polygon,
-#                                     start_date = "2019-05-01",
-#                                     end_date = "2019-05-31",
-#                                     sensor = ["sentinel-2-l2a","landsat-c2l2-sr",'venus-l2a'],
-#                                     bands= ["red", "green"],
-#                                     cloud_mask= "native")
-# #%%
-# print(len(data))
-
-# # %%
-# cube = initalize.merge_datacube(data)
-
-
-# # %%
-# print(cube)
-# # %%
