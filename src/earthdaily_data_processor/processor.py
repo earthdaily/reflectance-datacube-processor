@@ -168,14 +168,8 @@ class EarthDailyData:
         xarray.Dataset 
         '''
         #deal with rededge bands for landsat
-        band_adjusted = assets.copy()
-        if 'rededge1' in assets:
-            band_adjusted.remove('rededge1')
-        if 'rededge2' in assets:
-            band_adjusted.remove('rededge2')
-        if 'rededge3' in assets:
-            band_adjusted.remove('rededge3')
-            
+        band_adjusted = list(filter(lambda asset: asset not in ["rededge1", "rededge2", "rededge3"], assets))
+
         #get datacube
         data_cube = self.__client_eds.datacube(
                     "landsat-c2l2-sr",
