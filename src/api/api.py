@@ -78,9 +78,9 @@ async def create_analytics_datacube(item: Item, CloudStorage: CloudStorageRepo =
                 logging.error(f"Error while uploading folder to {CloudStorage.value}: {exc}")
                 raise HTTPException(status_code=500, detail=f"Error while uploading folder to {CloudStorage.value} : {exc}")
         else: 
-            for datacube in range(len(datacubes)):
+            for i, datacube in enumerate(datacubes):
                 # convert the generated datacube in zarr file
-                zarr_path = dataset_to_zarr_format_sensor(datacubes[datacube],item.EntityID,item.startDate,item.endDate,collections_done[datacube])
+                zarr_path = dataset_to_zarr_format_sensor(datacube, item.EntityID, item.startDate, item.endDate, collections_done[i])
                 try:
                     links.append(upload_cube(zarr_path,CloudStorage))
                 except Exception as exc:
