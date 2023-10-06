@@ -6,7 +6,7 @@ from fastapi import FastAPI, Query, HTTPException
 from fastapi.openapi.docs import get_swagger_ui_html
 import time
 from earthdaily_data_processor.processor import EarthDailyData
-from earthdaily_data_processor.utils import dataset_to_zarr_format_indep_sensor,dataset_to_zarr_format_sensor
+from earthdaily_data_processor.utils import dataset_to_zarr_format_indep_sensor,dataset_to_zarr_format_sensor, upload_cube
 from api.constants import CloudStorageRepo, Bands, Collections, CloudMask, Question
 from cloud_storage import cloud_storage_aws, cloud_storage_azure
 from fastapi.staticfiles import StaticFiles
@@ -73,14 +73,7 @@ async def create_analytics_datacube(item: Item, CloudStorage: CloudStorageRepo =
             cube = client.cross_calibration_collections(*datacubes)
             zarr_path = dataset_to_zarr_format_indep_sensor(cube,item.EntityID,item.startDate,item.endDate)
             try:
-                # upload result on chosen CloudStorage provider (AWS or Azure)
-                if CloudStorage == CloudStorageRepo.AWS and cloud_storage_aws.upload_folder_to_aws_s3(zarr_path):
-                    logger.info("EarthDaily DataCube uploaded to AWS S3")
-                    links.append(cloud_storage_aws.get_s3_uri_path(zarr_path))
-                elif CloudStorage == CloudStorageRepo.AZURE and cloud_storage_azure.upload_directory_to_azure_blob_storage(
-                        zarr_path):
-                    logger.info("EarthDaily DataCube uploaded to Azure Blob Storage")
-                    links.append(cloud_storage_azure.get_azure_blob_url_path(zarr_path))
+                links.append(upload_cube(zarr_path,CloudStorage))
             except Exception as exc:
                 logging.error(f"Error while uploading folder to {CloudStorage.value}: {exc}")
                 raise HTTPException(status_code=500, detail=f"Error while uploading folder to {CloudStorage.value} : {exc}")
@@ -89,18 +82,11 @@ async def create_analytics_datacube(item: Item, CloudStorage: CloudStorageRepo =
                 # convert the generated datacube in zarr file
                 zarr_path = dataset_to_zarr_format_sensor(datacubes[datacube],item.EntityID,item.startDate,item.endDate,collections_done[datacube])
                 try:
-                        # upload CloudStorage on chosen CloudStorage provider (AWS or Azure)
-                    if CloudStorage == CloudStorageRepo.AWS and cloud_storage_aws.upload_folder_to_aws_s3(zarr_path):
-                        logger.info("EarthDaily DataCube uploaded to AWS S3")
-                        links.append(cloud_storage_aws.get_s3_uri_path(zarr_path))
-                    elif CloudStorage == CloudStorageRepo.AZURE and cloud_storage_azure.upload_directory_to_azure_blob_storage(
-                            zarr_path):
-                        logger.info("EarthDaily DataCube uploaded to Azure Blob Storage")
-                        links.append(cloud_storage_azure.get_azure_blob_url_path(zarr_path))
+                    links.append(upload_cube(zarr_path,CloudStorage))
                 except Exception as exc:
                     logging.error(f"Error while uploading folder to {CloudStorage.value}: {exc}")
                     raise HTTPException(status_code=500, detail=f"Error while uploading folder to {CloudStorage.value} : {exc}")
-                    
+                        
         return {"Storage_links": links,
                 "Execution time":(f"--- {int(np.round((time.time() - start_time)/60))} minutes {int(np.round(np.round((time.time() - start_time))%60))} seconds ---" )}
         

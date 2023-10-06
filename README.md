@@ -51,6 +51,7 @@
   - [Installation](#installation)
 - [Usage](#usage)
   - [Run the processor in a Docker container](#run-the-processor-in-a-docker-container)
+    - [POST /earthdaily-data-processor:](#post-earthdaily-data-processor)
   - [Leverage datacube to generate analytics within a Jupyter Notebook](#leverage-datacube-to-generate-analytics-within-a-jupyter-notebook)
 - [Project Organization](#project-organization)
 - [Resources](#resources)
@@ -67,9 +68,9 @@
 
 <p> The aim of this project is to help our customers valuing our data platform capabilities to build their own analytics. </p>
 
-The purpose of this example is to demonstrate how to extract pixel of interest from our EarthData Store based on a geometry and data selection criterias like sensors and band of interest, access to standard of premium cloud mask and publish results as a n dimension object (zarr file) on cloud storage location. Extracted data can be used to support analysis and analytic creation like in the notebook showcasing how to generate a vegatation index for non cloudy dates leveraging spatial dimensions of the dataset or how to plot vegetation index evolution over time.
+The purpose of this example is to demonstrate how to extract pixel of interest from our EarthData Store based on a geometry and data selection criteria like sensors and band of interest, access to standard of premium cloud mask and publish results as a n-dimension object (zarr file) on cloud storage location. Extracted data can be used to support analysis and analytic creation like in the notebook showcasing how to generate a vegatation index for non cloudy dates leveraging spatial dimensions of the dataset or how to plot vegetation index evolution over time.
 
-It highlights the ability to quickly create pixel pipeline and generate n dimension reflectance objects in [xarray](https://docs.xarray.dev/en/stable/) format. 
+It highlights the ability to quickly create pixel pipeline and generate n-dimension reflectance objects in [xarray](https://docs.xarray.dev/en/stable/) format. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -239,6 +240,7 @@ To use Jupyter Notebook of the project, please follow these steps:
 
     ├── README.md         
     ├── notebooks    
+    │   ├───datacube-cloud_mask.ipynb 
     │   ├───datacube-sustainable-practices.ipynb 
     ├── requirements.txt    
     ├── environment.yml   
@@ -255,11 +257,13 @@ To use Jupyter Notebook of the project, please follow these steps:
     │   │   │   └── favicon.svg
     │   │   ├── __init__.py
     │   │   └── api.py
-    │   └───analytics_datacube
+    │   |───cloud_storage
+    │   |   ├── cloud_storage_aws.py
+    │   |   └── cloud_storage_azure.py
+    │   └───earthdaily_data_procesor
     │       ├── __init__.py
     │       ├── utils.py
-    │       ├── processor.py
-    │       ├── metacube.py
+    │       └── processor.py
     └── test_environment.py         
 
 <p align="right">(<a href="#top">back to top</a>)</p>

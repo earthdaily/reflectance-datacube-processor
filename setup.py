@@ -1,10 +1,10 @@
 from setuptools import find_packages, setup
 
 setup(
-    name='analytics_datacube',
+    name='earthdaily_data_processor ',
     packages = find_packages('src'),
     package_dir={"":"src"},
-    version="0.0.1",
-    description='Create an Analytics Datacube of clear images',
+    version="0.0.0",
+    description='Get datasets from EarthData Store and package them as datacubes.',
     author='EarthDaily Agro',
 )
