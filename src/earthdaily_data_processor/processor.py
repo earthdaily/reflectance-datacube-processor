@@ -267,24 +267,8 @@ class EarthDailyData:
             rededge2='image_file_FRE_B9',
             rededge3='image_file_FRE_B10'
         )
-        venus_assets_reversed = dict(
-            image_file_SRE_B3="blue",
-            image_file_SRE_B4="green",
-            image_file_SRE_B7="red",
-            image_file_SRE_B8="rededge1",
-            image_file_FRE_B9='rededge2',
-            image_file_FRE_B10='rededge3',
-            )
-        
-        
-        lst_venus_assets = []
-        for band in assets:
-            try:
-                lst_venus_assets.append(venus_assets[f'{band}'])
-            except:
-                pass
-        dict_venus_assets = {i:venus_assets_reversed[f'{i}'] for i in lst_venus_assets}
-        
+
+        dict_venus_assets = { venus_assets[band]: band for band in assets }
         data_cube = self.__client_eds.datacube(
                         'venus-l2a',
                         intersects = polygon,
