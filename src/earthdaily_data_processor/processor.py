@@ -203,10 +203,9 @@ class EarthDailyData:
             elif cloud_mask =='ag_cloud_mask':
                 data_cube_lst = data_cube_lst.sel(time=data_cube_lst.time[data_cube_lst.clear_percent_ag_cloud_mask >= clear_percent])
             data_cube_landsat_all = xr.merge([data_cube,data_cube_lst],compat="no_conflicts")
-        
+            return data_cube_landsat_all
         else:
-            data_cube_landsat_all = data_cube.copy()
-        return(data_cube_landsat_all)  
+            return data_cube  
     
     def get_ed_simulated(self, 
                 polygon: gpd.GeoDataFrame,
