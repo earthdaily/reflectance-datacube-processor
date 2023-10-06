@@ -1,4 +1,3 @@
-# FROM continuumio/miniconda3:4.12.0 
 FROM continuumio/miniconda3
 RUN conda create -n env python=3.10.12
 RUN echo "source activate env" > ~/.bashrc
