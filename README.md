@@ -107,7 +107,6 @@ To set up the project, follow these steps:
     
     ```
     git clone https://github.com/GEOSYS/earthdaily-data-processor
-
     ```
 
 2. Change the directory:
@@ -124,7 +123,7 @@ To access and use our Catalog STAC named EarthDataStore, please ensure that you 
 EDS_API_URL = https://api.eds.earthdaily.com/archive/v1/stac/v1
 EDS_AUTH_URL = <skyfox auth url>
 EDS_CLIENT_ID =  <your client id>
-EDS_SECRET = <your client id>
+EDS_SECRET = <your secret>
 ```
 
 To publish results on cloud storage, please add your credentials allowing the processor to write outputs:
