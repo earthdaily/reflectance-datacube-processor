@@ -195,40 +195,33 @@ Body Example:
 To use Jupyter Notebook of the project, please follow these steps:
 
 
-1. Create a Conda environment:
+1. Open a terminal in the earthdaily-data-processor folder.
+
+
+2. Create the required Conda environment:
 
     ```
-    conda create -y --name demo
-    ```
-
-
-2. Activate the Conda environment:
-
-    ```
-    conda activate demo
+    conda env create -f environment.yml
     ```
 
 
-3. Install the project dependencies. You can do this by running the following command in your terminal:
+3. Activate the Conda environment:
 
     ```
-    conda install -y pip
-    pip install -r requirements.txt
-    pip install ipykernel
+    conda activate earthdaily-processor
     ```
-4. Set up the Jupyter Notebook kernel for the project:
+
+
+4. Open a jupyter notebook server:
 
     ```
-    python -m ipykernel install --user --name demo --display-name example1
+    jupyter notebook --port=8080
     ```
+
 5. Open the example notebook (datacube-sustainable-practices.ipynb) by clicking on it.
 
 
-
-6. Select the "Kernel" menu and choose "Change Kernel". Then, select "example1" from the list of available kernels.
-
-
-7. Run the notebook cells to execute the code example and plot results. 
+6. Run the notebook cells to execute the code example and plot results. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
