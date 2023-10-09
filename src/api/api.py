@@ -49,12 +49,12 @@ class Item(BaseModel):
 
 
 @app.post("/earthdaily-data-processor", tags=["Datacube Computation"])
-async def create_analytics_datacube(item: Item, CloudStorage: CloudStorageRepo = Query(...),
-                                    Collections: List[Collections] = Query(...),
-                                    Assets: List[Bands] = Query(...),
-                                    CloudMask: CloudMask = Query(...),
-                                    SensorCrossCalibration:Question=Query(...),
-                                    CloudClearPercent: int = Query(default=0,allow_inf_nan=False,examples=[0,10,50,80,90,100])):
+async def create_analytics_datacube(item: Item, cloud_storage: CloudStorageRepo = Query(alias="Cloud Storage"),
+                                    collections: List[Collections] = Query(alias="Collections"),
+                                    assets: List[Bands] = Query(alias="Assets"),
+                                    cloud_mask: CloudMask = Query(alias="Cloud Mask"),
+                                    sensor_cross_calibration:Question=Query(alias="Sensor Cross Calibration"),
+                                    cloud_clear_percent: int = Query(default=0,alias="Cloud Clear Percent",allow_inf_nan=False,examples=[0,10,50,80,90,100])):
     start_time = time.time()
     client = EarthDailyData()
     start_date = dt.datetime(item.startDate.year, item.startDate.month, item.startDate.day)
@@ -62,30 +62,30 @@ async def create_analytics_datacube(item: Item, CloudStorage: CloudStorageRepo =
 
     # generate analytics datacube
     datacubes, collections_done = client.generate_datacube_optic(polygon=item.geometry, start_date=start_date, end_date=end_date,
-                                                            collections=[collection.value for collection in Collections],
-                                                            assets=[asset.value for asset in Assets],
-                                                            cloud_mask=CloudMask.value,
-                                                            clear_percent=CloudClearPercent)
+                                                            collections=[collection.value for collection in collections],
+                                                            assets=[asset.value for asset in assets],
+                                                            cloud_mask=cloud_mask.value,
+                                                            clear_percent=cloud_clear_percent)
     
     links=[]
     if len(datacubes)>0:
-        if SensorCrossCalibration.value == 'Yes':
+        if sensor_cross_calibration.value == 'Yes':
             cube = client.cross_calibration_collections(*datacubes)
             zarr_path = dataset_to_zarr_format_indep_sensor(cube,item.EntityID,item.startDate,item.endDate)
             try:
-                links.append(upload_cube(zarr_path,CloudStorage))
+                links.append(upload_cube(zarr_path,cloud_storage))
             except Exception as exc:
-                logging.error(f"Error while uploading folder to {CloudStorage.value}: {exc}")
-                raise HTTPException(status_code=500, detail=f"Error while uploading folder to {CloudStorage.value} : {exc}")
+                logging.error(f"Error while uploading folder to {cloud_storage.value}: {exc}")
+                raise HTTPException(status_code=500, detail=f"Error while uploading folder to {cloud_storage.value} : {exc}")
         else: 
             for i, datacube in enumerate(datacubes):
                 # convert the generated datacube in zarr file
                 zarr_path = dataset_to_zarr_format_sensor(datacube, item.EntityID, item.startDate, item.endDate, collections_done[i])
                 try:
-                    links.append(upload_cube(zarr_path,CloudStorage))
+                    links.append(upload_cube(zarr_path,cloud_storage))
                 except Exception as exc:
-                    logging.error(f"Error while uploading folder to {CloudStorage.value}: {exc}")
-                    raise HTTPException(status_code=500, detail=f"Error while uploading folder to {CloudStorage.value} : {exc}")
+                    logging.error(f"Error while uploading folder to {cloud_storage.value}: {exc}")
+                    raise HTTPException(status_code=500, detail=f"Error while uploading folder to {cloud_storage.value} : {exc}")
                         
         return {"Storage_links": links,
                 "Execution time":(f"--- {int(np.round((time.time() - start_time)/60))} minutes {int(np.round(np.round((time.time() - start_time))%60))} seconds ---" )}
