@@ -9,7 +9,7 @@ dependencies:
   - geojson
   - pyproj
   - zarr
-  - gdal
+  - gdal==3.7.2
   - pip 
   - pip:
     # aws
