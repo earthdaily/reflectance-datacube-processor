@@ -31,6 +31,7 @@ class EarthDailyData:
         
         load_dotenv()
         self.__client_eds = earthdatastore.Auth()
+        self.sensors = ["sentinel-2-l2a","landsat-c2l2",'venus-l2a','earthdaily-simulated-cloudless-l2a-cog-edagro']
     
     
     def check_client_auth(self,) :
@@ -80,7 +81,7 @@ class EarthDailyData:
         #re authenticate if needed
         self.check_client_auth()
         
-        if "sentinel-2-l2a" not in collections:
+        if "Sentinel-2 L2A" not in collections:
             base_dataset =  (self.get_sentinel(polygon = dataframe_pol,assets = assets,cloud_mask = cloud_mask,
                                             dates = [start_date, end_date], clear_percent= clear_percent))
         
@@ -88,27 +89,31 @@ class EarthDailyData:
         for sens in collections:
             try:
                 logging.info(f"EarthDailyData:generate_datacube_optic: Get dataset for {sens}")
-                if sens =="sentinel-2-l2a":
+                if sens =="Sentinel-2 L2A":
                     datacube = (self.get_sentinel(polygon = dataframe_pol,assets = assets,cloud_mask = cloud_mask,
                                             dates = [start_date, end_date], clear_percent= clear_percent))
                     sensors_datasets.append(datacube.copy()) 
                     base_dataset = datacube.copy()
-                elif  sens =="landsat-c2l2-sr":
+                    sensor_done.append(self.sensors[0])
+                    
+                elif  sens =="Landsat C2L2":
                     sensors_datasets.append(self.get_landsat(polygon = dataframe_pol,assets = assets,cloud_mask = cloud_mask,
                                             dates = [start_date, end_date],base_dataset = base_dataset, clear_percent= clear_percent,lst_band=lst))
-                
+                    sensor_done.append(self.sensors[1])
                     
-                elif sens=='venus-l2a':
+                elif sens=="Venus L2A":
                     sensors_datasets.append(self.get_venus(polygon = dataframe_pol,assets = assets,cloud_mask = cloud_mask,
                                             dates = [start_date, end_date],base_dataset = base_dataset, clear_percent= clear_percent))
-                
-                elif sens=='earthdaily-simulated-cloudless-l2a-cog-edagro':
+                    sensor_done.append(self.sensors[2])
+                    
+                elif sens=="EarthDaily Simulated L2A":
                     sensors_datasets.append(self.get_ed_simulated(polygon = dataframe_pol,assets = assets,
                                             dates = [start_date, end_date],base_dataset = base_dataset))
+                    sensor_done.append(self.sensors[3])
+                    
                 else:
                     print(f'Sensor {sens} not supported yet')  
-                
-                sensor_done.append(sens)                                                       
+                    
             except Exception as exc:
                 logging.error(f"Error while generating dataset for {sens} indicator: {str(exc)}")
         

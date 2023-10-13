@@ -21,10 +21,10 @@ class Collections(Enum):
     """
     Available sensor values
     """
-    Sentinel_2 = "sentinel-2-l2a"
-    Landsat = "landsat-c2l2-sr"
-    Venus = "venus-l2a"
-    # ED_simulated = "earthdaily-simulated-cloudless-l2a-cog-edagro"
+    Sentinel_2 = "Sentinel-2 L2A"
+    Landsat = "Landsat C2L2"
+    Venus = "Venus L2A"
+    ED_simulated = "EarthDaily Simulated L2A"
 
 class CloudMask(Enum):
     """
