@@ -234,6 +234,10 @@ class EarthDailyData:
         Returns:
         xarray.Dataset 
         '''
+        
+        if 'nir08' in assets:
+            assets.remove('nir08')
+            assets.append('nir')
         data_cube = self.__client_eds.datacube(
                         'earthdaily-simulated-cloudless-l2a-cog-edagro',
                         intersects = polygon,
@@ -293,10 +297,11 @@ class EarthDailyData:
         if cloud_mask == 'native':
             data_cube = data_cube.sel(time=data_cube.time[data_cube.clear_percent_detailed_cloud_mask >= clear_percent])
         elif cloud_mask =='ag_cloud_mask':
-            data_cube = data_cube.sel(time=data_cube.time[data_cube.clear_percent_ag_cloud_mask >= clear_percent])
+            #no cloud mask available for venus so it will select the native one
+            data_cube = data_cube.sel(time=data_cube.time[data_cube.clear_percent_detailed_cloud_mask >= clear_percent])
         return(data_cube)
         
-    def cross_calibration_collections(self,
+    def create_metacube(self,
                        *list_datacube: Dataset,
                         ):
         

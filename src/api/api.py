@@ -10,7 +10,6 @@ from earthdaily_data_processor.utils import dataset_to_zarr_format_indep_sensor,
 from api.constants import CloudStorageRepo, Bands, Collections, CloudMask, Question
 from cloud_storage import cloud_storage_aws, cloud_storage_azure
 from fastapi.staticfiles import StaticFiles
-from geosyspy.geosys import Region, Env
 from pydantic import BaseModel
 import datetime as dt
 from pydantic import BaseModel, Field
@@ -53,8 +52,8 @@ async def create_analytics_datacube(item: Item, cloud_storage: CloudStorageRepo 
                                     collections: List[Collections] = Query(alias="Collections"),
                                     assets: List[Bands] = Query(alias="Assets"),
                                     cloud_mask: CloudMask = Query(alias="Cloud Mask"),
-                                    sensor_cross_calibration:Question=Query(alias="Sensor Cross Calibration"),
-                                    cloud_clear_percent: int = Query(default=0,alias="Cloud Clear Percent",allow_inf_nan=False,examples=[0,10,50,80,90,100])):
+                                    create_metacube:Question=Query(alias="Create Metacube"),
+                                    clear_coverage: int = Query(default=0,alias="Clear Coverage",allow_inf_nan=False,examples=[0,10,50,80,90,100])):
     start_time = time.time()
     client = EarthDailyData()
     start_date = dt.datetime(item.startDate.year, item.startDate.month, item.startDate.day)
@@ -65,12 +64,12 @@ async def create_analytics_datacube(item: Item, cloud_storage: CloudStorageRepo 
                                                             collections=[collection.value for collection in collections],
                                                             assets=[asset.value for asset in assets],
                                                             cloud_mask=cloud_mask.value,
-                                                            clear_percent=cloud_clear_percent)
+                                                            clear_percent=clear_coverage)
     
     links=[]
     if len(datacubes)>0:
-        if sensor_cross_calibration.value == 'Yes':
-            cube = client.cross_calibration_collections(*datacubes)
+        if create_metacube.value == 'Yes':
+            cube = client.create_metacube(*datacubes)
             zarr_path = dataset_to_zarr_format_indep_sensor(cube,item.EntityID,item.startDate,item.endDate)
             try:
                 links.append(upload_cube(zarr_path,cloud_storage))
