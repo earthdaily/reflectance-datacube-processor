@@ -1,2 +1,0 @@
-# external requirements
-gdal==3.7.2

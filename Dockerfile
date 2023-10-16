@@ -6,10 +6,6 @@ EXPOSE 80
 RUN pip install --upgrade pip==23.1.2
 RUN pip cache purge 
 
-COPY ./requirements-conda.txt .
-RUN conda install -c conda-forge --file requirements-conda.txt
-RUN conda clean --all
-
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 RUN pip cache purge; exit 0
