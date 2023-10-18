@@ -235,14 +235,25 @@ class EarthDailyData:
         xarray.Dataset 
         '''
         
-        if 'nir08' in assets:
-            assets.remove('nir08')
-            assets.append('nir')
+        if 'swir22' in assets:
+            assets.remove('swir22')
+        
+        simulated_assets = dict(
+            blue='blue',
+            green="green",
+            red="red",
+            rededge1= "image_file_RE1",
+            rededge2= "image_file_RE2",
+            rededge3= "image_file_RE3",
+            nir08='image_file_NIR',
+            swir16='swir16'
+        )
+        dict_simulated_assets = { simulated_assets[band]: band for band in assets}
         data_cube = self.__client_eds.datacube(
                         'earthdaily-simulated-cloudless-l2a-cog-edagro',
                         intersects = polygon,
                         datetime = dates,
-                        assets = assets,
+                        assets = dict_simulated_assets,
                         resolution = base_dataset.rio.resolution()[0],
                         epsg = base_dataset.rio.crs.to_epsg(),
                         prefer_alternate="download"
