@@ -8,6 +8,8 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 from cloud_storage import cloud_storage_aws, cloud_storage_azure
 from api.constants import CloudStorageRepo
+import zarr
+from azure.storage.blob import ContainerClient
 
 def dataset_to_zarr_format_indep_sensor(dataset: xarray.Dataset,
                                         fieldID:str,
@@ -76,3 +78,32 @@ def upload_cube(zarr_path: str,
         logger.info("EarthDaily DataCube uploaded to Azure Blob Storage")
         link = cloud_storage_azure.get_azure_blob_url_path(zarr_path)
     return(link)
+
+
+def open_cube_azure(image: str):
+    """
+        Open Datacube from azure cloud storage.
+
+        Args:
+            - image: name of the image generated on the API
+
+        Returns:
+            The xarray.Dataset generated on the API.
+    """
+    
+    #retrieve credentials
+    account_storage = os.getenv('AZURE_ACCOUNT_NAME')
+    account_url = f'https://{account_storage}.blob.core.windows.net'
+    container_name = os.getenv('AZURE_BLOB_CONTAINER_NAME')
+    credential = os.getenv('AZURE_SAS_CREDENTIAL')
+
+    #Load container client
+    container_client = ContainerClient(account_url=account_url, container_name=container_name, credential=credential)
+    
+    #Load zarr cube
+    store = zarr.ABSStore(client=container_client, prefix=image)
+    
+    #Open cube as xarray Dataset
+    cube = xarray.open_zarr(store=store, consolidated=True)
+    
+    return(cube)
