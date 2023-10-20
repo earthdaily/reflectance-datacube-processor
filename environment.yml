@@ -17,7 +17,7 @@ dependencies:
     # azure
     - azure-storage-blob
     - geosyspy
-    - earthdaily
+    - earthdaily==0.0.1rc4
     - jupyter
     - matplotlib
     - numpy 
