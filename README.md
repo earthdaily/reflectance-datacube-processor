@@ -13,7 +13,7 @@
     <img src="https://earthdailyagro.com/wp-content/uploads/2022/01/Logo.svg" alt="Logo" width="400" height="200">
   </a>
   
-  <h1>EarthDaily Data Processor</h1>
+  <h1>Reflectance Datacube Processor</h1>
 
   <p>
     Learn how to use &lt;geosys/&gt; platform capabilities in your own business workflow! Build your processor and learn how to run them on your platform.
