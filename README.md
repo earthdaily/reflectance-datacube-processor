@@ -123,7 +123,7 @@ To access and use our Catalog STAC named EarthDataStore, please ensure that you 
 
 ```
 EDS_API_URL = https://api.eds.earthdaily.com/archive/v1/stac/v1
-EDS_AUTH_URL = <skyfox auth url>
+EDS_AUTH_URL = <eds auth url>
 EDS_CLIENT_ID =  <your client id>
 EDS_SECRET = <your secret>
 ```
@@ -174,11 +174,12 @@ This URL will open the Swagger UI documentation, click on the "Try it out" butto
 #### POST /earthdaily-data-processor:
 
 Parameters:
-  - Cloud storage repo, ex: "AWS_S3"
+  - Cloud storage, ex: "AWS_S3"
   - Collections, ex: "Venus-l2a"
   - Assets, ex: "red"
   - Cloud mask, ex: "native"
-  - Sensor cross calibration, ex: "yes"
+  - Create metacube, ex: "no"
+  - Clear coverage (%), ex: "80"
 
 Body Example:
 
