@@ -77,12 +77,17 @@ class EarthDailyData:
             assets.remove('lst')
         else:
             lst=False
-            
+        
+        if 'nir09' in assets:
+            nir09=True
+            assets.remove('nir09')
+        else:
+            nir09=False
         #re authenticate if needed
         self.check_client_auth()
         
         if "Sentinel-2 L2A" not in collections:
-            base_dataset =  (self.get_sentinel(polygon = dataframe_pol,assets = assets,cloud_mask = cloud_mask,
+            base_dataset =  (self.get_sentinel(polygon = dataframe_pol,assets = assets,cloud_mask = 'native',
                                             dates = [start_date, end_date], clear_percent= clear_percent))
         
         #datacube creation for each collections wanted
@@ -90,6 +95,8 @@ class EarthDailyData:
             try:
                 logging.info(f"EarthDailyData:generate_datacube_optic: Get dataset for {sens}")
                 if sens =="Sentinel-2 L2A":
+                    if nir09==True:
+                        assets.append('nir09')
                     datacube = (self.get_sentinel(polygon = dataframe_pol,assets = assets,cloud_mask = cloud_mask,
                                             dates = [start_date, end_date], clear_percent= clear_percent))
                     sensors_datasets.append(datacube.copy()) 
@@ -318,3 +325,18 @@ class EarthDailyData:
         
         final_cube = earthdatastore.metacube(*list_datacube, concat_dim="time", by="time.date", how="mean")
         return(final_cube)
+#test script
+# #%%
+# initalize = EarthDailyData()
+# polygon = "POLYGON ((-96.444476707042 41.18311650256777, -96.4347884854818 41.18295356510254, -96.43489673376754 41.176069086814266, -96.4445308311847 41.176028348103074, -96.44436845875661 41.17879852277147, -96.444476707042 41.18311650256777))"
+# data,sensors = initalize.generate_datacube_optic(
+#                                     polygon,
+#                                     start_date = "2019-05-01",
+#                                     end_date = "2019-06-30",#,"landsat-c2l2-sr",'venus-l2a','earthdaily-simulated-cloudless-l2a-cog-edagro'
+#                                     collections = ["EarthDaily Simulated L2A"],
+#                                     assets= ["red", "blue", "green"],
+#                                     cloud_mask= "native")
+# #%%
+# # # %%
+# # collections  = [i.id for i in list(initalize.__client_eds.get_all_collections())]
+# # # %%

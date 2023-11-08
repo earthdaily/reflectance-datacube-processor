@@ -31,6 +31,5 @@ odc-stac
 earthdaily==0.0.1rc4
 # aws
 boto3
-
 # azure
 azure-storage-blob

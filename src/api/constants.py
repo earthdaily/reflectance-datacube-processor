@@ -16,6 +16,7 @@ class Bands(Enum):
     REDEDGE2='rededge2'
     REDEDGE3='rededge3'
     LST='lst'
+    NIR9='nir09'
 
 class Collections(Enum):
     """
