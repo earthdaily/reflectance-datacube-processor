@@ -72,39 +72,49 @@ async def create_analytics_datacube(item: Item, cloud_storage: CloudStorageRepo 
                                                             clear_percent=clear_coverage)
     # bandwidth use retrieval
     bandwidth_generation = psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv
-    
-    if len(datacubes)>0:
-        if create_metacube.value == 'Yes':
-            cube = client.create_metacube(*datacubes)
-            zarr_path = dataset_to_zarr_format_indep_sensor(cube,item.EntityID,item.startDate,item.endDate)
+
+    if len(datacubes) <= 0:
+        return('No item were found.')
+    if create_metacube.value == 'Yes':
+        cube = client.create_metacube(*datacubes)
+        zarr_path = dataset_to_zarr_format_indep_sensor(cube,item.EntityID,item.startDate,item.endDate)
+        try:
+            links.append(upload_cube(zarr_path,cloud_storage))
+        except Exception as exc:
+            logging.error(f"Error while uploading folder to {cloud_storage.value}: {exc}")
+            raise HTTPException(status_code=500, detail=f"Error while uploading folder to {cloud_storage.value} : {exc}")
+    else: 
+        for i, datacube in enumerate(datacubes):
+            # convert the generated datacube in zarr file
+            zarr_path = dataset_to_zarr_format_sensor(datacube, item.EntityID, item.startDate, item.endDate, collections_done[i])
             try:
                 links.append(upload_cube(zarr_path,cloud_storage))
             except Exception as exc:
                 logging.error(f"Error while uploading folder to {cloud_storage.value}: {exc}")
                 raise HTTPException(status_code=500, detail=f"Error while uploading folder to {cloud_storage.value} : {exc}")
-        else: 
-            for i, datacube in enumerate(datacubes):
-                # convert the generated datacube in zarr file
-                zarr_path = dataset_to_zarr_format_sensor(datacube, item.EntityID, item.startDate, item.endDate, collections_done[i])
-                try:
-                    links.append(upload_cube(zarr_path,cloud_storage))
-                except Exception as exc:
-                    logging.error(f"Error while uploading folder to {cloud_storage.value}: {exc}")
-                    raise HTTPException(status_code=500, detail=f"Error while uploading folder to {cloud_storage.value} : {exc}")
-        # bandwidth use retrieval
-        bandwidth_upload = psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv               
-        
-        if environ.get('bandwidth')=='True':
-            return {"Storage_links": links,
-                "Execution time":(f"--- {int(np.round((time.time() - start_time)/60))} minutes {int(np.round(np.round((time.time() - start_time))%60))} seconds ---" ),
-                "Datacube generation network use":(f"--- {np.round((bandwidth_generation)/1024./1024./1024.*8,3)} Gb ---" ),
-                "Datacube upload network use":(f"--- {np.round((bandwidth_upload-bandwidth_generation)/1024./1024./1024.*8,3)} Gb ---" )}
-        else:
-            return {"Storage_links": links,
-                "Execution time":(f"--- {int(np.round((time.time() - start_time)/60))} minutes {int(np.round(np.round((time.time() - start_time))%60))} seconds ---" )}
-        
-        
-    else:
-        return('No item were found.')
+    # bandwidth use retrieval
+    bandwidth_upload = psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv               
+
+    return (
+        {
+            "Storage_links": links,
+            "Execution time": (
+                f"--- {int(np.round((time.time() - start_time)/60))} minutes {int(np.round(np.round((time.time() - start_time))%60))} seconds ---"
+            ),
+            "Datacube generation network use": (
+                f"--- {np.round((bandwidth_generation)/1024./1024./1024.*8,3)} Gb ---"
+            ),
+            "Datacube upload network use": (
+                f"--- {np.round((bandwidth_upload-bandwidth_generation)/1024./1024./1024.*8,3)} Gb ---"
+            ),
+        }
+        if environ.get('bandwidth') == 'True'
+        else {
+            "Storage_links": links,
+            "Execution time": (
+                f"--- {int(np.round((time.time() - start_time)/60))} minutes {int(np.round(np.round((time.time() - start_time))%60))} seconds ---"
+            ),
+        }
+    )
     
             
