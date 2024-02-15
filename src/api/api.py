@@ -14,6 +14,8 @@ from pydantic import BaseModel
 import datetime as dt
 from pydantic import BaseModel, Field
 import numpy as np
+import psutil
+from os import environ
 
 
 app = FastAPI(
@@ -53,8 +55,11 @@ async def create_analytics_datacube(item: Item, cloud_storage: CloudStorageRepo 
                                     assets: List[Bands] = Query(alias="Assets"),
                                     cloud_mask: CloudMask = Query(alias="Cloud Mask"),
                                     create_metacube:Question=Query(alias="Create Metacube"),
-                                    clear_coverage: int = Query(default=0,alias="Clear Coverage",allow_inf_nan=False,examples=[0,10,50,80,90,100])):
+                                    clear_coverage: int = Query(default=0,alias="Clear Coverage (%)",allow_inf_nan=False,examples=[0,10,50,80,90,100])):
+    
+    # initialization 
     start_time = time.time()
+    links=[]
     client = EarthDailyData()
     start_date = dt.datetime(item.startDate.year, item.startDate.month, item.startDate.day)
     end_date = dt.datetime(item.endDate.year, item.endDate.month, item.endDate.day)
@@ -65,31 +70,51 @@ async def create_analytics_datacube(item: Item, cloud_storage: CloudStorageRepo 
                                                             assets=[asset.value for asset in assets],
                                                             cloud_mask=cloud_mask.value,
                                                             clear_percent=clear_coverage)
-    
-    links=[]
-    if len(datacubes)>0:
-        if create_metacube.value == 'Yes':
-            cube = client.create_metacube(*datacubes)
-            zarr_path = dataset_to_zarr_format_indep_sensor(cube,item.EntityID,item.startDate,item.endDate)
+    # bandwidth use retrieval
+    bandwidth_generation = psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv
+
+    if len(datacubes) <= 0:
+        return('No item were found.')
+    if create_metacube.value == 'Yes':
+        cube = client.create_metacube(*datacubes)
+        zarr_path = dataset_to_zarr_format_indep_sensor(cube,item.EntityID,item.startDate,item.endDate)
+        try:
+            links.append(upload_cube(zarr_path,cloud_storage))
+        except Exception as exc:
+            logging.error(f"Error while uploading folder to {cloud_storage.value}: {exc}")
+            raise HTTPException(status_code=500, detail=f"Error while uploading folder to {cloud_storage.value} : {exc}")
+    else: 
+        for i, datacube in enumerate(datacubes):
+            # convert the generated datacube in zarr file
+            zarr_path = dataset_to_zarr_format_sensor(datacube, item.EntityID, item.startDate, item.endDate, collections_done[i])
             try:
                 links.append(upload_cube(zarr_path,cloud_storage))
             except Exception as exc:
                 logging.error(f"Error while uploading folder to {cloud_storage.value}: {exc}")
                 raise HTTPException(status_code=500, detail=f"Error while uploading folder to {cloud_storage.value} : {exc}")
-        else: 
-            for i, datacube in enumerate(datacubes):
-                # convert the generated datacube in zarr file
-                zarr_path = dataset_to_zarr_format_sensor(datacube, item.EntityID, item.startDate, item.endDate, collections_done[i])
-                try:
-                    links.append(upload_cube(zarr_path,cloud_storage))
-                except Exception as exc:
-                    logging.error(f"Error while uploading folder to {cloud_storage.value}: {exc}")
-                    raise HTTPException(status_code=500, detail=f"Error while uploading folder to {cloud_storage.value} : {exc}")
-                        
-        return {"Storage_links": links,
-                "Execution time":(f"--- {int(np.round((time.time() - start_time)/60))} minutes {int(np.round(np.round((time.time() - start_time))%60))} seconds ---" )}
-        
-    else:
-        return('No item were found.')
+    # bandwidth use retrieval
+    bandwidth_upload = psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv               
+
+    return (
+        {
+            "Storage_links": links,
+            "Execution time": (
+                f"--- {int(np.round((time.time() - start_time)/60))} minutes {int(np.round(np.round((time.time() - start_time))%60))} seconds ---"
+            ),
+            "Datacube generation network use": (
+                f"--- {np.round((bandwidth_generation)/1024./1024./1024.*8,3)} Gb ---"
+            ),
+            "Datacube upload network use": (
+                f"--- {np.round((bandwidth_upload-bandwidth_generation)/1024./1024./1024.*8,3)} Gb ---"
+            ),
+        }
+        if environ.get('bandwidth') == 'True'
+        else {
+            "Storage_links": links,
+            "Execution time": (
+                f"--- {int(np.round((time.time() - start_time)/60))} minutes {int(np.round(np.round((time.time() - start_time))%60))} seconds ---"
+            ),
+        }
+    )
     
             
