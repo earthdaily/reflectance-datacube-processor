@@ -1,13 +1,21 @@
 import logging
 import os
+
 import boto3
 
 
 def _get_s3_client():
-    access_key: str = os.getenv('AWS_ACCESS_KEY_ID')
-    secret_key: str = os.getenv('AWS_SECRET_ACCESS_KEY')
-    if access_key is not None and secret_key is not None and access_key != "" and secret_key != "":
-        return boto3.client('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
+    access_key: str = os.getenv("AWS_ACCESS_KEY_ID")
+    secret_key: str = os.getenv("AWS_SECRET_ACCESS_KEY")
+    if (
+        access_key is not None
+        and secret_key is not None
+        and access_key != ""
+        and secret_key != ""
+    ):
+        return boto3.client(
+            "s3", aws_access_key_id=access_key, aws_secret_access_key=secret_key
+        )
     else:
         logging.error("Please enter valid access information to AWS S3 in .env file")
         return None
@@ -28,7 +36,7 @@ def write_file_to_aws_s3(local_file_path, bucket_name=None):
 
     # get bucket name
     if bucket_name is None:
-        bucket_name = os.getenv('AWS_BUCKET_NAME')
+        bucket_name = os.getenv("AWS_BUCKET_NAME")
 
     s3_client = _get_s3_client()
     if s3_client and bucket_name is not None:
@@ -57,7 +65,7 @@ def upload_folder_to_aws_s3(local_folder_path, bucket_name=None):
 
     # get bucket name
     if bucket_name is None:
-        bucket_name = os.getenv('AWS_BUCKET_NAME')
+        bucket_name = os.getenv("AWS_BUCKET_NAME")
 
     s3_client = _get_s3_client()
     if s3_client:
@@ -66,7 +74,9 @@ def upload_folder_to_aws_s3(local_folder_path, bucket_name=None):
                 for file in files:
                     local_file_path = os.path.join(root, file)
                     relative_path = os.path.relpath(local_file_path, local_folder_path)
-                    s3_key = os.path.join(os.path.basename(local_folder_path), relative_path).replace(os.sep, "/")
+                    s3_key = os.path.join(
+                        os.path.basename(local_folder_path), relative_path
+                    ).replace(os.sep, "/")
                     s3_client.upload_file(local_file_path, bucket_name, s3_key)
             return True
         except Exception as exc:
@@ -78,16 +88,15 @@ def upload_folder_to_aws_s3(local_folder_path, bucket_name=None):
 
 def get_s3_uri_path(local_path):
     """
-       get the s3 path of the uploaded element (file or folder)
+    get the s3 path of the uploaded element (file or folder)
 
-       Args:
-           - local_path: The local path of the uploaded folder/file  on s3
+    Args:
+        - local_path: The local path of the uploaded folder/file  on s3
 
-       Returns:
-           the s3 uri of the uploaded folder/file
+    Returns:
+        the s3 uri of the uploaded folder/file
     """
     s3_key = os.path.basename(local_path)
-    bucket_name = os.getenv('AWS_BUCKET_NAME')
+    bucket_name = os.getenv("AWS_BUCKET_NAME")
     s3_uri = f"s3://{bucket_name}/{s3_key}"
     return s3_uri
-

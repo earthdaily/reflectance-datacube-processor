@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reflectance-datacube-processor
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: reflectance-datacube-processor
+  template:
+    metadata:
+      labels:
+        app: reflectance-datacube-processor
+    spec:
+      containers:
+      - image: regdock01.azurecr.io/reflectance-datacube-processor-processor-v2:v1.0.0
+        name: reflectance-datacube-processor
+        env: 
+        - name: RUN_MODE_ENV
+          value: "API"  
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+        - name: acr-secrets

@@ -32,3 +32,4 @@ earthdaily==0.0.4
 boto3
 # azure
 azure-storage-blob
+byoa
