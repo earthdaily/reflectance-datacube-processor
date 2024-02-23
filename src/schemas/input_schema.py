@@ -6,8 +6,8 @@ from pydantic import BaseModel
 
 class Parameters(BaseModel):
     geometry: str
-    startDate: dt.date
-    endDate: dt.date
+    startDate: dt.datetime
+    endDate: dt.datetime
     EntityID: str
     collections: List[str]
     assets: List[str]

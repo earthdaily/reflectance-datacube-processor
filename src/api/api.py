@@ -60,9 +60,15 @@ async def create_analytics_datacube(
     #     examples=[0, 10, 50, 80, 90, 100],
     # ),
 ):
+    start_date = dt.datetime(item.startDate.year, item.startDate.month, item.startDate.day)
+    end_date=dt.datetime(item.endDate.year, item.endDate.month, item.endDate.day)
+    
+    print (f"start_date: {start_date} - type {type(start_date)}")
+    
+    print (start_date.astimezone())
     parameters = Parameters(geometry=item.geometry,
-                            startDate=item.startDate,
-                            endDate=item.endDate,
+                            startDate=start_date,
+                            endDate=end_date,
                             EntityID=item.EntityID,
                             collections=collections,
                             assets=assets,
@@ -84,4 +90,4 @@ async def create_analytics_datacube(
         logger_manager.error(f"Error while generating datacube")
         raise HTTPException(status_code=500)
 
-
+    return analytics_datacube
