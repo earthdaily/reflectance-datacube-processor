@@ -3,7 +3,6 @@ import json
 import os
 from typing import List
 
-from api.constants import Bands, CloudMask, CloudStorageRepo, Collections, Question
 from byoa.telemetry.log_manager import log_manager
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
@@ -11,6 +10,8 @@ from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+
+from api.constants import Bands, CloudMask, CloudStorageRepo, Collections, Question
 from reflectance_datacube_processor.processor import reflectance_datacube_processor
 from schemas.input_schema import InputModel, Parameters
 
@@ -38,9 +39,9 @@ async def swagger_ui_html():
 async def create_analytics_datacube(
     parameters: Parameters,
     cloud_storage: CloudStorageRepo = Query(alias="Cloud Storage"),
-    collections: List[Collections] = Query(alias="Collections"),
-    assets: List[Bands] = Query(alias="Assets"),
-    cloud_mask: CloudMask = Query(alias="Cloud Mask"),
+    # collections: List[Collections] = Query(alias="Collections"),
+    # assets: List[Bands] = Query(alias="Assets"),
+    # cloud_mask: CloudMask = Query(alias="Cloud Mask"),
     create_metacube: Question = Query(alias="Create Metacube"),
     # aws_azure_id: str = Query(alias="AWS Access Key ID/Azure Account Name"),
     # aws_azure_secret: str = Query(alias="AWS Secret Access Key/Azure SAS Credential"),
@@ -50,12 +51,12 @@ async def create_analytics_datacube(
     bandwidth_display: Question = Query(
         alias="Display information regarding bandwith consumption"
     ),
-    clear_coverage: int = Query(
-        default=0,
-        alias="Clear Coverage (%)",
-        allow_inf_nan=False,
-        examples=[0, 10, 50, 80, 90, 100],
-    ),
+    # clear_coverage: int = Query(
+    #     default=0,
+    #     alias="Clear Coverage (%)",
+    #     allow_inf_nan=False,
+    #     examples=[0, 10, 50, 80, 90, 100],
+    # ),
 ):
 
     input_data = InputModel(parameters=parameters)
@@ -63,12 +64,8 @@ async def create_analytics_datacube(
     client = reflectance_datacube_processor(
         input_data.model_dump(),
         cloud_storage,
-        collections,
-        assets,
-        cloud_mask,
         create_metacube,
         bandwidth_display,
-        clear_coverage,
     )
 
     # generate analytics datacube

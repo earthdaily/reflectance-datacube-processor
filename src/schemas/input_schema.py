@@ -9,6 +9,10 @@ class Parameters(BaseModel):
     startDate: dt.date
     endDate: dt.date
     EntityID: str
+    collections: List[str]
+    assets: List[str]
+    cloud_mask: str
+    clear_coverage: int
 
 
 class InputModel(BaseModel):

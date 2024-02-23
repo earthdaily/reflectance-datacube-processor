@@ -115,7 +115,7 @@ To set up the project, follow these steps:
 1. Clone the project repository:
 
     ```
-    git clone http://github.com/GEOSYS/reflectance-datacube-processor
+    git clone https://github.com/earthdaily/reflectance-datacube-processor
     ```
 
 
@@ -231,16 +231,16 @@ To set up and run the project using Docker, follow these steps:
     │
     ├── pyproject.toml     <- Makes project pip installable (pip install -e .) so src can be imported
     ├── MANIFEST.in        <- Used to include/exclude files for package genration. 
-    ├───src                <- Source code for use in tis project.
-    │   ├───main.py 
+    ├───src                <- Source code for use in tis project. 
     │   ├───api
     │   │   ├── files
     │   │   │   └── favicon.svg
     │   │   ├── __init__.py
-    │   │   └── api.py
+    │   │   ├── api.py
+    |   |   └── constants.py
     │   ├───data
     │   │   └── processor_input_example.json
-    │   ├───data
+    │   ├───shemas
     │   │   ├── __init__.py 
     │   │   ├── input_schema.py   
     │   │   └── output_schema.py
@@ -248,9 +248,11 @@ To set up and run the project using Docker, follow these steps:
     │   │   ├── __init__.py 
     │   │   ├── file_utils.py   
     │   │   └── logging.py
-    │   └───reflectance_datacube_processor
-    │       ├── __init__.py
-    │       └── reflectance_datacube_processor.py
+    │   ├───reflectance_datacube_processor
+    │   |   ├── __init__.py
+    │   |   └── processor.py
+    |   └───main.py
+    |
     └── tests 
 
 <p align="right">(<a href="#top">back to top</a>)</p>

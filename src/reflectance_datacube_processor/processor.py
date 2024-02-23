@@ -6,18 +6,160 @@ from typing import List, Optional
 import geopandas as gpd
 import numpy as np
 import psutil
+import xarray as xr
+from earthdaily import earthdatastore
+from xarray import DataArray, Dataset
+
 import utils.cloud_storage_aws as cloud_storage_aws
 import utils.cloud_storage_azure as cloud_storage_azure
-import xarray as xr
 from api.constants import Bands, CloudMask, CloudStorageRepo, Collections
-from earthdaily import earthdatastore
 from utils.file_utils import validate_data
-from utils.utils import (dataset_to_zarr_format_indep_sensor,
-                         dataset_to_zarr_format_sensor, upload_cube)
-from xarray import DataArray, Dataset
+from utils.utils import (
+    dataset_to_zarr_format_indep_sensor,
+    dataset_to_zarr_format_sensor,
+    upload_cube,
+)
 
 
 class reflectance_datacube_processor:
+
+    def __init__(
+        self,
+        input_data,
+        cloud_storage,
+        create_metacube,
+        bandwidth_display,
+    ):
+        validate_data(input_data, "input")
+        self.input_data = input_data
+        self.cloud_storage = cloud_storage
+        self.creation_metacube = create_metacube
+        self.bandwidth_display = bandwidth_display
+        self.__client_eds = earthdatastore.Auth()
+        self.sensors = [
+            "sentinel-2-l2a",
+            "landsat-c2l2",
+            "venus-l2a",
+            "earthdaily-simulated-cloudless-l2a-cog-edagro",
+        ]
+
+    def prepare_data(self):
+        print("data_prepared")
+
+    def predict(
+        self,
+        input_data,
+    ):
+
+        print("Output predicted")
+        start_time = time.time()
+        links = []
+        start_date = input_data["parameters"]["startDate"]
+        end_date = input_data["parameters"]["endDate"]
+
+        # generate analytics datacube
+        datacubes, collections_done = self.generate_datacube_optic(
+            polygon=input_data["parameters"]["geometry"],
+            start_date=start_date,
+            end_date=end_date,
+            collections=input_data["parameters"]["collections"],
+            assets=input_data["parameters"]["assets"],
+            cloud_mask=input_data["parameters"]["cloud_mask"],
+            clear_percent=input_data["parameters"]["clear_coverage"],
+        )
+
+        # bandwidth use retrieval
+        bandwidth_generation = (
+            psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv
+        )
+
+        if len(datacubes) <= 0:
+            return "No item were found."
+        if self.creation_metacube == "Yes":
+            cube = self.create_metacube(*datacubes)
+            zarr_path = dataset_to_zarr_format_indep_sensor(
+                cube,
+                input_data["parameters"]["EntityID"],
+                input_data["parameters"]["startDate"],
+                input_data["parameters"]["endDate"],
+            )
+            try:
+                links.append(upload_cube(zarr_path, self.cloud_storage))
+            except Exception as exc:
+                logging.error(
+                    f"Error while uploading folder to {self.cloud_storage}: {exc}"
+                )
+        else:
+            for i, datacube in enumerate(datacubes):
+                # convert the generated datacube in zarr file
+                zarr_path = dataset_to_zarr_format_sensor(
+                    datacube,
+                    input_data["parameters"]["EntityID"],
+                    input_data["parameters"]["startDate"],
+                    input_data["parameters"]["endDate"],
+                    collections_done[i],
+                )
+                try:
+                    links.append(upload_cube(zarr_path, self.cloud_storage))
+                except Exception as exc:
+                    logging.error(
+                        f"Error while uploading folder to {self.cloud_storage}: {exc}"
+                    )
+                    raise HTTPException(
+                        status_code=500,
+                        detail=f"Error while uploading folder to {self.cloud_storage} : {exc}",
+                    )
+        # bandwidth use retrieval
+        bandwidth_upload = (
+            psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv
+        )
+
+        return (
+            {
+                "Storage_links": links,
+                "Execution time": (
+                    f"--- {int(np.round((time.time() - start_time)/60))} minutes {int(np.round(np.round((time.time() - start_time))%60))} seconds ---"
+                ),
+                "Datacube generation network use": (
+                    f"--- {np.round((bandwidth_generation)/1024./1024./1024.*8,3)} Gb ---"
+                ),
+                "Datacube upload network use": (
+                    f"--- {np.round((bandwidth_upload-bandwidth_generation)/1024./1024./1024.*8,3)} Gb ---"
+                ),
+            }
+            # if environ.get("bandwidth") == "True"
+            if self.bandwidth_display == "Yes"
+            else {
+                "Storage_links": links,
+                "Execution time": (
+                    f"--- {int(np.round((time.time() - start_time)/60))} minutes {int(np.round(np.round((time.time() - start_time))%60))} seconds ---"
+                ),
+            }
+        )
+
+    def trigger(self):
+        start_time = time.time()
+        print("Processor triggered")
+        self.prepare_data()
+        result = self.predict(self.input_data)
+        # output_data = {
+        #     "Metadata": {
+        #         "processId": "123",
+        #         "processName": "SeasonAnalysis",
+        #         "outputFormat": "zarr",
+        #     },
+        #     "ProcessOutput": {
+        #         "status": result,
+        #         "outputPath": "http://geosysp3.blob.core.windows.net/example_analytic_datacube.zarr",
+        #         "error": "",
+        #     },
+        # }
+
+        output_data = {"data": result}
+        # validate_data(output_data, 'output')
+
+        print("Processor output:", output_data)
+        return result
 
     def generate_datacube_optic(
         self,
@@ -323,149 +465,3 @@ class reflectance_datacube_processor:
         return earthdatastore.metacube(
             *list_datacube, concat_dim="time", by="time.date", how="mean"
         )
-
-    def __init__(
-        self,
-        input_data,
-        cloud_storage,
-        collections: List[Collections],
-        assets: List[Bands],
-        cloud_mask,
-        create_metacube,
-        bandwidth_display,
-        clear_coverage,
-    ):
-        validate_data(input_data, "input")
-        self.input_data = input_data
-        self.cloud_storage = cloud_storage
-        self.collections = collections
-        self.assets = assets
-        self.cloud_mask = cloud_mask
-        self.creation_metacube = create_metacube
-        self.bandwidth_display = bandwidth_display
-        self.clear_coverage = clear_coverage
-        self.__client_eds = earthdatastore.Auth()
-        self.sensors = [
-            "sentinel-2-l2a",
-            "landsat-c2l2",
-            "venus-l2a",
-            "earthdaily-simulated-cloudless-l2a-cog-edagro",
-        ]
-
-    def prepare_data(self):
-        print("data_prepared")
-
-    def predict(
-        self,
-        input_data,
-    ):
-
-        print("Output predicted")
-        start_time = time.time()
-        links = []
-        start_date = input_data["parameters"]["startDate"]
-        end_date = input_data["parameters"]["endDate"]
-
-        # generate analytics datacube
-        datacubes, collections_done = self.generate_datacube_optic(
-            polygon=input_data["parameters"]["geometry"],
-            start_date=start_date,
-            end_date=end_date,
-            collections=self.collections,
-            assets=self.assets,
-            cloud_mask=self.cloud_mask,
-            clear_percent=self.clear_coverage,
-        )
-
-        # bandwidth use retrieval
-        bandwidth_generation = (
-            psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv
-        )
-
-        if len(datacubes) <= 0:
-            return "No item were found."
-        if self.creation_metacube == "Yes":
-            cube = self.create_metacube(*datacubes)
-            zarr_path = dataset_to_zarr_format_indep_sensor(
-                cube,
-                input_data["parameters"]["EntityID"],
-                input_data["parameters"]["startDate"],
-                input_data["parameters"]["endDate"],
-            )
-            try:
-                links.append(upload_cube(zarr_path, self.cloud_storage))
-            except Exception as exc:
-                logging.error(
-                    f"Error while uploading folder to {self.cloud_storage}: {exc}"
-                )
-        else:
-            for i, datacube in enumerate(datacubes):
-                # convert the generated datacube in zarr file
-                zarr_path = dataset_to_zarr_format_sensor(
-                    datacube,
-                    input_data["parameters"]["EntityID"],
-                    input_data["parameters"]["startDate"],
-                    input_data["parameters"]["endDate"],
-                    collections_done[i],
-                )
-                try:
-                    links.append(upload_cube(zarr_path, self.cloud_storage))
-                except Exception as exc:
-                    logging.error(
-                        f"Error while uploading folder to {self.cloud_storage}: {exc}"
-                    )
-                    raise HTTPException(
-                        status_code=500,
-                        detail=f"Error while uploading folder to {self.cloud_storage} : {exc}",
-                    )
-        # bandwidth use retrieval
-        bandwidth_upload = (
-            psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv
-        )
-
-        return (
-            {
-                "Storage_links": links,
-                "Execution time": (
-                    f"--- {int(np.round((time.time() - start_time)/60))} minutes {int(np.round(np.round((time.time() - start_time))%60))} seconds ---"
-                ),
-                "Datacube generation network use": (
-                    f"--- {np.round((bandwidth_generation)/1024./1024./1024.*8,3)} Gb ---"
-                ),
-                "Datacube upload network use": (
-                    f"--- {np.round((bandwidth_upload-bandwidth_generation)/1024./1024./1024.*8,3)} Gb ---"
-                ),
-            }
-            # if environ.get("bandwidth") == "True"
-            if self.bandwidth_display == "Yes"
-            else {
-                "Storage_links": links,
-                "Execution time": (
-                    f"--- {int(np.round((time.time() - start_time)/60))} minutes {int(np.round(np.round((time.time() - start_time))%60))} seconds ---"
-                ),
-            }
-        )
-
-    def trigger(self):
-        start_time = time.time()
-        print("Processor triggered")
-        self.prepare_data()
-        result = self.predict(self.input_data)
-        # output_data = {
-        #     "Metadata": {
-        #         "processId": "123",
-        #         "processName": "SeasonAnalysis",
-        #         "outputFormat": "zarr",
-        #     },
-        #     "ProcessOutput": {
-        #         "status": result,
-        #         "outputPath": "http://geosysp3.blob.core.windows.net/example_analytic_datacube.zarr",
-        #         "error": "",
-        #     },
-        # }
-
-        output_data = {"data": result}
-        # validate_data(output_data, 'output')
-
-        print("Processor output:", output_data)
-        return result
