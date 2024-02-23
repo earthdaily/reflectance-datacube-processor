@@ -9,7 +9,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from api.constants import Bands, CloudMask, CloudStorageRepo, Collections, Question
 from reflectance_datacube_processor.processor import reflectance_datacube_processor
@@ -34,20 +34,22 @@ async def swagger_ui_html():
         swagger_favicon_url="/static/favicon.svg",
     )
 
+class Item(BaseModel):
+    geometry: str = Field(...,
+                        example="POLYGON ((1.26 43.427, 1.263 43.428, 1.263 43.426, 1.26 43.426, 1.26 43.427))")
+    startDate: dt.date = Field(..., example="2019-05-01")
+    endDate: dt.date = Field(..., example="2019-05-31")
+    EntityID: str=Field(...,example='entity_1') 
 
 @app.post("/reflectance-datacube-processor", tags=["Datacube Computation"])
 async def create_analytics_datacube(
-    parameters: Parameters,
+    item: Item,
     cloud_storage: CloudStorageRepo = Query(alias="Cloud Storage"),
-    # collections: List[Collections] = Query(alias="Collections"),
-    # assets: List[Bands] = Query(alias="Assets"),
-    # cloud_mask: CloudMask = Query(alias="Cloud Mask"),
-    create_metacube: Question = Query(alias="Create Metacube"),
-    # aws_azure_id: str = Query(alias="AWS Access Key ID/Azure Account Name"),
-    # aws_azure_secret: str = Query(alias="AWS Secret Access Key/Azure SAS Credential"),
-    # aws_bucket_azure_blob: str = Query(
-    #     alias="AWS Bucket Name/Azure Blob Container Name"
-    # ),
+    collections: List[Collections] = Query(alias="Collections"),
+    assets: List[Bands] = Query(alias="Assets"),
+    cloud_mask: CloudMask = Query(alias="Cloud Mask"),
+    create_metacube:Question=Query(alias="Create Metacube"),
+    clear_coverage: int = Query(default=0,alias="Clear Coverage (%)",allow_inf_nan=False,examples=[0,10,50,80,90,100]),    
     bandwidth_display: Question = Query(
         alias="Display information regarding bandwith consumption"
     ),
@@ -58,7 +60,14 @@ async def create_analytics_datacube(
     #     examples=[0, 10, 50, 80, 90, 100],
     # ),
 ):
-
+    parameters = Parameters(geometry=item.geometry,
+                            startDate=item.startDate,
+                            endDate=item.endDate,
+                            EntityID=item.EntityID,
+                            collections=collections,
+                            assets=assets,
+                            cloud_mask=cloud_mask,
+                            clear_coverage=clear_coverage)        
     input_data = InputModel(parameters=parameters)
 
     client = reflectance_datacube_processor(
@@ -74,3 +83,5 @@ async def create_analytics_datacube(
     if not analytics_datacube:
         logger_manager.error(f"Error while generating datacube")
         raise HTTPException(status_code=500)
+
+
