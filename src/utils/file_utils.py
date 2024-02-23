@@ -32,4 +32,4 @@ def find_enum(value, MyEnum):
     for member in MyEnum.__members__.values():
         if member.value == value:
             return member
-    raise ValueError("No enum member with value '{}'".format(value))
+    raise ValueError(f"No enum member with value '{value}'")

@@ -1,25 +1,26 @@
 name: earthdaily-processor
 channels:
-  - conda-forge
-  - defaults
+ - conda-forge
+ - defaults
 dependencies:
-  - python=3.10.12
+  - python>3.11
   - ipykernel
   - python-dotenv>=0.5.1
   - geojson
   - pyproj
   - zarr
-  - pip
+  - pip 
   - pip:
-      # aws
-      - boto3
-      # azure
-      - azure-storage-blob
-      - geosyspy== 0.2.0
-      - earthdaily==0.0.4
-      - jupyter
-      - matplotlib
-      - numpy
-      - scipy
-      - geogif
-      - pydantic
+    # aws
+    - boto3
+    # azure
+    - azure-storage-blob
+    - earthdaily==0.0.6
+    - jupyter
+    - matplotlib
+    - numpy 
+    - scipy
+    - geogif
+    - fastapi
+    - pydantic
+    - byoa

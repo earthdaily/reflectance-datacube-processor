@@ -1,13 +1,10 @@
 import datetime as dt
-import json
-import os
 from typing import List
 
 from byoa.telemetry.log_manager import log_manager
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.openapi.docs import get_swagger_ui_html
-from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -52,14 +49,28 @@ async def create_analytics_datacube(
     clear_coverage: int = Query(default=0,alias="Clear Coverage (%)",allow_inf_nan=False,examples=[0,10,50,80,90,100]),    
     bandwidth_display: Question = Query(
         alias="Display information regarding bandwith consumption"
-    ),
-    # clear_coverage: int = Query(
-    #     default=0,
-    #     alias="Clear Coverage (%)",
-    #     allow_inf_nan=False,
-    #     examples=[0, 10, 50, 80, 90, 100],
-    # ),
+    )
 ):
+    """
+    Create an analytics datacube based on the provided parameters.
+
+    Args:
+        item (Item): The input item containing the geometry, start date, end date, and entity ID.
+        cloud_storage (CloudStorageRepo): The cloud storage repository.
+        collections (List[Collections]): The list of collections.
+        assets (List[Bands]): The list of bands.
+        cloud_mask (CloudMask): The cloud mask.
+        create_metacube (Question): Whether to create a metacube.
+        clear_coverage (int): The clear coverage percentage.
+        bandwidth_display (Question): Whether to display information regarding bandwidth consumption.
+
+    Returns:
+        analytics_datacube: The generated analytics datacube.
+
+    Raises:
+        HTTPException: If there is an error while generating the datacube.
+    """
+
     start_date = dt.datetime(item.startDate.year, item.startDate.month, item.startDate.day)
     end_date=dt.datetime(item.endDate.year, item.endDate.month, item.endDate.day)
     
@@ -87,7 +98,7 @@ async def create_analytics_datacube(
     analytics_datacube = client.trigger()
 
     if not analytics_datacube:
-        logger_manager.error(f"Error while generating datacube")
+        logger_manager.error("Error while generating datacube")
         raise HTTPException(status_code=500)
 
     return analytics_datacube

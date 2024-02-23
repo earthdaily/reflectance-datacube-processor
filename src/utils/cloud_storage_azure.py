@@ -63,7 +63,9 @@ def write_file_to_azure_blob_storage(local_file_path, blob_name: str = None):
             return True
 
         except Exception as exc:
-            logging.error(f"Error while uploading file to Azure: {str(exc)}")
+            logging.error(
+                "Error while uploading file to Azure: %s",str(exc)
+                )
             return False
 
     else:
@@ -106,10 +108,9 @@ def upload_directory_to_azure_blob_storage(local_directory_path):
                     write_file_to_azure_blob_storage(local_file_path, blob_name)
 
             return True
-
         except Exception as exc:
             logging.error(
-                f"Error while uploading directory to Azure Blob Storage: {str(exc)}"
+                "Error while uploading directory to Azure Blob Storage: %s",str(exc)
             )
             return False
 
@@ -132,6 +133,4 @@ def get_azure_blob_url_path(local_path):
     """
     azure_blob_key = os.path.basename(local_path)
     account_name, blob_container_name, sas_credential = _get_access_info()
-
-    blob_url = f"https://{account_name}.blob.core.windows.net/{blob_container_name}/{azure_blob_key}"
-    return blob_url
+    return f"https://{account_name}.blob.core.windows.net/{blob_container_name}/{azure_blob_key}"

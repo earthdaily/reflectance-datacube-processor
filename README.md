@@ -6,29 +6,30 @@
 -->
 
 
+
 <!-- PROJECT LOGO -->
-<br />
-<p align="center">
-  <a href="https://github.com/GEOSYS">
+<br>
+<div align="center">
+  <a href="https://github.com/earthdaily">
     <img src="https://earthdailyagro.com/wp-content/uploads/2022/01/Logo.svg" alt="Logo" width="400" height="200">
   </a>
+  
+  <h1>Reflectance Datacube Processor</h1>
 
-  <h1 align="center">reflectance-datacube-processor</h1>
-
-  <p align="center">
-    Learn how to use &ltgeosys/&gt platform capabilities in your own business workflow! Build your processor and learn how to run them on your platform.
-    <br />
+  <p>
+    Learn how to use &lt;geosys/&gt; platform capabilities in your own business workflow! Build your processor and learn how to run them on your platform.
+    <br>
     <a href="https://earthdailyagro.com/"><strong>Who we are</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/GEOSYS/GeosysPy/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/GEOSYS/GeosysPy/issues">Request Feature</a>
   </p>
-</p>
 
-<div align="center">
+  <p>
+    <a href="https://github.com/earthdaily/reflectance-datacube-processor/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/earthdaily/reflectance-datacube-processor/issues">Request Feature</a>
+  </p>
 </div>
+
+<div align="center"></div>
 
 <div align="center">
   
@@ -40,35 +41,37 @@
 
 </div>
 
+
 <!-- TABLE OF CONTENTS -->
 <details open>
   <summary>Table of Contents</summary>
-
+  
 - [About The Project](#about-the-project)
 - [Getting Started](#getting-started)
-  * [Prerequisite](#prerequisite)
-  * [Installation](#installation)
+  - [Prerequisite](#prerequisite)
+  - [Installation](#installation)
 - [Usage](#usage)
-  * [Run the example inside a Docker container](#run-the-example-inside-a-docker-container)
-  * [Usage with Jupyter Notebook](#usage-with-jupyter-notebook)
+  - [Run the processor in a Docker container](#run-the-processor-in-a-docker-container)
+    - [POST /earthdaily-data-processor:](#post-earthdaily-data-processor)
+  - [Leverage datacube to generate analytics within a Jupyter Notebook](#leverage-datacube-to-generate-analytics-within-a-jupyter-notebook)
 - [Project Organization](#project-organization)
 - [Resources](#resources)
 - [Support development](#support-development)
 - [License](#license)
 - [Contact](#contact)
 - [Copyrights](#copyrights)
-
+   
 </details>
+
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-<p> The aim of this project is to help our customers valuing &ltgeosys/&gt platform capabilities to build their own analytic of interest. </p>
+<p> The aim of this project is to help our customers valuing our data platform capabilities to build their own analytics. </p>
 
-This directory exposes an example of code that will enable you to 
+The purpose of this example is to demonstrate how to extract pixel of interest from our EarthData Store based on a geometry and data selection criteria like sensors and band of interest, access to standard of premium cloud mask and publish results as a n-dimension object (zarr file) on cloud storage location. Extracted data can be used to support analysis and analytic creation like in the notebook showcasing how to generate a vegatation index for non cloudy dates leveraging spatial dimensions of the dataset or how to plot vegetation index evolution over time.
 
-This directory allows you to run this example both through a notebook and as a local application on your machine. 
- 
+It highlights the ability to quickly create pixel pipeline and generate n-dimension reflectance objects in [xarray](https://docs.xarray.dev/en/stable/) format. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -78,32 +81,22 @@ This directory allows you to run this example both through a notebook and as a l
 
 ### Prerequisite
 
-To be able to run this example, you will need to have following tools to be installed
+ <p align="left">
+Use of this project requires valids credentials from the &ltgeosys/&gt platform . If you need to get trial access, please register <a href=https://earthdailyagro.com/geosys-registration/>here</a>.
+</p>
+
+To be able to run this example, you will need to have following tools installed:
+
+1. Install Conda: please install Conda on your computer. You can download and install it by following the instructions provided on the [official Conda website](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
+
+2. Install Docker Desktop: please install Docker Desktop on your computer. You can download and install it by following the instructions provided on the [official Docker Desktop website](https://docs.docker.com/desktop/)
+
+3. Install Jupyter Notebook: please install jupyter Notebook on your computer following the instructions provided on the [official Jupyter website](https://jupyter.org/install)
+
+4. Install Git: please install Github on your computer. You can download and install it by visiting <a href=https://desktop.github.com/>here</a> and following the provided instructions
 
 
-
-1. Install Git
-
-    Please install Git on your computer. You can download and install it by visiting the [official Git website]    (https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and following the provided instructions
-
-2. Install Conda
-
-    Please install Conda on your computer. You can download and install it by following the instructions provided on the [official Conda website](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
-
-3. Install Docker Desktop
-
-    Please install Docker Desktop on your computer. You can download and install it by following the instructions provided on the [official Docker Desktop website](https://docs.docker.com/desktop/)
-
-4. Install Jupyter Notebook
-
-    Please install jupyter Notebook on your computer. You can install it by following the instructions provided on the [official Jupyter website](https://jupyter.org/install)
-
-
-Make sure you have valid credentials. If you need to get trial access, please register [here](https://earthdailyagro.com/geosys-api/#get-started).
-
-
-
-This package has been tested on Python 3.9.7.
+This package has been tested on Python 3.10.12.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -113,86 +106,60 @@ This package has been tested on Python 3.9.7.
 To set up the project, follow these steps:
 
 1. Clone the project repository:
-
+    
     ```
     git clone https://github.com/earthdaily/reflectance-datacube-processor
     ```
 
-
 2. Change the directory:
 
     ```
-    cd reflectance-datacube-processor
+    cd earthdaily-data-processor
     ```
+3. Fill the environment variable (.env)
+
+Ensure that you populate the .env file with your credentials.=
+To access and use our Catalog STAC named EarthDataStore, please ensure that you have the following environment variables set in your .env file:
+
+```
+EDS_API_URL = https://api.eds.earthdaily.com/archive/v1/stac/v1
+EDS_AUTH_URL = <eds auth url>
+EDS_CLIENT_ID =  <your client id>
+EDS_SECRET = <your secret>
+```
+
+To publish results on cloud storage, please add your credentials allowing the processor to write outputs:
+
+```
+AWS_ACCESS_KEY_ID = <...>
+AWS_SECRET_ACCESS_KEY = <...>
+AWS_BUCKET_NAME = <...>
+
+AZURE_ACCOUNT_NAME = <...>
+AZURE_BLOB_CONTAINER_NAME = <...>
+AZURE_SAS_CREDENTIAL = <...>
+```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+
+<!-- USAGE -->
 ## Usage
 
-### Usage with Jupyter Notebook
-
-To use the project with Jupyter Notebook, follow these steps:
-
-
-1. Create a Conda environment:
-
-    To create a Conda environment, ensure first you have installed Conda on your computer. You can download and install it by following the instructions provided on the official Conda website. 
-
-    
-    ```
-    conda create -y --name demo 
-    ```
-
-
-2. Activate the Conda environment:
-    
-    ```
-    conda activate demo
-    ```
-   
-3. Install the project dependencies. You can do this by running the following command in your terminal:
-
-    ```
-    conda install -y pip
-    pip install -r requirements.txt
-    pip install ipykernel
-    ```
-4. Set up the Jupyter Notebook kernel for the project:
-
-    ```
-    python -m ipykernel install --user --name demo --display-name demo
-    ```
-5. Open jupyter and then the example notebook (reflectance_datacube_processor.ipynb) by clicking on it.
-
-
-
-6. Select the "Kernel" menu and choose "Change Kernel". Then, select "demo" from the list of available kernels.
-
-
-7. Run the notebook cells to execute the code example.
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-### Run the example inside a Docker container
+### Run the processor in a Docker container
 
 To set up and run the project using Docker, follow these steps:
 
 1. Build the Docker image locally:
+
     ```
-    docker build -t template2 .
+    docker build --tag reflectancedatacubeprocessor .
     ```
+
 2. Run the Docker container:
-
-    - Processor Mode
-
+    
     ```
-     docker run -d --name template_container template2 
-    ```
-
-    - Processor with API Mode
-
-    ```
-     docker run -e RUN_MODE_ENV=API -d --name template_container -p 8081:80 template2 
+    docker run -e RUN_MODE_ENV=API -p 8100:90 reflectancedatacubeprocessor
     ```
 
 3. Access the API by opening a web browser and navigating to the following URL:
@@ -201,68 +168,106 @@ To set up and run the project using Docker, follow these steps:
     http://127.0.0.1:8081/docs
     ```
 
-   This URL will open the Swagger UI documentation, click on the "Try it out" button for the POST endpoint and  enter the request body
-   
-   Body Example for reflectance_datacube_processor endpoint:
-   
-   ```json
-   
-   ```
 
-4. Closing the Docker container:
+This URL will open the Swagger UI documentation, click on the "Try it out" button under each POST endpoint and enter the request parameters and body
 
-    To delete the container when it is not needed anymore run : 
+#### POST /earthdaily-data-processor:
+
+Parameters:
+  - Cloud storage, ex: "AWS_S3"
+  - Collections, ex: "Venus-l2a"
+  - Assets, ex: "red"
+  - Cloud mask, ex: "native"
+  - Create metacube, ex: "no"
+  - Clear coverage (%), ex: "80"
+
+Body Example:
+
+```json
+{
+  "geometry": "POLYGON ((1.26 43.427, 1.263 43.428, 1.263 43.426, 1.26 43.426, 1.26 43.427))",
+  "startDate": "2019-05-01",
+  "endDate": "2019-05-31",
+  "EntityID": "entity_1"
+}
+```
+
+### Leverage datacube to generate analytics within a Jupyter Notebook
+
+To use Jupyter Notebook of the project, please follow these steps:
+
+
+1. Open a terminal in the earthdaily-data-processor folder.
+
+
+2. Create the required Conda environment:
+
     ```
-    docker stop demo
+    conda env create -f environment.yml
     ```
+
+
+3. Activate the Conda environment:
+
+    ```
+    conda activate earthdaily-processor
+    ```
+
+
+4. Open a jupyter notebook server:
+
+    ```
+    jupyter notebook --port=8080
+    ```
+
+5. Open the example notebook (datacube-sustainable-practices.ipynb) by clicking on it.
+
+
+6. Run the notebook cells to execute the code example and plot results. 
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
 
 <!-- PROJECT ORGANIZATION -->
 ## Project Organization
 
-    ├── README.md          <- The top-level README for developers using this project.
-    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-    │                         the creator's initials, and a short `-` delimited description, e.g.
-    │                         `1.0-jqp-initial-data-exploration`.
-    │
-    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-    │                         generated with `pip freeze > requirements.txt`
-    ├── environment.yml    <- The conda requirements file for reproducing the analysis environment, e.g.
-    │                         generated with `conda env export > environment.yml`, or manually
-    │
-    ├── pyproject.toml     <- Makes project pip installable (pip install -e .) so src can be imported
-    ├── MANIFEST.in        <- Used to include/exclude files for package genration. 
-    ├───src                <- Source code for use in tis project. 
+
+    ├── README.md         
+    ├── notebooks    
+    │   ├───datacube-cloud_mask.ipynb 
+    │   ├───datacube-sustainable-practices.ipynb 
+    ├── requirements.txt    
+    ├── environment.yml   
+    │── Dockerfile
+    │── .env
+    │── LICENSE
+    │── VERSION
+    ├── setup.py         
+    ├───src                
+    │   ├───main.py 
+    │   ├───test.py 
     │   ├───api
     │   │   ├── files
     │   │   │   └── favicon.svg
     │   │   ├── __init__.py
-    │   │   ├── api.py
-    |   |   └── constants.py
-    │   ├───data
-    │   │   └── processor_input_example.json
-    │   ├───shemas
-    │   │   ├── __init__.py 
-    │   │   ├── input_schema.py   
-    │   │   └── output_schema.py
-    │   ├───utils
-    │   │   ├── __init__.py 
-    │   │   ├── file_utils.py   
-    │   │   └── logging.py
-    │   ├───reflectance_datacube_processor
-    │   |   ├── __init__.py
-    │   |   └── processor.py
-    |   └───main.py
-    |
-    └── tests 
+    │   │   └── api.py
+    │   |───cloud_storage
+    │   |   ├── cloud_storage_aws.py
+    │   |   └── cloud_storage_azure.py
+    │   └───earthdaily_data_procesor
+    │       ├── __init__.py
+    │       ├── utils.py
+    │       └── processor.py
+    └── test_environment.py         
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
 
 <!-- RESOURCES -->
 ## Resources 
 The following links will provide access to more information:
 - [EarthDaily agro developer portal  ](https://developer.geosys.com/)
-- [Pypi package](https://pypi.org/project/geosyspy/)
+- [Pypi package](https://pypi.org/project/earthdaily/)
 - [Analytic processor template](https://github.com/GEOSYS/Analytic-processor-template)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -276,7 +281,7 @@ If this project has been useful, that it helped you or your business to save pre
 
 ## License
 
-Distributed under the [MIT License](https://github.com/GEOSYS/Studies-and-Analysis/blob/main/LICENSE).
+Distributed under the [MIT License](https://github.com/GEOSYS/earthdaily-data-processor/blob/main/LICENSE). 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -302,10 +307,10 @@ For any additonal information, please [email us](mailto:sales@earthdailyagro.com
 [contributors-url]: https://github.com/github_username/repo/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/github_username/repo.svg?style=plastic&logo=appveyor
 [forks-url]: https://github.com/github_username/repo/network/members
-[stars-shield]: https://img.shields.io/github/stars/reflectance-datacube-processor/repo.svg?style=plastic&logo=appveyor
+[stars-shield]: https://img.shields.io/github/stars/earthdaily-data-processor/repo.svg?style=plastic&logo=appveyor
 [stars-url]: https://github.com/github_username/repo/stargazers
-[issues-shield]: https://img.shields.io/github/issues/GEOSYS/reflectance-datacube-processor/repo.svg?style=social
-[issues-url]: https://github.com/GEOSYS/reflectance-datacube-processor/issues
+[issues-shield]: https://img.shields.io/github/issues/GEOSYS/earthdaily-data-processor/repo.svg?style=social
+[issues-url]: https://github.com/GEOSYS/earthdaily-data-processor/issues
 [license-shield]: https://img.shields.io/badge/License-MIT-yellow.svg
 [license-url]: https://opensource.org/licenses/MIT
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=social&logo=linkedin
@@ -318,11 +323,5 @@ For any additonal information, please [email us](mailto:sales@earthdailyagro.com
 [language-python-url]: https://pypi.org/ 
 [GitStars-shield]: https://img.shields.io/github/stars/GEOSYS?style=social
 [GitStars-url]: https://img.shields.io/github/stars/GEOSYS?style=social
-[CITest-shield]: https://img.shields.io/github/workflow/status/GEOSYS/reflectance-datacube-processor/Continous%20Integration
-[CITest-url]: https://img.shields.io/github/workflow/status/GEOSYS/reflectance-datacube-processor/Continous%20Integration
-
-
-
-
-
-
+[CITest-shield]: https://img.shields.io/github/workflow/status/GEOSYS/earthdaily-data-processor/Continous%20Integration
+[CITest-url]: https://img.shields.io/github/workflow/status/GEOSYS/earthdaily-data-processor/Continous%20Integration

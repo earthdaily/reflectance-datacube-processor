@@ -23,3 +23,7 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 where =["src"]
+
+[tool.pylint.'MESSAGES CONTROL']
+disable = ["line-too-long","broad-exception-caught"]
+

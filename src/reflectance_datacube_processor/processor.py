@@ -1,18 +1,14 @@
-import datetime as dt
 import logging
 import time
-from typing import List, Optional
+from typing import List
 
 import geopandas as gpd
 import numpy as np
 import psutil
 import xarray as xr
 from earthdaily import earthdatastore
-from xarray import DataArray, Dataset
-
-import utils.cloud_storage_aws as cloud_storage_aws
-import utils.cloud_storage_azure as cloud_storage_azure
-from api.constants import Bands, CloudMask, CloudStorageRepo, Collections
+from xarray import  Dataset
+from fastapi import  HTTPException
 from utils.file_utils import validate_data
 from utils.utils import (
     dataset_to_zarr_format_indep_sensor,
@@ -22,7 +18,32 @@ from utils.utils import (
 
 
 class reflectance_datacube_processor:
+    """
+    A class for processing reflectance datacubes.
 
+    Args:
+        input_data: The input data for processing.
+        cloud_storage: The cloud storage repository.
+        create_metacube: Whether to create a metacube.
+        bandwidth_display: Whether to display information regarding bandwidth consumption.
+
+    Methods:
+        prepare_data: Prepare the data for processing.
+        predict: Perform the prediction based on the input data.
+        trigger: Trigger the datacube processing.
+        generate_datacube_optic: Generate a datacube with indicator values for each pixel and date.
+        get_sentinel: Retrieve a Sentinel datacube.
+        get_landsat: Retrieve a Landsat datacube.
+        get_ed_simulated: Retrieve a cloudless EarthDaily simulated datacube.
+        get_venus: Retrieve a Venus datacube.
+        create_metacube: Merge different sensors datacubes into one datacube.
+
+    Returns:
+        The result of the datacube processing.
+
+    Raises:
+        HTTPException: If there is an error while generating the datacube.
+    """
     def __init__(
         self,
         input_data,
@@ -50,7 +71,6 @@ class reflectance_datacube_processor:
         self,
         input_data,
     ):
-
         print("Output predicted")
         start_time = time.time()
         links = []
@@ -87,7 +107,7 @@ class reflectance_datacube_processor:
                 links.append(upload_cube(zarr_path, self.cloud_storage))
             except Exception as exc:
                 logging.error(
-                    f"Error while uploading folder to {self.cloud_storage}: {exc}"
+                    "Error while uploading folder to  %s: %s",str(self.cloud_storage),str(exc)
                 )
         else:
             for i, datacube in enumerate(datacubes):
@@ -103,12 +123,12 @@ class reflectance_datacube_processor:
                     links.append(upload_cube(zarr_path, self.cloud_storage))
                 except Exception as exc:
                     logging.error(
-                        f"Error while uploading folder to {self.cloud_storage}: {exc}"
+                        "Error while uploading folder to %s: %s",str(self.cloud_storage),str(exc)
                     )
                     raise HTTPException(
                         status_code=500,
                         detail=f"Error while uploading folder to {self.cloud_storage} : {exc}",
-                    )
+                    ) from exc
         # bandwidth use retrieval
         bandwidth_upload = (
             psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv
@@ -138,7 +158,6 @@ class reflectance_datacube_processor:
         )
 
     def trigger(self):
-        start_time = time.time()
         print("Processor triggered")
         self.prepare_data()
         result = self.predict(self.input_data)
@@ -154,10 +173,8 @@ class reflectance_datacube_processor:
         #         "error": "",
         #     },
         # }
-
         output_data = {"data": result}
         # validate_data(output_data, 'output')
-
         print("Processor output:", output_data)
         return result
 
@@ -166,14 +183,13 @@ class reflectance_datacube_processor:
         polygon,
         start_date: str,
         end_date: str,
-        collections: [str],
-        assets: [str],
+        collections: List[str],
+        assets: List[str],
         cloud_mask: str,
         clear_percent: int = 80,
     ):
         """
         Get a xarray.Dataset with indicators values for each pixel and for each date of images found between start and end dates.
-
         Args:
             - polygon: WKT
             - start_date: beginning of the period
@@ -188,20 +204,17 @@ class reflectance_datacube_processor:
         # Initiate an empty list for the datasets of each collections selected
         sensors_datasets = []
         sensor_done = []
-
         # specific assets by collections management
         if "lst" in assets:  # thermal band from Landsat
             lst = True
             assets.remove("lst")
         else:
             lst = False
-
         if "nir09" in assets:  # band B08A from S2
             nir09 = True
             assets.remove("nir09")
         else:
             nir09 = False
-
         if "Sentinel-2 L2A" not in collections:
             base_dataset = self.get_sentinel(
                 polygon=polygon,
@@ -215,7 +228,7 @@ class reflectance_datacube_processor:
         for sens in collections:
             try:
                 logging.info(
-                    f"EarthDailyData:generate_datacube_optic: Get dataset for {sens}"
+                    "EarthDailyData:generate_datacube_optic: Get dataset for %s",sens
                 )
                 if sens == "Sentinel-2 L2A":
                     if nir09:
@@ -274,17 +287,16 @@ class reflectance_datacube_processor:
 
             except Exception as exc:
                 logging.error(
-                    f"Error while generating dataset for {sens} indicator: {str(exc)}"
+                    "Error while generating dataset for %s indicator: %s",sens,str(exc)
                 )
-
         return sensors_datasets, sensor_done
 
     def get_sentinel(
         self,
         polygon: gpd.GeoDataFrame,
-        assets: [str],
+        assets: List[str],
         cloud_mask: str,
-        dates: [str],
+        dates: List[str],
         clear_percent: int,
     ) -> Dataset:
         """
@@ -313,9 +325,9 @@ class reflectance_datacube_processor:
     def get_landsat(
         self,
         polygon: gpd.GeoDataFrame,
-        assets: [str],
+        assets: List[str],
         cloud_mask: str,
-        dates: [str],
+        dates: List[str],
         base_dataset: Dataset,
         clear_percent: int,
         lst_band: bool,
@@ -373,8 +385,8 @@ class reflectance_datacube_processor:
     def get_ed_simulated(
         self,
         polygon: gpd.GeoDataFrame,
-        assets: [str],
-        dates: [str],
+        assets: List[str],
+        dates: List[str],
         base_dataset: Dataset,
     ) -> Dataset:
         """
@@ -416,9 +428,9 @@ class reflectance_datacube_processor:
     def get_venus(
         self,
         polygon: gpd.GeoDataFrame,
-        assets: [str],
+        assets: List[str],
         cloud_mask: str,
-        dates: [str],
+        dates: List[str],
         base_dataset: Dataset,
         clear_percent: int,
     ) -> Dataset:
@@ -461,7 +473,13 @@ class reflectance_datacube_processor:
         self,
         *list_datacube: Dataset,
     ):
-
+        """
+        Function to merge different sensors datacubes into one datacube.
+        Parameters:
+            - list_datacube : list of xarray.Dataset from all sensors.
+        Returns:
+        xarray.Dataset
+        """
         return earthdatastore.metacube(
             *list_datacube, concat_dim="time", by="time.date", how="mean"
         )

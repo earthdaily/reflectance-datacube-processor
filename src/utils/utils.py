@@ -3,8 +3,6 @@ import logging
 import os
 import shutil
 import tempfile
-from datetime import datetime
-
 import xarray
 
 logger = logging.getLogger()
@@ -17,11 +15,11 @@ from azure.storage.blob import ContainerClient
 
 
 def dataset_to_zarr_format_indep_sensor(
-    dataset: xarray.Dataset, fieldID: str, start_date: dt.date, end_date: dt.date
+    dataset: xarray.Dataset, fieldID: str, start_date: dt.datetime, end_date: dt.datetime
 ):
     """
     Save a xarray.Dataset as zarr format in a temporary folder.
-    Output zarr path : "\{start_date}_{end_date}_{fieldID}_datacube.zarr"
+    Output zarr path : "{start_date}_{end_date}_{fieldID}_datacube.zarr"
 
     Args:
         - dataset: the Dataset to save
@@ -29,12 +27,14 @@ def dataset_to_zarr_format_indep_sensor(
     Returns:
         The complete zarr path
     """
+    start_date_str = str(start_date)[:10]
+    end_date_str = str(end_date)[:10]
     # Make a valid path whatever the OS
     zarr_path = os.path.join(
-        tempfile.gettempdir(), f"{start_date}_{end_date}_{fieldID}_datacube.zarr"
+        tempfile.gettempdir(), f"{start_date_str}_{end_date_str}_{fieldID}_datacube.zarr"
     )
     logging.info(
-        "AnalyticsDatacube:save_dataset_to_temporary_zarr: path is " + zarr_path
+        "AnalyticsDatacube:save_dataset_to_temporary_zarr: path is %s" ,zarr_path
     )
 
     if os.path.exists(zarr_path):
@@ -58,7 +58,7 @@ def dataset_to_zarr_format_sensor(
 ):
     """
     Save a xarray.Dataset as zarr format in a temporary folder.
-    Output zarr path : "\{start_date}_{end_date}_{fieldID}_{sensor}_datacube.zarr"
+    Output zarr path : "{start_date}_{end_date}_{fieldID}_{sensor}_datacube.zarr"
 
     Args:
         - dataset: the Dataset to save
@@ -66,13 +66,14 @@ def dataset_to_zarr_format_sensor(
     Returns:
         The complete zarr path
     """
+    start_date_str = str(start_date)[:10]
+    end_date_str = str(end_date)[:10]
     # Make a valid path whatever the OS
     zarr_path = os.path.join(
-        tempfile.gettempdir(),
-        f"{start_date}_{end_date}_{fieldID}_{sensor}_datacube.zarr",
+        tempfile.gettempdir(), f"{start_date_str}_{end_date_str}_{fieldID}_{sensor}_datacube.zarr"
     )
     logging.info(
-        "AnalyticsDatacube:save_dataset_to_temporary_zarr: path is " + zarr_path
+        "AnalyticsDatacube:save_dataset_to_temporary_zarr: path is %s", zarr_path
     )
 
     # save dataset and return complete zarr path
@@ -133,7 +134,5 @@ def open_cube_azure(image: str):
     # Load zarr cube
     store = zarr.ABSStore(client=container_client, prefix=image)
 
-    # Open cube as xarray Dataset
-    cube = xarray.open_zarr(store=store, consolidated=True)
-
-    return cube
+    # Open and return cube as xarray Dataset
+    return xarray.open_zarr(store=store, consolidated=True)
