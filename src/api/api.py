@@ -31,25 +31,35 @@ async def swagger_ui_html():
         swagger_favicon_url="/static/favicon.svg",
     )
 
+
 class Item(BaseModel):
-    geometry: str = Field(...,
-                        example="POLYGON ((1.26 43.427, 1.263 43.428, 1.263 43.426, 1.26 43.426, 1.26 43.427))")
+    geometry: str = Field(
+        ...,
+        example="POLYGON ((1.26 43.427, 1.263 43.428, 1.263 43.426, 1.26 43.426, 1.26 43.427))",
+    )
     startDate: dt.date = Field(..., example="2019-05-01")
     endDate: dt.date = Field(..., example="2019-05-31")
-    EntityID: str=Field(...,example='entity_1') 
+    EntityID: str = Field(..., example="entity_1")
+
 
 @app.post("/reflectance-datacube-processor", tags=["Datacube Computation"])
 async def create_analytics_datacube(
     item: Item,
     cloud_storage: CloudStorageRepo = Query(alias="Cloud Storage"),
+    bucket_name: str = Query(alias="Name of AWS bucket"),
     collections: List[Collections] = Query(alias="Collections"),
     assets: List[Bands] = Query(alias="Assets"),
     cloud_mask: CloudMask = Query(alias="Cloud Mask"),
-    create_metacube:Question=Query(alias="Create Metacube"),
-    clear_coverage: int = Query(default=0,alias="Clear Coverage (%)",allow_inf_nan=False,examples=[0,10,50,80,90,100]),    
+    create_metacube: Question = Query(alias="Create Metacube"),
     bandwidth_display: Question = Query(
         alias="Display information regarding bandwith consumption"
-    )
+    ),
+    clear_coverage: int = Query(
+        default=0,
+        alias="Clear Coverage (%)",
+        allow_inf_nan=False,
+        examples=[0, 10, 50, 80, 90, 100],
+    ),
 ):
     """
     Create an analytics datacube based on the provided parameters.
@@ -71,26 +81,31 @@ async def create_analytics_datacube(
         HTTPException: If there is an error while generating the datacube.
     """
 
-    start_date = dt.datetime(item.startDate.year, item.startDate.month, item.startDate.day)
-    end_date=dt.datetime(item.endDate.year, item.endDate.month, item.endDate.day)
-    
-    print (f"start_date: {start_date} - type {type(start_date)}")
-    
-    print (start_date.astimezone())
-    parameters = Parameters(geometry=item.geometry,
-                            startDate=start_date,
-                            endDate=end_date,
-                            EntityID=item.EntityID,
-                            collections=collections,
-                            assets=assets,
-                            cloud_mask=cloud_mask,
-                            clear_coverage=clear_coverage)        
+    start_date = dt.datetime(
+        item.startDate.year, item.startDate.month, item.startDate.day
+    )
+    end_date = dt.datetime(item.endDate.year, item.endDate.month, item.endDate.day)
+
+    print(f"start_date: {start_date} - type {type(start_date)}")
+
+    print(start_date.astimezone())
+    parameters = Parameters(
+        geometry=item.geometry,
+        startDate=start_date,
+        endDate=end_date,
+        EntityID=item.EntityID,
+        collections=collections,
+        assets=assets,
+        cloud_mask=cloud_mask,
+        clear_coverage=clear_coverage,
+    )
     input_data = InputModel(parameters=parameters)
 
     client = reflectance_datacube_processor(
         input_data.model_dump(),
         cloud_storage,
         create_metacube,
+        bucket_name,
         bandwidth_display,
     )
 

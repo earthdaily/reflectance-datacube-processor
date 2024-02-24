@@ -3,19 +3,23 @@ import logging
 import os
 import shutil
 import tempfile
+
 import xarray
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-import utils.cloud_storage_aws as cloud_storage_aws
-import utils.cloud_storage_azure as cloud_storage_azure
 import zarr
-from api.constants import CloudStorageRepo
 from azure.storage.blob import ContainerClient
+from byoa.cloud_storage import aws_s3, azure_blob_storage
+
+from api.constants import CloudStorageRepo
 
 
 def dataset_to_zarr_format_indep_sensor(
-    dataset: xarray.Dataset, fieldID: str, start_date: dt.datetime, end_date: dt.datetime
+    dataset: xarray.Dataset,
+    fieldID: str,
+    start_date: dt.datetime,
+    end_date: dt.datetime,
 ):
     """
     Save a xarray.Dataset as zarr format in a temporary folder.
@@ -31,10 +35,11 @@ def dataset_to_zarr_format_indep_sensor(
     end_date_str = str(end_date)[:10]
     # Make a valid path whatever the OS
     zarr_path = os.path.join(
-        tempfile.gettempdir(), f"{start_date_str}_{end_date_str}_{fieldID}_datacube.zarr"
+        tempfile.gettempdir(),
+        f"{start_date_str}_{end_date_str}_{fieldID}_datacube.zarr",
     )
     logging.info(
-        "AnalyticsDatacube:save_dataset_to_temporary_zarr: path is %s" ,zarr_path
+        "AnalyticsDatacube:save_dataset_to_temporary_zarr: path is %s", zarr_path
     )
 
     if os.path.exists(zarr_path):
@@ -70,7 +75,8 @@ def dataset_to_zarr_format_sensor(
     end_date_str = str(end_date)[:10]
     # Make a valid path whatever the OS
     zarr_path = os.path.join(
-        tempfile.gettempdir(), f"{start_date_str}_{end_date_str}_{fieldID}_{sensor}_datacube.zarr"
+        tempfile.gettempdir(),
+        f"{start_date_str}_{end_date_str}_{fieldID}_{sensor}_datacube.zarr",
     )
     logging.info(
         "AnalyticsDatacube:save_dataset_to_temporary_zarr: path is %s", zarr_path
@@ -81,7 +87,7 @@ def dataset_to_zarr_format_sensor(
     return zarr_path
 
 
-def upload_cube(zarr_path: str, cloud_storage: str):
+def upload_cube(zarr_path: str, cloud_storage: str, bucket_name=None):
     """
     Upload a zarr to a cloud storage.
 
@@ -94,18 +100,17 @@ def upload_cube(zarr_path: str, cloud_storage: str):
     """
 
     # upload result on chosen CloudStorage provider (AWS or Azure)
-    if (
-        cloud_storage == CloudStorageRepo.AWS
-        and cloud_storage_aws.upload_folder_to_aws_s3(zarr_path)
+    if cloud_storage == CloudStorageRepo.AWS and aws_s3.upload_folder_to_aws_s3(
+        zarr_path, bucket_name=bucket_name
     ):
         logger.info("EarthDaily DataCube uploaded to AWS S3")
-        link = cloud_storage_aws.get_s3_uri_path(zarr_path)
+        link = aws_s3.get_s3_uri_path(zarr_path)
     elif (
         cloud_storage == CloudStorageRepo.AZURE
-        and cloud_storage_azure.upload_directory_to_azure_blob_storage(zarr_path)
+        and azure_blob_storage.upload_directory_to_azure_blob_storage(zarr_path)
     ):
         logger.info("EarthDaily DataCube uploaded to Azure Blob Storage")
-        link = cloud_storage_azure.get_azure_blob_url_path(zarr_path)
+        link = azure_blob_storage.get_azure_blob_url_path(zarr_path)
     return link
 
 

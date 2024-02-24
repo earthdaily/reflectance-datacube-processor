@@ -2,7 +2,7 @@
     "parameters": {
         "geometry": "POLYGON ((1.26 43.427, 1.263 43.428, 1.263 43.426, 1.26 43.426, 1.26 43.427))",
         "startDate": "2019-05-01",
-        "endDate": "2019-05-06",
+        "endDate": "2019-05-11",
         "EntityID": "kls3",
         "collections": [
             "Landsat C2L2"

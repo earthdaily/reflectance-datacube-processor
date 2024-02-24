@@ -7,8 +7,9 @@ import numpy as np
 import psutil
 import xarray as xr
 from earthdaily import earthdatastore
-from xarray import  Dataset
-from fastapi import  HTTPException
+from fastapi import HTTPException
+from xarray import Dataset
+
 from utils.file_utils import validate_data
 from utils.utils import (
     dataset_to_zarr_format_indep_sensor,
@@ -44,17 +45,20 @@ class reflectance_datacube_processor:
     Raises:
         HTTPException: If there is an error while generating the datacube.
     """
+
     def __init__(
         self,
         input_data,
         cloud_storage,
         create_metacube,
+        bucket_name,
         bandwidth_display,
     ):
         validate_data(input_data, "input")
         self.input_data = input_data
         self.cloud_storage = cloud_storage
         self.creation_metacube = create_metacube
+        self.bucket_name = bucket_name
         self.bandwidth_display = bandwidth_display
         self.__client_eds = earthdatastore.Auth()
         self.sensors = [
@@ -93,6 +97,12 @@ class reflectance_datacube_processor:
             psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv
         )
 
+        print("list param")
+        print("bucket name ")
+        print(self.bucket_name)
+        print("bandwidth")
+        logging.info(self.bandwidth_display)
+
         if len(datacubes) <= 0:
             return "No item were found."
         if self.creation_metacube == "Yes":
@@ -104,10 +114,16 @@ class reflectance_datacube_processor:
                 input_data["parameters"]["endDate"],
             )
             try:
-                links.append(upload_cube(zarr_path, self.cloud_storage))
+                links.append(
+                    upload_cube(
+                        zarr_path, self.cloud_storage, bucket_name=self.bucket_name
+                    )
+                )
             except Exception as exc:
                 logging.error(
-                    "Error while uploading folder to  %s: %s",str(self.cloud_storage),str(exc)
+                    "Error while uploading folder to  %s: %s",
+                    str(self.cloud_storage),
+                    str(exc),
                 )
         else:
             for i, datacube in enumerate(datacubes):
@@ -123,7 +139,9 @@ class reflectance_datacube_processor:
                     links.append(upload_cube(zarr_path, self.cloud_storage))
                 except Exception as exc:
                     logging.error(
-                        "Error while uploading folder to %s: %s",str(self.cloud_storage),str(exc)
+                        "Error while uploading folder to %s: %s",
+                        str(self.cloud_storage),
+                        str(exc),
                     )
                     raise HTTPException(
                         status_code=500,
@@ -228,7 +246,7 @@ class reflectance_datacube_processor:
         for sens in collections:
             try:
                 logging.info(
-                    "EarthDailyData:generate_datacube_optic: Get dataset for %s",sens
+                    "EarthDailyData:generate_datacube_optic: Get dataset for %s", sens
                 )
                 if sens == "Sentinel-2 L2A":
                     if nir09:
@@ -287,7 +305,9 @@ class reflectance_datacube_processor:
 
             except Exception as exc:
                 logging.error(
-                    "Error while generating dataset for %s indicator: %s",sens,str(exc)
+                    "Error while generating dataset for %s indicator: %s",
+                    sens,
+                    str(exc),
                 )
         return sensors_datasets, sensor_done
 

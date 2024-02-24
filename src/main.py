@@ -11,7 +11,11 @@ from utils.file_utils import find_enum, load_input_data
 
 
 def main(
-    input_path=None, cloud_storage=None, create_metacube=None, bandwidth_display=None
+    input_path=None,
+    cloud_storage=None,
+    create_metacube=None,
+    bucket_name=None,
+    bandwidth_display=None,
 ):
     load_dotenv()
     environment = os.getenv("APP_ENVIRONMENT", "local")
@@ -29,12 +33,11 @@ def main(
 
     cloud_storage_ok = find_enum(cloud_storage, CloudStorageRepo)
 
-    print(input_data, cloud_storage_ok, create_metacube, bandwidth_display)
-
     processor = reflectance_datacube_processor(
         input_data,
         cloud_storage_ok,
         create_metacube,
+        bucket_name,
         bandwidth_display,
     )
 
@@ -60,6 +63,12 @@ if __name__ == "__main__":
         default="Yes",
     )
     parser.add_argument(
+        "--bucket_name",
+        type=str,
+        help="Name of the AWS bucket",
+        default=None,
+    )
+    parser.add_argument(
         "--bandwidth_display",
         type=str,
         help="Display Bandwidth consumption (Yes/No)",
@@ -71,5 +80,6 @@ if __name__ == "__main__":
         args.input_path,
         args.cloud_storage,
         args.create_metacube,
+        args.bucket_name,
         args.bandwidth_display,
     )
