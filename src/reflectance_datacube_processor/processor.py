@@ -1,3 +1,4 @@
+import os
 import logging
 import time
 from typing import List
@@ -53,6 +54,7 @@ class reflectance_datacube_processor:
         create_metacube,
         bucket_name,
         bandwidth_display,
+        token: str = None,
     ):
         validate_data(input_data, "input")
         self.input_data = input_data
@@ -60,7 +62,10 @@ class reflectance_datacube_processor:
         self.creation_metacube = create_metacube
         self.bucket_name = bucket_name
         self.bandwidth_display = bandwidth_display
-        self.__client_eds = earthdatastore.Auth()
+        if token:
+            self.__client_eds = earthdatastore.Auth((token, os.getenv("EDS_API_URL")))
+        else:
+            self.__client_eds = earthdatastore.Auth()
         self.sensors = [
             "sentinel-2-l2a",
             "landsat-c2l2",
@@ -133,7 +138,11 @@ class reflectance_datacube_processor:
                     collections_done[i],
                 )
                 try:
-                    links.append(upload_cube(zarr_path, self.cloud_storage,bucket_name=self.bucket_name))
+                    links.append(
+                        upload_cube(
+                            zarr_path, self.cloud_storage, bucket_name=self.bucket_name
+                        )
+                    )
                 except Exception as exc:
                     logging.error(
                         "Error while uploading folder to %s: %s",

@@ -1,5 +1,5 @@
 FROM continuumio/miniconda3:23.10.0-1
-EXPOSE 90
+EXPOSE 80
 
 RUN pip install --upgrade pip==22.0.4
 RUN conda clean --all
