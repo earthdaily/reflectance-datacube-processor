@@ -171,7 +171,6 @@ class reflectance_datacube_processor:
                     f"--- {np.round((bandwidth_upload-bandwidth_generation)/1024./1024./1024.*8,3)} Gb ---"
                 ),
             }
-            # if environ.get("bandwidth") == "True"
             if self.bandwidth_display == "Yes"
             else {
                 "Storage_links": links,

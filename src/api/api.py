@@ -132,9 +132,9 @@ async def create_analytics_datacube(
     client = reflectance_datacube_processor(        
         input_data=input_data.model_dump(),
         cloud_storage=cloud_storage,
-        create_metacube=create_metacube,
+        create_metacube=create_metacube.value,
         bucket_name=aws_s3_bucket,
-        bandwidth_display=bandwidth_display,
+        bandwidth_display=bandwidth_display.value,
         token=token
     )
 
