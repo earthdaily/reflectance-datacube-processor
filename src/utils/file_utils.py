@@ -16,6 +16,17 @@ def load_input_data(input_data_path):
 
 
 def validate_data(data, data_type):
+    """
+    Validate the provided data using Pydantic models.
+
+    Args:
+        data: The data to validate.
+        data_type: The type of data to validate, either 'input' or 'output'.
+
+    Raises:
+        ValueError: If the data_type is invalid.
+        ValidationError: If the data fails validation.
+    """
     try:
         if data_type == "input":
             InputModel(**data)
@@ -28,8 +39,21 @@ def validate_data(data, data_type):
         raise
 
 
-def find_enum(value, MyEnum):
-    for member in MyEnum.__members__.values():
+def find_enum(value, my_enum):
+    """
+    Find and return the enum member with the specified value.
+
+    Args:
+        value: The value to search for.
+        MyEnum: The enum class to search in.
+
+    Returns:
+        The enum member with the specified value.
+
+    Raises:
+        ValueError: If no enum member with the specified value is found.
+    """
+    for member in my_enum.__members__.values():
         if member.value == value:
             return member
     raise ValueError(f"No enum member with value '{value}'")

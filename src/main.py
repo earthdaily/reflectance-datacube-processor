@@ -1,7 +1,5 @@
 import argparse
 import os
-from enum import Enum
-from typing import List
 
 from dotenv import load_dotenv
 
@@ -17,6 +15,19 @@ def main(
     bucket_name=None,
     bandwidth_display=None,
 ):
+    """
+    The main function for processing reflectance datacubes.
+
+    Args:
+        input_path: The path to the input data.
+        cloud_storage: The cloud storage repository.
+        create_metacube: Whether to create a metacube.
+        bucket_name: The name of the bucket.
+        bandwidth_display: Whether to display information regarding bandwidth consumption.
+
+    Returns:
+        The result of the datacube processing.
+    """
     load_dotenv()
     environment = os.getenv("APP_ENVIRONMENT", "local")
     if environment == "local":

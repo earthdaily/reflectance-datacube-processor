@@ -97,9 +97,6 @@ class reflectance_datacube_processor:
             psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv
         )
 
-        print("list param")
-        print("bucket name ")
-        print(self.bucket_name)
         print("bandwidth")
         logging.info(self.bandwidth_display)
 
@@ -136,7 +133,7 @@ class reflectance_datacube_processor:
                     collections_done[i],
                 )
                 try:
-                    links.append(upload_cube(zarr_path, self.cloud_storage))
+                    links.append(upload_cube(zarr_path, self.cloud_storage,bucket_name=self.bucket_name))
                 except Exception as exc:
                     logging.error(
                         "Error while uploading folder to %s: %s",
@@ -384,7 +381,6 @@ class reflectance_datacube_processor:
             epsg=base_dataset.rio.crs.to_epsg(),
         )
         if lst_band:
-
             data_cube_lst = self.__client_eds.datacube(
                 "landsat-c2l2-st",
                 intersects=polygon,
@@ -399,8 +395,7 @@ class reflectance_datacube_processor:
                 epsg=base_dataset.rio.crs.to_epsg(),
             )
             return xr.merge([data_cube, data_cube_lst], compat="no_conflicts")
-        else:
-            return data_cube
+        return data_cube
 
     def get_ed_simulated(
         self,

@@ -1,6 +1,6 @@
 from enum import Enum
 
-
+# pylint: disable=invalid-name
 class Bands(Enum):
     """
     Available band values
@@ -49,5 +49,12 @@ class CloudStorageRepo(Enum):
 
 
 class Question(Enum):
+    """
+    An enumeration representing a question with possible answers.
+
+    Attributes:
+        no (str): The answer "No".
+        yes (str): The answer "Yes".
+    """
     no = "No"
     yes = "Yes"

@@ -12,6 +12,8 @@ from api.constants import Bands, CloudMask, CloudStorageRepo, Collections, Quest
 from reflectance_datacube_processor.processor import reflectance_datacube_processor
 from schemas.input_schema import InputModel, Parameters
 
+# pylint: disable=missing-docstring
+
 logger_manager = log_manager.LogManager.get_instance()
 
 app = FastAPI(
@@ -46,7 +48,10 @@ class Item(BaseModel):
 async def create_analytics_datacube(
     item: Item,
     cloud_storage: CloudStorageRepo = Query(alias="Cloud Storage"),
-    bucket_name: str = Query(alias="Name of AWS bucket"),
+    aws_s3_bucket: str = Query(
+        default=None,
+        alias="AWS S3 bucket name",
+    ),
     collections: List[Collections] = Query(alias="Collections"),
     assets: List[Bands] = Query(alias="Assets"),
     cloud_mask: CloudMask = Query(alias="Cloud Mask"),
@@ -61,34 +66,11 @@ async def create_analytics_datacube(
         examples=[0, 10, 50, 80, 90, 100],
     ),
 ):
-    """
-    Create an analytics datacube based on the provided parameters.
-
-    Args:
-        item (Item): The input item containing the geometry, start date, end date, and entity ID.
-        cloud_storage (CloudStorageRepo): The cloud storage repository.
-        collections (List[Collections]): The list of collections.
-        assets (List[Bands]): The list of bands.
-        cloud_mask (CloudMask): The cloud mask.
-        create_metacube (Question): Whether to create a metacube.
-        clear_coverage (int): The clear coverage percentage.
-        bandwidth_display (Question): Whether to display information regarding bandwidth consumption.
-
-    Returns:
-        analytics_datacube: The generated analytics datacube.
-
-    Raises:
-        HTTPException: If there is an error while generating the datacube.
-    """
 
     start_date = dt.datetime(
         item.startDate.year, item.startDate.month, item.startDate.day
     )
     end_date = dt.datetime(item.endDate.year, item.endDate.month, item.endDate.day)
-
-    print(f"start_date: {start_date} - type {type(start_date)}")
-
-    print(start_date.astimezone())
     parameters = Parameters(
         geometry=item.geometry,
         startDate=start_date,
@@ -100,12 +82,11 @@ async def create_analytics_datacube(
         clear_coverage=clear_coverage,
     )
     input_data = InputModel(parameters=parameters)
-
     client = reflectance_datacube_processor(
         input_data.model_dump(),
         cloud_storage,
         create_metacube,
-        bucket_name,
+        aws_s3_bucket,
         bandwidth_display,
     )
 
