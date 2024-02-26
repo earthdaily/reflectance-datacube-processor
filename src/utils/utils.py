@@ -120,12 +120,14 @@ def upload_cube(zarr_path: str, cloud_storage: str, bucket_name: str=None):
         zarr_path, bucket_name=bucket_name
     ):
         logger.info("EarthDaily DataCube uploaded to AWS S3")
+        __delete_local_directory(zarr_path)
         link = get_s3_uri_path(zarr_path, bucket_name=bucket_name)
     elif (
         cloud_storage == CloudStorageRepo.AZURE
         and azure_blob_storage.upload_directory_to_azure_blob_storage(zarr_path)
     ):
         logger.info("EarthDaily DataCube uploaded to Azure Blob Storage")
+        __delete_local_directory(zarr_path)
         link = azure_blob_storage.get_azure_blob_url_path(zarr_path)
     return link
 
@@ -157,3 +159,18 @@ def open_cube_azure(image: str):
 
     # Open and return cube as xarray Dataset
     return xarray.open_zarr(store=store, consolidated=True)
+
+
+def __delete_local_directory(path: str):
+    """
+    Delete a local directory if it exists.
+
+    Args:
+        path (str): The path of the directory to delete.
+    """
+    # Remove local csv file
+    if os.path.exists(path):
+        logging.info("Delete local directory after upload")
+        shutil.rmtree(path)
+    else:
+        logging.info("File not present.")

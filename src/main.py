@@ -14,6 +14,7 @@ def main(
     create_metacube=None,
     bucket_name=None,
     bandwidth_display=None,
+    token=None
 ):
     """
     The main function for processing reflectance datacubes.
@@ -24,6 +25,8 @@ def main(
         create_metacube: Whether to create a metacube.
         bucket_name: The name of the bucket.
         bandwidth_display: Whether to display information regarding bandwidth consumption.
+        token: EDS token
+        
 
     Returns:
         The result of the datacube processing.
@@ -50,6 +53,7 @@ def main(
         create_metacube,
         bucket_name,
         bandwidth_display,
+        token
     )
 
     result = processor.trigger()
@@ -85,6 +89,12 @@ if __name__ == "__main__":
         help="Display Bandwidth consumption (Yes/No)",
         default="Yes",
     )
+    parser.add_argument(
+        "--eds_token",
+        type=str,
+        help="EDS bearer token",
+        default=None,
+    )
     args = parser.parse_args()
 
     main(
@@ -93,4 +103,5 @@ if __name__ == "__main__":
         args.create_metacube,
         args.bucket_name,
         args.bandwidth_display,
+        args.eds_token
     )

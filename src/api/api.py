@@ -146,17 +146,3 @@ async def create_analytics_datacube(
         raise HTTPException(status_code=500)
 
     return analytics_datacube
-
-def __delete_local_directory(path: str):
-    """
-    Delete a local directory if it exists.
-
-    Args:
-        path (str): The path of the directory to delete.
-    """
-    # Remove local csv file
-    if os.path.exists(path):
-        logger_manager.info("Delete local directory after upload")
-        shutil.rmtree(path)
-    else:
-        logger_manager.info("File not present.")
