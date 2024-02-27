@@ -1,12 +1,11 @@
 import os
-import shutil
 import requests
 import datetime as dt
 from typing import List
 
 from byoa.telemetry.log_manager import log_manager
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Query, Depends, Form
+from fastapi import FastAPI, HTTPException, Query, Form
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, SecretStr
@@ -45,8 +44,7 @@ def authenticate_client(client_id: str, client_secret: str):
     }
     response = requests.post(tokenUrl, data=data, timeout=60)
     if response.status_code == 200:
-        access_token = response.json()["access_token"]
-        return access_token
+        return response.json()["access_token"]
     else:
         raise HTTPException(
             status_code=response.status_code,
@@ -58,8 +56,7 @@ def generate_access_token(client_id: str , client_secret: str):
     return authenticate_client(client_id, client_secret)
 
 def token_dependency(client_id: str = Form(...), client_secret: SecretStr = Form(...)):
-    token = generate_access_token(client_id, client_secret)
-    if token:
+    if token := generate_access_token(client_id, client_secret):
         return token
     else:
         raise HTTPException(

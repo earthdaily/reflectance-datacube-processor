@@ -5,8 +5,6 @@
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
 
-
-
 <!-- PROJECT LOGO -->
 <br>
 <div align="center">
@@ -41,7 +39,6 @@
 
 </div>
 
-
 <!-- TABLE OF CONTENTS -->
 <details open>
   <summary>Table of Contents</summary>
@@ -52,7 +49,7 @@
   - [Installation](#installation)
 - [Usage](#usage)
   - [Run the processor in a Docker container](#run-the-processor-in-a-docker-container)
-    - [POST /earthdaily-data-processor:](#post-earthdaily-data-processor)
+    - [POST /earthdaily-data-processor](#post-earthdaily-data-processor)
   - [Leverage datacube to generate analytics within a Jupyter Notebook](#leverage-datacube-to-generate-analytics-within-a-jupyter-notebook)
 - [Project Organization](#project-organization)
 - [Resources](#resources)
@@ -60,9 +57,8 @@
 - [License](#license)
 - [Contact](#contact)
 - [Copyrights](#copyrights)
-   
-</details>
 
+</details>
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
@@ -71,10 +67,9 @@
 
 The purpose of this example is to demonstrate how to extract pixel of interest from our EarthData Store based on a geometry and data selection criteria like sensors and band of interest, access to standard of premium cloud mask and publish results as a n-dimension object (zarr file) on cloud storage location. Extracted data can be used to support analysis and analytic creation like in the notebook showcasing how to generate a vegatation index for non cloudy dates leveraging spatial dimensions of the dataset or how to plot vegetation index evolution over time.
 
-It highlights the ability to quickly create pixel pipeline and generate n-dimension reflectance objects in [xarray](https://docs.xarray.dev/en/stable/) format. 
+It highlights the ability to quickly create pixel pipeline and generate n-dimension reflectance objects in [xarray](https://docs.xarray.dev/en/stable/) format.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -93,20 +88,18 @@ To be able to run this example, you will need to have following tools installed:
 
 3. Install Jupyter Notebook: please install jupyter Notebook on your computer following the instructions provided on the [official Jupyter website](https://jupyter.org/install)
 
-4. Install Git: please install Github on your computer. You can download and install it by visiting <a href=https://desktop.github.com/>here</a> and following the provided instructions
-
+4. Install Git: please install Github on your computer. You can download and install it by visiting <a href=<https://desktop.github.com/>here></a> and following the provided instructions
 
 This package has been tested on Python 3.10.12.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
 
 ### Installation
 
 To set up the project, follow these steps:
 
 1. Clone the project repository:
-    
+
     ```
     git clone https://github.com/earthdaily/reflectance-datacube-processor
     ```
@@ -116,6 +109,7 @@ To set up the project, follow these steps:
     ```
     cd earthdaily-data-processor
     ```
+
 3. Fill the environment variable (.env)
 
 Ensure that you populate the .env file with your credentials.=
@@ -127,6 +121,7 @@ EDS_AUTH_URL = <eds auth url>
 EDS_CLIENT_ID =  <your client id>
 EDS_SECRET = <your secret>
 ```
+You can also specify the <code>EDS_CLIENT_ID</code> and <code>EDS_SECRET</code> direclty on the API. Those two parameters are not mandatory in the .env file. 
 
 To publish results on cloud storage, please add your credentials allowing the processor to write outputs:
 
@@ -140,8 +135,9 @@ AZURE_BLOB_CONTAINER_NAME = <...>
 AZURE_SAS_CREDENTIAL = <...>
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+You can also specify the <code>AWS_BUCKET_NAME</code> direclty on the API.
 
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- USAGE -->
 ## Usage
@@ -157,29 +153,29 @@ To set up and run the project using Docker, follow these steps:
     ```
 
 2. Run the Docker container:
-    
+
     ```
-    docker run -e RUN_MODE_ENV=API -p 8100:90 reflectancedatacubeprocessor
+    docker run -e RUN_MODE_ENV=API -p 8100:80 reflectancedatacubeprocessor
     ```
 
 3. Access the API by opening a web browser and navigating to the following URL:
-    
-    ```
-    http://127.0.0.1:8081/docs
-    ```
 
+    ```
+    http://127.0.0.1:8100/docs
+    ```
 
 This URL will open the Swagger UI documentation, click on the "Try it out" button under each POST endpoint and enter the request parameters and body
 
-#### POST /earthdaily-data-processor:
+#### POST /earthdaily-data-processor
 
 Parameters:
-  - Cloud storage, ex: "AWS_S3"
-  - Collections, ex: "Venus-l2a"
-  - Assets, ex: "red"
-  - Cloud mask, ex: "native"
-  - Create metacube, ex: "no"
-  - Clear coverage (%), ex: "80"
+
+- Cloud storage, ex: "AWS_S3"
+- Collections, ex: "Venus-l2a"
+- Assets, ex: "red"
+- Cloud mask, ex: "native"
+- Create metacube, ex: "no"
+- Clear coverage (%), ex: "80"
 
 Body Example:
 
@@ -196,9 +192,7 @@ Body Example:
 
 To use Jupyter Notebook of the project, please follow these steps:
 
-
 1. Open a terminal in the earthdaily-data-processor folder.
-
 
 2. Create the required Conda environment:
 
@@ -206,13 +200,11 @@ To use Jupyter Notebook of the project, please follow these steps:
     conda env create -f environment.yml
     ```
 
-
 3. Activate the Conda environment:
 
     ```
     conda activate earthdaily-processor
     ```
-
 
 4. Open a jupyter notebook server:
 
@@ -222,21 +214,22 @@ To use Jupyter Notebook of the project, please follow these steps:
 
 5. Open the example notebook (datacube-sustainable-practices.ipynb) by clicking on it.
 
+6. Run the notebook cells to execute the code example and plot results.
 
-6. Run the notebook cells to execute the code example and plot results. 
+NB: To use the example notebooks, you need to generate the exemple datacubes.
+They are described in each notebooks (the parameters not mentionned need to have the default value).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-
 
 <!-- PROJECT ORGANIZATION -->
 ## Project Organization
 
-
     ├── README.md         
     ├── notebooks    
     │   ├───datacube-cloud_mask.ipynb 
-    │   ├───datacube-sustainable-practices.ipynb 
+    │   ├───datacube-digital-agriculture.ipynb 
+    │   ├───datacube-simulated-dataset.ipynb 
+    │   └───datacube-sustainable-practices.ipynb 
     ├── requirements.txt    
     ├── environment.yml   
     │── Dockerfile
@@ -251,22 +244,31 @@ To use Jupyter Notebook of the project, please follow these steps:
     │   │   ├── files
     │   │   │   └── favicon.svg
     │   │   ├── __init__.py
-    │   │   └── api.py
-    │   |───cloud_storage
-    │   |   ├── cloud_storage_aws.py
-    │   |   └── cloud_storage_azure.py
+    │   │   ├── api.py
+    │   │   └── constants.py
+    │   ├───data
+    │   │   └── processor_input_example.json
+    │   ├───schemas
+    │   │   ├── __init__.py
+    │   │   ├── input_schema.py
+    │   │   └── output_schema.py
+    │   ├───utils
+    │   │   ├── __init__.py 
+    │   │   ├── utils.py
+    │   │   └── file_utils.py
     │   └───earthdaily_data_procesor
     │       ├── __init__.py
-    │       ├── utils.py
     │       └── processor.py
     └── test_environment.py         
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- RESOURCES -->
-## Resources 
+## Resources
+
 The following links will provide access to more information:
-- [EarthDaily agro developer portal  ](https://developer.geosys.com/)
+
+- [EarthDaily agro developer portal](https://developer.geosys.com/)
 - [Pypi package](https://pypi.org/project/earthdaily/)
 - [Analytic processor template](https://github.com/GEOSYS/Analytic-processor-template)
 
@@ -281,7 +283,7 @@ If this project has been useful, that it helped you or your business to save pre
 
 ## License
 
-Distributed under the [MIT License](https://github.com/GEOSYS/earthdaily-data-processor/blob/main/LICENSE). 
+Distributed under the [MIT License](https://github.com/GEOSYS/earthdaily-data-processor/blob/main/LICENSE).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -301,14 +303,6 @@ For any additonal information, please [email us](mailto:sales@earthdailyagro.com
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 <!-- List of available shields https://shields.io/category/license -->
 <!-- List of available shields https://simpleicons.org/ -->
-[contributors-shield]: https://img.shields.io/github/contributors/github_username/repo.svg?style=social
-[NETcore-shield]: https://img.shields.io/badge/.NET%20Core-6.0-green
-[NETcore-url]: https://github.com/dotnet/core
-[contributors-url]: https://github.com/github_username/repo/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/github_username/repo.svg?style=plastic&logo=appveyor
-[forks-url]: https://github.com/github_username/repo/network/members
-[stars-shield]: https://img.shields.io/github/stars/earthdaily-data-processor/repo.svg?style=plastic&logo=appveyor
-[stars-url]: https://github.com/github_username/repo/stargazers
 [issues-shield]: https://img.shields.io/github/issues/GEOSYS/earthdaily-data-processor/repo.svg?style=social
 [issues-url]: https://github.com/GEOSYS/earthdaily-data-processor/issues
 [license-shield]: https://img.shields.io/badge/License-MIT-yellow.svg
@@ -319,9 +313,3 @@ For any additonal information, please [email us](mailto:sales@earthdailyagro.com
 [twitter-url]: https://img.shields.io/twitter/follow/EarthDailyAgro?style=social
 [youtube-shield]: https://img.shields.io/youtube/channel/views/UCy4X-hM2xRK3oyC_xYKSG_g?style=social
 [youtube-url]: https://img.shields.io/youtube/channel/views/UCy4X-hM2xRK3oyC_xYKSG_g?style=social
-[language-python-shiedl]: https://img.shields.io/badge/python-3.9-green?logo=python
-[language-python-url]: https://pypi.org/ 
-[GitStars-shield]: https://img.shields.io/github/stars/GEOSYS?style=social
-[GitStars-url]: https://img.shields.io/github/stars/GEOSYS?style=social
-[CITest-shield]: https://img.shields.io/github/workflow/status/GEOSYS/earthdaily-data-processor/Continous%20Integration
-[CITest-url]: https://img.shields.io/github/workflow/status/GEOSYS/earthdaily-data-processor/Continous%20Integration
