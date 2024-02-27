@@ -345,7 +345,7 @@ class reflectance_datacube_processor:
             mask_with=cloud_mask,
             clear_cover=clear_percent,
             prefer_alternate="download",
-        )
+        ).load()
 
     def get_landsat(
         self,
@@ -403,7 +403,7 @@ class reflectance_datacube_processor:
                 epsg=base_dataset.rio.crs.to_epsg(),
             )
             return xr.merge([data_cube, data_cube_lst], compat="no_conflicts")
-        return data_cube
+        return data_cube.load()
 
     def get_ed_simulated(
         self,
@@ -446,7 +446,7 @@ class reflectance_datacube_processor:
             resolution=base_dataset.rio.resolution()[0],
             epsg=base_dataset.rio.crs.to_epsg(),
             prefer_alternate="download",
-        )
+        ).load()
 
     def get_venus(
         self,
@@ -490,7 +490,7 @@ class reflectance_datacube_processor:
             resolution=base_dataset.rio.resolution()[0],
             epsg=base_dataset.rio.crs.to_epsg(),
             prefer_alternate="download",
-        )
+        ).load()
 
     def create_metacube(
         self,
