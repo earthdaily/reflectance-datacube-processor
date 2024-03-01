@@ -23,4 +23,4 @@ dependencies:
     - geogif
     - fastapi
     - pydantic
-    - byoa
+    - byoa==0.1.0a1
