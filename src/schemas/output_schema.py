@@ -1,40 +1,33 @@
-from typing import Optional
-from pydantic import BaseModel, HttpUrl
+"""outpout schema class"""
+
+from typing import List, Optional
+
+from pydantic import BaseModel
 
 
-class Metadata(BaseModel):
+class Metrics(BaseModel):
     """
-    A Pydantic model representing the metadata of the output.
+    Metrics for the output.
 
     Attributes:
-        processId (str): The ID of the process.
-        processName (str): The name of the process.
-        outputFormat (str): The format of the output.
+        execution_time (Optional[str]): The execution time.
+        data_generation_network_use (Optional[str]): Network use for datacube generation.
+        data_upload_network_use (Optional[str]): Network use for datacube upload.
     """
-    processId: str
-    processName: str
-    outputFormat: str
 
-class ProcessOutput(BaseModel):
-    """
-    A Pydantic model representing the process output information.
+    execution_time: Optional[str] = None
+    data_generation_network_use: Optional[str] = None
+    data_upload_network_use: Optional[str] = None
 
-    Attributes:
-        status (str): The status of the process.
-        outputPath (Optional[HttpUrl]): The output path, if available.
-        error (Optional[str]): The error message, if any.
-    """
-    status: str
-    outputPath: Optional[HttpUrl]
-    error: Optional[str]
 
 class OutputModel(BaseModel):
     """
-    A Pydantic model representing the output of the process.
+    Output model containing storage links, and metrics.
 
     Attributes:
-        Metadata (Metadata): The metadata of the output.
-        ProcessOutput (ProcessOutput): The process output information.
+        StorageLinks (List[str]): The link of the output path.
+        Metrics (Optional[Metrics]): Metrics for the output.
     """
-    Metadata: Metadata
-    ProcessOutput: ProcessOutput
+
+    storage_links: List[str]
+    metrics: Optional[Metrics] = None  # type: ignore

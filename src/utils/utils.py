@@ -1,15 +1,13 @@
+import datetime as dt
 import logging
 import os
 import shutil
 import tempfile
 
-import datetime as dt
-
+import xarray
 import zarr
 from azure.storage.blob import ContainerClient
 from byoa.cloud_storage import aws_s3, azure_blob_storage
-
-import xarray
 
 from api.constants import CloudStorageRepo
 
@@ -88,23 +86,8 @@ def dataset_to_zarr_format_sensor(
     dataset.to_zarr(zarr_path)
     return zarr_path
 
-def get_s3_uri_path(local_path: str, bucket_name:str = None) -> str:
-    """Get the s3 path of the uploaded element (file or folder)
 
-    Args:
-      local_path(str): The local path of the uploaded folder/file on s3
-      bucket_name(str): The optional bucket name set to store the file on s3
-
-    Returns:
-      str: the s3 uri of the uploaded folder/file
-    """
-    # get bucket name
-    if bucket_name is None:
-        bucket_name = os.getenv("AWS_BUCKET_NAME") # careful, bucket name can still be None
-    s3_key = os.path.basename(local_path)
-    return  f"s3://{bucket_name}/{s3_key}"
-
-def upload_cube(zarr_path: str, cloud_storage: str, bucket_name: str=None):
+def upload_cube(zarr_path: str, cloud_storage: str, bucket_name: str = None):
     """
     Upload a zarr to a cloud storage.
 
@@ -116,12 +99,14 @@ def upload_cube(zarr_path: str, cloud_storage: str, bucket_name: str=None):
         The complete path to the zarr folder in the storage account.
     """
     # upload result on chosen CloudStorage provider (AWS or Azure)
-    if cloud_storage == CloudStorageRepo.AWS and aws_s3.write_folder_to_aws_s3(
-        zarr_path, bucket_name=bucket_name
-    ):
+    if cloud_storage == CloudStorageRepo.AWS:
+        if bucket_name is None:
+            bucket_name = os.getenv("AWS_BUCKET_NAME")
+
+        aws_s3.write_folder_to_aws_s3(zarr_path, bucket_name=bucket_name)
         logger.info("EarthDaily DataCube uploaded to AWS S3")
         __delete_local_directory(zarr_path)
-        link = get_s3_uri_path(zarr_path, bucket_name=bucket_name)
+        link = aws_s3.get_s3_uri_path(zarr_path, bucket_name=bucket_name)
     elif (
         cloud_storage == CloudStorageRepo.AZURE
         and azure_blob_storage.upload_directory_to_azure_blob_storage(zarr_path)

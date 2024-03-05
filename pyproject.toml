@@ -25,5 +25,15 @@ include-package-data = true
 where =["src"]
 
 [tool.pylint.'MESSAGES CONTROL']
-disable = ["line-too-long","broad-exception-caught","too-many-arguments"]
+disable = ["line-too-long","broad-exception-caught","too-many-arguments","too-few-public-methods","too-many-locals"]
 
+[tool.black]
+line-length = 99
+
+[tool.isort]
+profile = "black"
+line_length = 99
+
+[tool.mypy]
+ignore_missing_imports = true
+exclude = ['tests', 'docs']

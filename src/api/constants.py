@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 # pylint: disable=invalid-name
 class Bands(Enum):
     """
@@ -53,8 +54,9 @@ class Question(Enum):
     An enumeration representing a question with possible answers.
 
     Attributes:
-        no (str): The answer "No".
-        yes (str): The answer "Yes".
+        NO (str): The answer "No".
+        YES (str): The answer "Yes".
     """
-    no = "No"
-    yes = "Yes"
+
+    NO = "No"
+    YES = "Yes"

@@ -1,7 +1,9 @@
-import os
+""" Processor class """
+
 import logging
+import os
 import time
-from typing import List
+from typing import List, Optional
 
 import geopandas as gpd
 import numpy as np
@@ -11,6 +13,7 @@ from earthdaily import earthdatastore
 from fastapi import HTTPException
 from xarray import Dataset
 
+from schemas.output_schema import Metrics, OutputModel
 from utils.file_utils import validate_data
 from utils.utils import (
     dataset_to_zarr_format_indep_sensor,
@@ -19,7 +22,7 @@ from utils.utils import (
 )
 
 
-class reflectance_datacube_processor:
+class ReflectanceDatacubeProcessor:
     """
     A class for processing reflectance datacubes.
 
@@ -53,15 +56,15 @@ class reflectance_datacube_processor:
         cloud_storage,
         create_metacube,
         bucket_name,
-        bandwidth_display,
-        token: str = None,
+        metrics: bool = False,
+        token: Optional[str] = None,
     ):
         validate_data(input_data, "input")
         self.input_data = input_data
         self.cloud_storage = cloud_storage
         self.creation_metacube = create_metacube
         self.bucket_name = bucket_name
-        self.bandwidth_display = bandwidth_display
+        self.metrics = metrics
         if token:
             self.__client_eds = earthdatastore.Auth((token, os.getenv("EDS_API_URL")))
         else:
@@ -74,14 +77,19 @@ class reflectance_datacube_processor:
         ]
 
     def prepare_data(self):
+        """prepare data"""
         print("data_prepared")
 
     def predict(
         self,
         input_data,
     ):
+        """predict data"""
         print("Output predicted")
         start_time = time.time()
+
+        bandwidth_init = psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv
+
         links = []
         start_date = input_data["parameters"]["startDate"]
         end_date = input_data["parameters"]["endDate"]
@@ -102,8 +110,8 @@ class reflectance_datacube_processor:
             psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv
         )
 
-        print("bandwidth")
-        logging.info(self.bandwidth_display)
+        print("metrics:")
+        logging.info(self.metrics)
 
         if len(datacubes) <= 0:
             return "No item were found."
@@ -117,9 +125,7 @@ class reflectance_datacube_processor:
             )
             try:
                 links.append(
-                    upload_cube(
-                        zarr_path, self.cloud_storage, bucket_name=self.bucket_name
-                    )
+                    upload_cube(zarr_path, self.cloud_storage, bucket_name=self.bucket_name)
                 )
             except Exception as exc:
                 logging.error(
@@ -139,9 +145,7 @@ class reflectance_datacube_processor:
                 )
                 try:
                     links.append(
-                        upload_cube(
-                            zarr_path, self.cloud_storage, bucket_name=self.bucket_name
-                        )
+                        upload_cube(zarr_path, self.cloud_storage, bucket_name=self.bucket_name)
                     )
                 except Exception as exc:
                     logging.error(
@@ -158,44 +162,29 @@ class reflectance_datacube_processor:
             psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv
         )
 
-        return (
-            {
-                "Storage_links": links,
-                "Execution time": (
-                    f"--- {int(np.round((time.time() - start_time)/60))} minutes {int(np.round(np.round((time.time() - start_time))%60))} seconds ---"
-                ),
-                "Datacube generation network use": (
-                    f"--- {np.round((bandwidth_generation)/1024./1024./1024.*8,3)} Gb ---"
-                ),
-                "Datacube upload network use": (
-                    f"--- {np.round((bandwidth_upload-bandwidth_generation)/1024./1024./1024.*8,3)} Gb ---"
-                ),
-            }
-            if self.bandwidth_display == "Yes"
-            else {
-                "Storage_links": links,
-                "Execution time": (
-                    f"--- {int(np.round((time.time() - start_time)/60))} minutes {int(np.round(np.round((time.time() - start_time))%60))} seconds ---"
-                ),
-            }
-        )
+        # format result
+        result = OutputModel(storage_links=links)
+
+        # adding metrics
+        if self.metrics:
+            metrics = Metrics(
+                execution_time=f"{int(np.round((time.time() - start_time) / 60))} minutes {int(np.round(np.round((time.time() - start_time)) % 60))} seconds",
+                data_generation_network_use=f"{np.round((bandwidth_generation - bandwidth_init) / 1024. / 1024. / 1024. * 8, 3)} Gb",
+                data_upload_network_use=f"{np.round((bandwidth_upload - bandwidth_generation) / 1024. / 1024. / 1024. * 8, 3)} Gb",
+            )
+            result.metrics = metrics
+
+        # validate output data
+        # validate_data(result.model_dump(), "output")
+
+        return result.model_dump()
 
     def trigger(self):
+        """trigger processor"""
+
         print("Processor triggered")
         self.prepare_data()
         result = self.predict(self.input_data)
-        # output_data = {
-        #     "Metadata": {
-        #         "processId": "123",
-        #         "processName": "SeasonAnalysis",
-        #         "outputFormat": "zarr",
-        #     },
-        #     "ProcessOutput": {
-        #         "status": result,
-        #         "outputPath": "http://geosysp3.blob.core.windows.net/example_analytic_datacube.zarr",
-        #         "error": "",
-        #     },
-        # }
         output_data = {"data": result}
         # validate_data(output_data, 'output')
         print("Processor output:", output_data)
@@ -250,9 +239,7 @@ class reflectance_datacube_processor:
         # datacube creation for each collections wanted
         for sens in collections:
             try:
-                logging.info(
-                    "EarthDailyData:generate_datacube_optic: Get dataset for %s", sens
-                )
+                logging.info("EarthDailyData:generate_datacube_optic: Get dataset for %s", sens)
                 if sens == "Sentinel-2 L2A":
                     if nir09:
                         assets.append("nir09")
@@ -372,9 +359,7 @@ class reflectance_datacube_processor:
         """
         # deal with rededge bands for landsat
         band_adjusted = list(
-            filter(
-                lambda asset: asset not in ["rededge1", "rededge2", "rededge3"], assets
-            )
+            filter(lambda asset: asset not in ["rededge1", "rededge2", "rededge3"], assets)
         )
 
         # get datacube
@@ -396,9 +381,7 @@ class reflectance_datacube_processor:
                 assets=["lwir11"],
                 mask_with=cloud_mask,
                 clear_cover=clear_percent,
-                search_kwargs=dict(
-                    query={"platform": {"in_": ["LANDSAT_8", "LANDSAT_9"]}}
-                ),
+                search_kwargs=dict(query={"platform": {"in_": ["LANDSAT_8", "LANDSAT_9"]}}),
                 resolution=base_dataset.rio.resolution()[0],
                 epsg=base_dataset.rio.crs.to_epsg(),
             )

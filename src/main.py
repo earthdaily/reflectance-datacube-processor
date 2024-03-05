@@ -1,10 +1,12 @@
+"""reflectance_datacube_processor main"""
+
 import argparse
 import os
 
 from dotenv import load_dotenv
 
 from api.constants import CloudStorageRepo
-from reflectance_datacube_processor.processor import reflectance_datacube_processor
+from reflectance_datacube_processor.processor import ReflectanceDatacubeProcessor
 from utils.file_utils import find_enum, load_input_data
 
 
@@ -13,8 +15,8 @@ def main(
     cloud_storage=None,
     create_metacube=None,
     bucket_name=None,
-    bandwidth_display=None,
-    token=None
+    metrics=None,
+    token=None,
 ):
     """
     The main function for processing reflectance datacubes.
@@ -24,9 +26,9 @@ def main(
         cloud_storage: The cloud storage repository.
         create_metacube: Whether to create a metacube.
         bucket_name: The name of the bucket.
-        bandwidth_display: Whether to display information regarding bandwidth consumption.
+        metrics: Whether to display information regarding bandwidth consumption and duration.
         token: EDS token
-        
+
 
     Returns:
         The result of the datacube processing.
@@ -47,13 +49,13 @@ def main(
 
     cloud_storage_ok = find_enum(cloud_storage, CloudStorageRepo)
 
-    processor = reflectance_datacube_processor(
+    processor = ReflectanceDatacubeProcessor(
         input_data,
         cloud_storage_ok,
         create_metacube,
         bucket_name,
-        bandwidth_display,
-        token
+        metrics,
+        token,
     )
 
     result = processor.trigger()
@@ -84,10 +86,10 @@ if __name__ == "__main__":
         default=None,
     )
     parser.add_argument(
-        "--bandwidth_display",
+        "--metrics",
         type=str,
         help="Display Bandwidth consumption (Yes/No)",
-        default="Yes",
+        default="No",
     )
     parser.add_argument(
         "--eds_token",
@@ -102,6 +104,6 @@ if __name__ == "__main__":
         args.cloud_storage,
         args.create_metacube,
         args.bucket_name,
-        args.bandwidth_display,
-        args.eds_token
+        args.metrics,
+        args.eds_token,
     )
