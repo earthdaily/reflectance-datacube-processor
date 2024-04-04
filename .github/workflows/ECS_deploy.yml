@@ -67,7 +67,7 @@ jobs:
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::489065051964:role/Gitaction_devOps #change to reflect your IAM role’s ARN
+          role-to-assume: arn:aws:iam::489065051964:role/earthdaily_github #change to reflect your IAM role’s ARN
           role-session-name: GitHub_to_AWS_via_gitaction_devOps
           aws-region: ${{ env.AWS_REGION }}
 
