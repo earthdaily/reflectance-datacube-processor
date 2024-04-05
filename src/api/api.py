@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Form, HTTPException, Query
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.staticfiles import StaticFiles
+from mangum import Mangum
 from pydantic import BaseModel, Field, SecretStr
 
 from api.constants import Bands, CloudMask, CloudStorageRepo, Collections, Question
@@ -22,9 +23,7 @@ from schemas.input_schema import InputModel, Parameters
 
 logger_manager = log_manager.LogManager.get_instance()
 
-app = FastAPI(
-    docs_url=None, title="reflectance-datacube-processor" + " API", description=""
-)
+app = FastAPI(docs_url=None, title="reflectance-datacube-processor" + " API", description="")
 
 load_dotenv()
 
@@ -62,9 +61,7 @@ def generate_access_token(client_id: str, client_secret: str):
     return authenticate_client(client_id, client_secret)
 
 
-def login_for_access_token(
-    client_id: str = Form(...), client_secret: SecretStr = Form(...)
-):
+def login_for_access_token(client_id: str = Form(...), client_secret: SecretStr = Form(...)):
 
     return generate_access_token(client_id, client_secret.get_secret_value())
 
@@ -72,9 +69,7 @@ def login_for_access_token(
 class Item(BaseModel):
     geometry: str = Field(
         ...,
-        examples=[
-            "POLYGON ((1.26 43.427, 1.263 43.428, 1.263 43.426, 1.26 43.426, 1.26 43.427))"
-        ],
+        examples=["POLYGON ((1.26 43.427, 1.263 43.428, 1.263 43.426, 1.26 43.426, 1.26 43.427))"],
     )
     startDate: dt.date = Field(..., examples=["2019-05-01"])
     endDate: dt.date = Field(..., examples=["2019-05-31"])
@@ -109,9 +104,7 @@ async def create_analytics_datacube(
     if not token:
         raise HTTPException(status_code=401, detail="Invalid access token")
 
-    start_date = dt.datetime(
-        item.startDate.year, item.startDate.month, item.startDate.day
-    )
+    start_date = dt.datetime(item.startDate.year, item.startDate.month, item.startDate.day)
 
     end_date = dt.datetime(item.endDate.year, item.endDate.month, item.endDate.day)
     parameters = Parameters(
@@ -147,3 +140,6 @@ async def create_analytics_datacube(
         raise HTTPException(status_code=500)
 
     return analytics_datacube
+
+
+handler = Mangum(app)
