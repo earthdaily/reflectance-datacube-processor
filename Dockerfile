@@ -19,4 +19,5 @@ COPY docker-entrypoint.sh /usr/local/bin/
 RUN dos2unix /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-ENTRYPOINT ["docker-entrypoint.sh"]
+#ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["hypercorn", "docker-entrypoint.sh", "-b", "0.0.0.0:80", "--worker-class", "trio"]
