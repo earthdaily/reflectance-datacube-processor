@@ -24,12 +24,19 @@ from schemas.input_schema import InputModel, Parameters
 logger_manager = log_manager.LogManager.get_instance()
 
 app = FastAPI(docs_url=None, title="reflectance-datacube-processor" + " API", description="")
+handler = Mangum(app)
+
 
 load_dotenv()
 
 # identity server configuration
 tokenUrl = os.getenv("EDS_AUTH_URL")
 app.mount("/static", StaticFiles(directory="./api/files"), name="static")
+
+
+@app.get("/")
+async def hello():
+    return {"message": "test API reflectance"}
 
 
 @app.get("/docs", include_in_schema=False)
@@ -140,6 +147,3 @@ async def create_analytics_datacube(
         raise HTTPException(status_code=500)
 
     return analytics_datacube
-
-
-handler = Mangum(app)
