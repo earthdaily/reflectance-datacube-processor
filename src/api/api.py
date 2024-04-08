@@ -34,11 +34,6 @@ tokenUrl = os.getenv("EDS_AUTH_URL")
 app.mount("/static", StaticFiles(directory="./api/files"), name="static")
 
 
-@app.get("/")
-async def hello():
-    return {"message": "test API reflectance"}
-
-
 @app.get("/docs", include_in_schema=False)
 async def swagger_ui_html():
     return get_swagger_ui_html(
