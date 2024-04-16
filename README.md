@@ -1,3 +1,9 @@
+---
+layout: default
+title: Customization
+nav_order: 1
+---
+
 
 # Welcome to the Earthdaily Reflectance Datacube documentation
 
