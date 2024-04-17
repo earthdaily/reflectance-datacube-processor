@@ -4,7 +4,6 @@ title: Customization
 nav_order: 1
 ---
 
-
 # Welcome to the Earthdaily Reflectance Datacube documentation
 
 Earthdaily is offering sereral open processor showcasing how to levarage Earthdaily Agro content and combine it with your business logic and adapt it to your business workflows.
