@@ -19,6 +19,9 @@ heading_anchors: true
 footer_content: "© 2024 Geosys Holdings ULC, an Antarctica Capital portfolio company | All Rights Reserved. Distributed under the GPL 3.0 License."
 search_enabled: true
 
+# Set a path/url to a favicon that will be displayed by the browser
+favicon_ico: "https://earthdaily.com/wp-content/uploads/2023/06/cropped-e9-EarthDaily-Logo-White-192x192.png"
+
 # Footer last edited timestamp
 last_edit_timestamp: true # show or hide edit time - page must have `last_modified_date` defined in the frontmatter
 last_edit_time_format: "%b %e %Y at %I:%M %p" # uses ruby's time format: https://ruby-doc.org/stdlib-2.7.0/libdoc/time/rdoc/Time.html
