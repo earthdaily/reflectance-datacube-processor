@@ -16,7 +16,7 @@ include:
 remote_theme: just-the-docs/just-the-docs
 logo: "https://earthdaily.com/wp-content/themes/earthdaily-2023/src/assets/images/logo-1.svg"
 heading_anchors: true
-footer_content: "© 2022 Geosys Holdings ULC, an Antarctica Capital portfolio company | All Rights Reserved. Distributed under the GPL 3.0 License."
+footer_content: "© 2024 Geosys Holdings ULC, an Antarctica Capital portfolio company | All Rights Reserved. Distributed under the GPL 3.0 License."
 search_enabled: true
 
 # Footer last edited timestamp
@@ -26,7 +26,7 @@ last_edit_time_format: "%b %e %Y at %I:%M %p" # uses ruby's time format: https:/
 # Footer "Edit this page on GitHub" link text
 gh_edit_link: true # show or hide edit this page link
 gh_edit_link_text: "Edit this page on GitHub."
-gh_edit_repository: "https://github.com/GEOSYS/qgis-plugin" # the github URL for your repo
+gh_edit_repository: "hhttps://github.com/earthdaily/reflectance-datacube-processor" # the github URL for your repo
 gh_edit_branch: "gh-pages" # the branch that your docs is served from
 
 # Back to top link
@@ -61,7 +61,7 @@ search:
   rel_url: true
   # Enable or disable the search button that appears in the bottom right corner of every page
   # Supports true or false (default)
-  button: false
+  button: true
 
 kramdown:
   syntax_highlighter_opts:
