@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Lifecycle management
-nav_order: 6
+nav_order: 7
 ---
 
 
@@ -32,7 +32,15 @@ Open terminal and get [AWS CLI](https://pypi.org/project/awscli/)
 
 ### Get access to API from ECS
 
+Open your AWS Console and select ECS service. Navigate to your cluster, then service and finally task running your container. On configuration section of the screen you will find the public IP to access the service. 
 
+![Get public IP](images/Get_public_IP.png "Get public IP").
+
+Use this public IP and add  "/docs" to access the Open API page.
+
+![Get public IP](images/ReflectanceDataCube_API2.png "Get public IP").
+
+Then you can use the API as described [here](5.%20User%20guide.html#api-mode)
 
 ## Maintenance
 
@@ -43,7 +51,7 @@ Open terminal and get [AWS CLI](https://pypi.org/project/awscli/)
 ### Emergency maintenance
 
 
-## Support
+
 
 
 
@@ -53,6 +61,16 @@ For backup,please be sure to keep the various images of your service in the conf
 ECR repo will enable restoration of any version of your service.
 
 ## Costs
+
+The use of this processor is free but it will rely on infrastructure to run.
+
+If you are using the ECS deployment model, it will leverage the following billable AWS sercices:
+ - Identity and Access Management (IAM)
+ - Elastic Container Registry (ECR)
+ - Elastic Container Service (ECS)
+ - Virtual Private Cloud (VPC)
+ - Cloud watch 
+ - Simple Storage Service (S3)
 
 
 ### Additional Information
