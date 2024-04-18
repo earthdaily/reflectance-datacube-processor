@@ -36,7 +36,9 @@ Open your AWS Console and select ECS service. Navigate to your cluster, then ser
 
 ![Get public IP](images/Get_public_IP.png "Get public IP").
 
+
 Use this public IP and add  "/docs" to access the Open API page.
+
 
 ![Get public IP](images/ReflectanceDataCube_API2.png "Get public IP").
 
@@ -71,6 +73,9 @@ If you are using the ECS deployment model, it will leverage the following billab
  - Virtual Private Cloud (VPC)
  - Cloud watch 
  - Simple Storage Service (S3)
+
+
+To manage running cost, you can define service limits leveraging [AWS service quotas](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-quotas.html#service-quotas-fargate). For example you can control Fargate capacity like number of vCPUs running concurrently in the current region
 
 
 ### Additional Information

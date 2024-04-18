@@ -139,7 +139,9 @@ jobs:
 
 ```
 
-Finally commit changes and ensure that workflow is executed as planned. Go to the actions sections of the repository and you should see the execution steps and status.
+## Deployment workflow execution
+
+On every commit change, workflow is triggered and executed. Go to the actions sections of the repository and you should see the execution steps and status.
 
 ![Workflow execution](../images/workflow_execution.png "Workflow execution").
 
