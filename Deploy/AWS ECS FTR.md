@@ -296,8 +296,46 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 ## Sizing
 
 ## Deployment assets
+<table style="border-collapse:collapse;border:none;">
+    <tbody>
+        <tr>
+            <td style="width: 62.75pt;border: 1pt solid windowtext;padding: 0in 5.4pt;height: 22pt;vertical-align: top;">
+                <p style='margin-top:0in;margin-right:0in;margin-bottom:0in;margin-left:0in;line-height:normal;font-size:16px;font-family:"Aptos",sans-serif;'><strong>Req code</strong></p>
+            </td>
+            <td style="width: 194.7pt;border-top: 1pt solid windowtext;border-right: 1pt solid windowtext;border-bottom: 1pt solid windowtext;border-image: initial;border-left: none;padding: 0in 5.4pt;height: 22pt;vertical-align: top;">
+                <p style='margin-top:0in;margin-right:0in;margin-bottom:0in;margin-left:0in;line-height:normal;font-size:16px;font-family:"Aptos",sans-serif;'><strong>Requirement description</strong></p>
+            </td>
+            <td style="width: 210.05pt;border-top: 1pt solid windowtext;border-right: 1pt solid windowtext;border-bottom: 1pt solid windowtext;border-image: initial;border-left: none;padding: 0in 5.4pt;height: 22pt;vertical-align: top;">
+                <p style='margin-top:0in;margin-right:0in;margin-bottom:0in;margin-left:0in;line-height:normal;font-size:16px;font-family:"Aptos",sans-serif;'><strong>Content</strong></p>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 62.75pt;border-right: 1pt solid windowtext;border-bottom: 1pt solid windowtext;border-left: 1pt solid windowtext;border-image: initial;border-top: none;padding: 0in 5.4pt;vertical-align: top;">
+                <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:0in;line-height:normal;font-size:16px;font-family:"Aptos",sans-serif;background:white;'><span style="font-family:Roboto;color:#16191F;">DAS-001</span></p>
+            </td>
+            <td style="width: 194.7pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0in 5.4pt;vertical-align: top;">
+                <p style='margin-top:0in;margin-right:0in;margin-bottom:0in;margin-left:0in;line-height:normal;font-size:16px;font-family:"Aptos",sans-serif;'>The deployment guide provides step-by-step instructions for deploying the workload on AWS according to the typical deployment architecture.</p>
+            </td>
+            <td style="width: 210.05pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0in 5.4pt;vertical-align: top;">
+                <p style='margin-top:0in;margin-right:0in;margin-bottom:0in;margin-left:0in;line-height:normal;font-size:16px;font-family:"Aptos",sans-serif;'>The deployment guide includes step by step procedure to <a href="Provisioning.html">provision AWS resources</a> and a <a href="Deploy/AWS%20ECS%20Deployment.html">script to automatically deploy &nbsp;assets to AWS</a></p>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 62.75pt;border-right: 1pt solid windowtext;border-bottom: 1pt solid windowtext;border-left: 1pt solid windowtext;border-image: initial;border-top: none;padding: 0in 5.4pt;vertical-align: top;">
+                <p style='margin-top:0in;margin-right:0in;margin-bottom:8.0pt;margin-left:0in;line-height:normal;font-size:16px;font-family:"Aptos",sans-serif;background:white;'><span style="font-family:Roboto;color:#16191F;">DAS-004</span></p>
+            </td>
+            <td style="width: 194.7pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0in 5.4pt;vertical-align: top;">
+                <p style='margin-top:0in;margin-right:0in;margin-bottom:0in;margin-left:0in;line-height:normal;font-size:16px;font-family:"Aptos",sans-serif;'>The deployment guide contains prescriptive guidance for testing and troubleshooting.</p>
+            </td>
+            <td style="width: 210.05pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0in 5.4pt;vertical-align: top;">
+                <p style='margin-top:0in;margin-right:0in;margin-bottom:0in;margin-left:0in;line-height:normal;font-size:16px;font-family:"Aptos",sans-serif;'>The deployment guide contains a <a href="User%20guide.html">user guide section.</a></p>
+            </td>
+        </tr>
+    </tbody>
+</table>
 
 ## Health Check
+
 <table style="border-collapse:collapse;border:none;">
     <tbody>
         <tr>

@@ -15,6 +15,8 @@ Before configuring the deployment workflow, set the deployment variables in the 
 
 ![Github repository action secrets](../images/repo_secret.png "Github repository action secrets").
 
+
+
 | Secret  | Description   |
 |---|---|
 |  AWS_REGION | This is the AWS region you are targeting for deployment  |
