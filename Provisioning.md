@@ -54,6 +54,10 @@ Edit the trust policy, adding the `sub` field to the validation conditions and u
 
 >❗Note: AWS Identity and Access Management (IAM) recommends that users evaluate the IAM condition key, `token.actions.githubusercontent.com:sub`, in the trust policy of any role that trusts GitHub’s OIDC identity provider (IdP). Evaluating this condition key in the role trust policy limits which GitHub actions are able to assume the role.
 
+#### Configure role
+
+Follow the principle of the least privilege
+
 ### Create a container registry
 First sign in to your AWS console and select Elastic Container Register and Create a new private repository. 
 
@@ -188,6 +192,9 @@ Another important note is to give the correct ports (I used port 8000) that are 
 Within ECS, start by navigating to the clusters tab in ECS and create a service using the task definition. For compute configuration, choose “Launch type” and leave the default option for Fargate. For the deployment configuration, choose “Service” and then, choose the task definition with the latest revision. Then, navigate to the Networking section and ensure public IP is chosen (You can modify this later if you have specific networking requirements). Finally, create the service.
 
 ![Create ECS Service](images/ECS_create_service.png "ECS Service creation").
+
+#### Network configuration for external access
+
 
 ## Script using Terraform
 
