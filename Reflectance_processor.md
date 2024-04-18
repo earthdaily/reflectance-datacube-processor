@@ -7,11 +7,17 @@ nav_order: 3
 
 # Reflectance Datacube Processor
 
-### Earthdaily processors 
+## Earthdaily processors 
 
 
+## Architecture
 
-### Use case
+### AWS ECS
+
+
+![Referecence ECS rchitecture](ECS_Architecture.png "Referecence ECS rchitecture").
+
+## Use case
 
 Please make sure to have AWS account or access to resources allowing to setup AWS resources required for this services. AWS services to be used are:
  - Identity and Access Management (IAM)
