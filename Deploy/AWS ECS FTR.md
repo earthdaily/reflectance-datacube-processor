@@ -133,7 +133,65 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 </table>
 
 ## Architecture diagrams
-
+<table>
+<tbody>
+<tr>
+<td width="96">
+<p><strong>Req code</strong></p>
+</td>
+<td width="528">
+<p><strong>Requirement description</strong></p>
+</td>
+<td width="546">
+<p><strong>Content</strong></p>
+</td>
+</tr>
+<tr>
+<td width="96">
+<p>ARCH-001</p>
+</td>
+<td width="528">
+<p>Architecture diagrams must include all AWS services and resources deployed by the solution and illustrate how the services and resources connect with each other in a typical customer environment.</p>
+</td>
+<td width="546">
+<p>This is covered in the <a href="Reflectance_processor.html#architecture">Reflectance Datacube processor section</a></p>
+</td>
+</tr>
+<tr>
+<td width="96">
+<p>ARCH-004</p>
+</td>
+<td width="528">
+<p>Architecture diagrams use official AWS Architecture Icons.</p>
+</td>
+<td width="546">
+<p><a href="Reflectance_processor.html#architecture">Reflectance Datacube processor section</a> includes a diagram with official AWS Icon coming from <a href="https://aws.amazon.com/fr/architecture/icons/">here</a></p>
+</td>
+</tr>
+<tr>
+<td width="96">
+<p>ARCH-005</p>
+</td>
+<td width="528">
+<p>Network diagrams demonstrate virtual private clouds (VPCs) and subnets.</p>
+</td>
+<td width="546">
+<p><a href="https://earthdailyagro-my.sharepoint.com/personal/vincent_lelandais_earthdaily_com/Documents/Reflectance_processor.html#architecture">Reflectance Datacube processor section</a> includes a diagram with VPC</p>
+</td>
+</tr>
+<tr>
+<td width="96">
+<p>ARCH-006</p>
+</td>
+<td width="528">
+<p>Architecture diagrams show integration points, including third-party assets/APIs and on-premises/hybrid assets.</p>
+</td>
+<td width="546">
+<p><a href="https://earthdailyagro-my.sharepoint.com/personal/vincent_lelandais_earthdaily_com/Documents/Reflectance_processor.html#architecture">Reflectance Datacube processor section</a> includes a diagram with link to EarthPlatform (third party data infrastructure running on AWS)</p>
+</td>
+</tr>
+</tbody>
+</table>
 
 ## Security
 
