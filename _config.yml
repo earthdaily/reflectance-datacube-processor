@@ -20,7 +20,7 @@ footer_content: "© 2024 Geosys Holdings ULC, an Antarctica Capital portfolio co
 search_enabled: true
 
 # Set a path/url to a favicon that will be displayed by the browser
-favicon_ico: "https://earthdaily.com/wp-content/uploads/2023/06/cropped-e9-EarthDaily-Logo-White-192x192.png"
+favicon_ico: "images/favicon.svg"
 
 # Footer last edited timestamp
 last_edit_timestamp: true # show or hide edit time - page must have `last_modified_date` defined in the frontmatter

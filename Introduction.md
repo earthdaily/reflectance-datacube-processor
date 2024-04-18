@@ -22,9 +22,9 @@ The documentation will guide you through all the steps to get, customize and dep
     - Update service with latest release
 
 Please note that multiple other open processor are also available:
-    - Analytic datacube to generate vegetation index ND objects based on geometries.
-    - Agro warning processor to generate warning on small ag region based on weather and vegetation health.
-    - Impacted area to analyze impact of an event with a before/after analysis.
-    - Sub entity analysis to qualify the behavior of a sub area of an entity versus the entire area.
+ - Analytic datacube to generate vegetation index ND objects based on geometries.
+ - Agro warning processor to generate warning on small ag region based on weather and vegetation health.
+ - Impacted area to analyze impact of an event with a before/after analysis.
+ - Sub entity analysis to qualify the behavior of a sub area of an entity versus the entire area.
     
 If you have any question, feel free to contact us Api.Support@earthdaily.com 
