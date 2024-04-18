@@ -27,7 +27,7 @@ It is also strongly recommended to get fundational knowledge on AWS Service list
 
 This is the reference architecture for a deployment on ECS. 
 
-![Workflow execution](/images/ECS_Architecture.png "Workflow execution").
+![ECS Architecture](images/ECS_Architecture.png "ECS Architecture").
 
 
 
