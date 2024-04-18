@@ -14,7 +14,6 @@ To work locally with resources from this repository, install Github desktop app 
 
 It is also strongly recommended to get fundational knowledge in using source control tools and ideally with Github. If you are interested to learn more please use this [link](https://docs.github.com/).
 
-
 ### AWS
 
 Please make sure to have AWS account or access to resources allowing to setup AWS resources required for this services. AWS services to be used are:

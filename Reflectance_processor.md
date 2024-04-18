@@ -10,12 +10,6 @@ nav_order: 3
 ## Earthdaily processors 
 
 
-## Architecture
-
-### AWS ECS
-
-
-![Referecence ECS rchitecture](ECS_Architecture.png "Referecence ECS rchitecture").
 
 ## Use case
 
@@ -26,6 +20,16 @@ Please make sure to have AWS account or access to resources allowing to setup AW
 
 
 It is also strongly recommended to get fundational knowledge on AWS Service listed above. If you are interested to learn more please use this [link](https://docs.aws.amazon.com/).
+
+## Architecture
+
+### AWS ECS
+
+This is the reference architecture for a deployment on ECS. 
+
+![Workflow execution](/images/ECS_Architecture.png "Workflow execution").
+
+
 
 
 
