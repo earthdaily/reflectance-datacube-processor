@@ -42,7 +42,7 @@ Use this public IP and add  "/docs" to access the Open API page.
 
 ![Get public IP](images/ReflectanceDataCube_API2.png "Get public IP").
 
-Then you can use the API as described [here](5.%20User%20guide.html#api-mode)
+Then you can use the API as described [here](User%20guide.html#api-mode)
 
 ## Maintenance
 
