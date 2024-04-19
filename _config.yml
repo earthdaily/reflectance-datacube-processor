@@ -39,6 +39,7 @@ back_to_top_text: "Back to top"
 
 plugins:
   - jekyll-seo-tag
+  - jekyll-swagger-ui
 
 # Enable or disable the site search
 # Supports true (default) or false
