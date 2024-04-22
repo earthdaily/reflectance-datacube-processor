@@ -5,14 +5,19 @@ nav_order: 2
 ---
 
 # Reflectance Datacube Processor
+Processors can be deployed on your infrastructure, using optimized easy-to-use templates.
+You can also choose to use your own CI/CD pipelines.
 
-## Earthdaily processors 
+The following documentation will guide you through, step-by-step, to get, customize and deploy the Reflectance Datacube processor including:
 
-Agriculture is global and agronomy and risk management is local. The ideal bundle of analytics to use depends on crop, location, growth stage, location. With the Earthdaily Constallation coming soon, Earthdaily Agro wanted to find a solution to combine global dataset and local proprietary expertise to create analytics having high perceived added value. 
-
-The processor strategy aims to empower our customers to embed their business logic with our data and analytic to create added value insights and integrate them in their business processes.
- 
-This framework includeds open source components and rich documentation [here](https://github.com/earthdaily)
+ - Provision AWS resources
+    - Set up an identity provider for Github
+    - Set up ECR in AWS
+    - Create an ECS cluster, a service and a task definition in AWS
+ - Configure depplyment workflow
+    - Build and publish the docker image to ECR
+    - Download and update a task definition
+    - Update service with latest release
 
 ## Use cases
 
