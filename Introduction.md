@@ -6,7 +6,7 @@ nav_order: 1
 
 # Welcome to the Earthdaily Reflectance Datacube documentation
 
-Earthdaily is offering sereral open processor showcasing how to levarage Earthdaily Agro content and combine it with your business logic and adapt it to your business workflows.
+Earthdaily is offering sereral open processors showcasing how to levarage Earthdaily Agro content and combine it with your business logic and adapt it to your business workflows.
 
 Each processor can be deployed on your infrastructure, using some available templates  or you can also use your own CI/CD pipelines.
 
