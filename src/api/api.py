@@ -26,13 +26,15 @@ logger_manager = log_manager.LogManager.get_instance()
 app = FastAPI(docs_url=None, title="reflectance-datacube-processor" + " API", description="")
 handler = Mangum(app)
 
-
 load_dotenv()
 
 # identity server configuration
 tokenUrl = os.getenv("EDS_AUTH_URL")
 app.mount("/static", StaticFiles(directory="./api/files"), name="static")
 
+@app.get("/")
+def read_root():
+   return {"Welcome to ": "Reflectance Datacube Processor"}
 
 @app.get("/docs", include_in_schema=False)
 async def swagger_ui_html():

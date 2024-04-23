@@ -21,4 +21,5 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 RUN chmod 644 api/api.py
 
+CMD ["app.handler"]
 ENTRYPOINT ["docker-entrypoint.sh"]
