@@ -28,7 +28,7 @@ netcdf4
 pystac
 stackstac
 odc-stac
-earthdaily==0.0.6
+earthdaily==0.1.0
 # aws
 boto3
 # azure
