@@ -23,7 +23,14 @@ from schemas.input_schema import InputModel, Parameters
 
 logger_manager = log_manager.LogManager.get_instance()
 
-app = FastAPI(docs_url=None, title="reflectance-datacube-processor" + " API", description="")
+app = FastAPI(
+    docs_url="/docs",
+    title="reflectance-datacube-processor" + " API",
+    description="",
+    root_path="/v1/",
+    openapi_url="/openapi.json",
+    redoc_url=None,
+)
 handler = Mangum(app)
 
 load_dotenv()
@@ -32,9 +39,11 @@ load_dotenv()
 tokenUrl = os.getenv("EDS_AUTH_URL")
 app.mount("/static", StaticFiles(directory="./api/files"), name="static")
 
+
 @app.get("/")
 def read_root():
-   return {"Welcome to ": "Reflectance Datacube Processor"}
+    return {"Welcome to ": "Reflectance Datacube Processor"}
+
 
 @app.get("/docs", include_in_schema=False)
 async def swagger_ui_html():
