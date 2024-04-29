@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/python:3.10
+FROM continuumio/miniconda3:23.10.0-1
 
 RUN pip install --upgrade pip==22.0.4
 RUN pip cache purge
