@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/python:3.10
+FROM public.ecr.aws/lambda/python:3.11
 
 RUN pip install --upgrade pip==22.0.4
 RUN pip cache purge

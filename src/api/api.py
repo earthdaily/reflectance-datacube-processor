@@ -7,8 +7,7 @@ import os
 from typing import List
 
 import requests
-
-# from byoa.telemetry.log_manager import log_manager
+from byoa.telemetry.log_manager import log_manager
 from dotenv import load_dotenv
 from fastapi import FastAPI, Form, HTTPException, Query
 from fastapi.openapi.docs import get_swagger_ui_html
@@ -22,7 +21,7 @@ from schemas.input_schema import InputModel, Parameters
 
 # pylint: disable=missing-docstring
 
-# logger_manager = log_manager.LogManager.get_instance()
+logger_manager = log_manager.LogManager.get_instance()
 
 app = FastAPI(
     docs_url="/docs",

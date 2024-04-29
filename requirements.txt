@@ -33,5 +33,5 @@ earthdaily==0.0.6
 boto3
 # azure
 azure-storage-blob
-#byoa==0.1.0a2
+byoa==0.1.0a2
 mangum
