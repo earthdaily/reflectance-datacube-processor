@@ -15,7 +15,7 @@ This framework includeds open source components and rich documentation [here](ht
 
 ## Reflectance datacube 
 
-The following sections will drive you through the deployment and operation with the processor.
+The following sections will drive you through the deployment and operation of the Reflectance datacube processor.
 
 ## More resources
 

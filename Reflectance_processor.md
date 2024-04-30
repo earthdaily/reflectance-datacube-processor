@@ -52,9 +52,3 @@ Here are two examples of study leveraging pixel selection over fields:
 This is the reference architecture for a deployment on ECS. 
 
 ![ECS Architecture](images/ECS_Architecture.png "ECS Architecture").
-
-
-
-
-
-
