@@ -80,6 +80,8 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
-        run: aws lambda update-function-code \
+        run: |
+          echo "function=$LAMBDA_FUNCTION" >> $GITHUB_OUTPUT
+          aws lambda update-function-code \
           --function-name $LAMBDA_FUNCTION \
           --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
