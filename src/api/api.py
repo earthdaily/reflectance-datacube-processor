@@ -42,7 +42,7 @@ app.mount("/static", StaticFiles(directory="./api/files"), name="static")
 
 @app.get("/")
 def read_root():
-    return {"Welcome to ": "Reflectance Datacube Processor v2"}
+    return {"Welcome to ": "Reflectance Datacube Processor v1"}
 
 
 @app.get("/docs", include_in_schema=False)
