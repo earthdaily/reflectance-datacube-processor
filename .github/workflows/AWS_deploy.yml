@@ -65,8 +65,7 @@ jobs:
           # docker tag $ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-          echo "::set-output name=IMAGE_TAG::$IMAGE_TAG"
-          echo "::set-output name=ECR_REGISTRY::$ECR_REGISTRY"
+          echo "::set-output name=IMAGE_URI::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
       # - name: Deploy ECS
       #   if: ${{ env.DEPLOY_ECS == 'true' }}
@@ -79,5 +78,5 @@ jobs:
         if: ${{ env.DEPLOY_LAMBDA == 'true' }}
         uses: ./.github/actions/deploy_Lambda
         with:
-          image_tag: ${{ steps.build-image.outputs.IMAGE_TAG }}
-          ecr_registry: ${{ steps.build-image.outputs.ECR_REGISTRY }}
+          image_uri: ${{ steps.build-image.outputs.IMAGE_TAG }}
+          lambda_function: ${{ env.LAMBDA_FUNCTION }}
