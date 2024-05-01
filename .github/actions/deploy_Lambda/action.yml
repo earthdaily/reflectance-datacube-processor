@@ -12,6 +12,4 @@ runs:
   steps:
     - name: "Update Lambda function"
       run: |
-      aws lambda update-function-code \
-      --function-name ${{ inputs.lambda_function }} \
-      --image-uri ${{ inputs.image_uri }}
+      aws lambda update-function-code --function-name ${{ inputs.lambda_function }} --image-uri ${{ inputs.image_uri }}
