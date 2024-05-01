@@ -9,7 +9,11 @@ inputs:
   runs:
     using: "composite"
     steps:
-      -run: |
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Update Lambda
+        run: |
         echo "function=$LAMBDA_FUNCTION" >> $GITHUB_OUTPUT
         aws lambda update-function-code \
         --function-name $LAMBDA_FUNCTION \
