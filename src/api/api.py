@@ -27,7 +27,7 @@ app = FastAPI(
     docs_url="/docs",
     title="reflectance-datacube-processor" + " API",
     description="",
-    root_path="/v1/",
+    root_path="/",
     openapi_url="/openapi.json",
     redoc_url=None,
 )

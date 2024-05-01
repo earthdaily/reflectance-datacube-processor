@@ -14,8 +14,8 @@ env:
   EDS_API_URL_SECRET: ${{ secrets.EDS_API_URL }}
   EDS_AUTH_URL_SECRET: ${{ secrets.EDS_AUTH_URL }}
   LAMBDA_FUNCTION: ${{ secrets.LAMBDA_FUNCTION }}
-  DEPLOY_ECS: false
-  DEPLOY_LAMBDA: true
+  DEPLOY_ECS: true
+  DEPLOY_LAMBDA: false
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -67,13 +67,6 @@ jobs:
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "::set-output name=IMAGE_URI::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-      # - name: Deploy ECS
-      #   if: ${{ env.DEPLOY_ECS == 'true' }}
-      #   uses: .github/actions/Deploy_ECS.yml
-      #   with:
-      #     image_tag: ${{ steps.build-image.outputs.IMAGE_TAG }}
-      #     ecr_registry: ${{ steps.build-image.outputs.ECR_REGISTRY }}
-
       - name: Update image to lambda funtion
         id: lambda-function
         if: ${{ env.DEPLOY_LAMBDA == 'true' }}
@@ -85,3 +78,40 @@ jobs:
           aws lambda update-function-code \
           --function-name $LAMBDA_FUNCTION \
           --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Download task definition
+        if: ${{ env.DEPLOY_ECS == 'true' }}
+        run: |
+          aws ecs describe-task-definition --task-definition fastapiprocessor --query taskDefinition > task-definition.json
+          echo $(cat task-definition.json | jq 'del(
+                    .taskDefinitionArn,
+                    .requiresAttributes,
+                    .compatibilities,
+                    .revision,
+                    .status,
+                    .registeredAt,
+                    .registeredBy
+                )') > task-definition.json
+          cat task-definition.json
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        if: ${{ env.DEPLOY_ECS == 'true' }}
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: updating task-definition file
+        if: ${{ env.DEPLOY_ECS == 'true' }}
+        run: cat ${{ steps.task-def.outputs.task-definition }}
+
+      - name: Deploy Amazon ECS task definition
+        if: ${{ env.DEPLOY_ECS == 'true' }}
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true1
