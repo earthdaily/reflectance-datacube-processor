@@ -74,9 +74,12 @@ jobs:
       #     image_tag: ${{ steps.build-image.outputs.IMAGE_TAG }}
       #     ecr_registry: ${{ steps.build-image.outputs.ECR_REGISTRY }}
 
-      - name: Deploy Package
+      - name: Update image to lambda funtion
+        id: lambda-function
         if: ${{ env.DEPLOY_LAMBDA == 'true' }}
-        uses: ./.github/actions/deploy_Lambda
-        with:
-          image_uri: ${{ steps.build-image.outputs.IMAGE_TAG }}
-          lambda_function: ${{ env.LAMBDA_FUNCTION }}
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: aws lambda update-function-code \
+          --function-name $LAMBDA_FUNCTION \
+          --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
