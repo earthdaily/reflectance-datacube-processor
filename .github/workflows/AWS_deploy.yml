@@ -77,7 +77,7 @@ jobs:
 
       - name: Deploy Package
         if: ${{ env.DEPLOY_LAMBDA == 'true' }}
-        uses: ./.github/actions/deploy_Lambda/action.yml
+        uses: ./.github/actions/deploy_Lambda
         with:
           image_tag: ${{ steps.build-image.outputs.IMAGE_TAG }}
           ecr_registry: ${{ steps.build-image.outputs.ECR_REGISTRY }}
