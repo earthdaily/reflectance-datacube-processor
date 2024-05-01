@@ -1,0 +1,16 @@
+name: Deploy docker image to Amazon Lambda
+inputs:
+  image_tag:
+    decription: "the tag of the docker image to deploy"
+    required: true
+  ecr_registry:
+    decription: "the ECR registry"
+    required: true
+  runs:
+    using: "composite"
+    steps:
+      -run: |
+        echo "function=$LAMBDA_FUNCTION" >> $GITHUB_OUTPUT
+        aws lambda update-function-code \
+        --function-name $LAMBDA_FUNCTION \
+        --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

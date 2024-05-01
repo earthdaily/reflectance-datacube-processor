@@ -149,7 +149,7 @@ async def create_analytics_datacube(
     analytics_datacube = client.trigger()
 
     if not analytics_datacube:
-        # logger_manager.error("Error while generating datacube")
+        logger_manager.error("Error while generating datacube")
         raise HTTPException(status_code=500)
 
     return analytics_datacube
