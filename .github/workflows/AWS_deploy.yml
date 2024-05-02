@@ -37,6 +37,7 @@ jobs:
           envkey_EDS_API_URL: ${{ secrets.EDS_API_URL }}
           envkey_EDS_AUTH_URL: ${{ secrets.EDS_AUTH_URL }}
           envkey_INPUT_JSON_PATH: "data/processor_input_example.json"
+          envkey_GATEWAY_STAGE: ""
           file_name: .env
           fail_on_empty: false
           sort_keys: false

@@ -23,17 +23,28 @@ from schemas.input_schema import InputModel, Parameters
 
 logger_manager = log_manager.LogManager.get_instance()
 
-app = FastAPI(
-    docs_url="/docs",
-    title="reflectance-datacube-processor" + " API",
-    description="",
-    root_path="/",
-    openapi_url="/openapi.json",
-    redoc_url=None,
-)
+load_dotenv()
+
+if os.getenv("GATEWAY_STAGE") == "":
+    app = FastAPI(
+        docs_url="/docs",
+        title="reflectance-datacube-processor" + " API",
+        description="",
+        openapi_url="/openapi.json",
+        redoc_url=None,
+    )
+else:
+    app = FastAPI(
+        docs_url="/docs",
+        title="reflectance-datacube-processor" + " API",
+        description="",
+        root_path="/" + os.getenv("GATEWAY_STAGE") + "/",
+        openapi_url="/openapi.json",
+        redoc_url=None,
+    )
+
 handler = Mangum(app)
 
-load_dotenv()
 
 # identity server configuration
 tokenUrl = os.getenv("EDS_AUTH_URL")
