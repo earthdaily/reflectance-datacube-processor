@@ -89,7 +89,7 @@ In case of service outage, here is the troubleshooting process:
 ![CloudWatch_LogInsight](images/CloudWatch_LogInsight.png "CloudWatch_LogInsight")
 
 - Run your root cause analysis based traces
-- If a source code update is required, please create a ticket [here](reflectance-datacube-processor/User%20guide.html#support)
+- If a source code update is required, please create a ticket [here](/User%20guide.html#support)
 
 If you need to restore service leveraging a previous task definition, please go the ECS service and select *Task definition*, then select a previous version and update your ECS Processor service.
 
