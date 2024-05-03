@@ -83,9 +83,15 @@ In case of service outage, here is the troubleshooting process:
 
 ![ECS Task check](images/ECS_task_check.png "ECS Task check")
 
+- Go to CloudWatch and select Log Insgiths
+- Select your cluster in the group and Click *"Run query"*
 
+![CloudWatch_LogInsight](images/CloudWatch_LogInsight.png "CloudWatch_LogInsight")
+CloudWatch_LogInsight
+- Run your root cause analysis based traces
+- If a source code update is required, please create a ticket [here](/User%20guide.html#support)
 
-
+To restore service leveraging a previous task definition, please fo 
 
 ## Backup and recovery
 For backup,please be sure to keep the various images of your service in the configured ECR repository. We recommend that you tag your images using the git SHA for the git commit that was used to build the image.
