@@ -91,7 +91,9 @@ In case of service outage, here is the troubleshooting process:
 - Run your root cause analysis based traces
 - If a source code update is required, please create a ticket [here](reflectance-datacube-processor/User%20guide.html#support)
 
-To restore service leveraging a previous task definition, please fo 
+If you need to restore service leveraging a previous task definition, please go the ECS service and select *Task definition*, then select a previous version and update your ECS Processor service.
+
+![Restore_previousTask](images/Restore_previousTask.png "Restore_previousTask")
 
 ## Backup and recovery
 For backup,please be sure to keep the various images of your service in the configured ECR repository. We recommend that you tag your images using the git SHA for the git commit that was used to build the image.
