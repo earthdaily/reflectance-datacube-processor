@@ -15,8 +15,8 @@ env:
   EDS_AUTH_URL_SECRET: ${{ secrets.EDS_AUTH_URL }}
   LAMBDA_FUNCTION: ${{ secrets.LAMBDA_FUNCTION }}
   GATEWAY_STAGE: ${{ secrets.GATEWAY_STAGE }}
-  DEPLOY_ECS: true
-  DEPLOY_LAMBDA: false
+  DEPLOY_ECS: false
+  DEPLOY_LAMBDA: true
 
 permissions:
   id-token: write # This is required for requesting the JWT
