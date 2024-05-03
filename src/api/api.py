@@ -52,8 +52,10 @@ app.mount("/static", StaticFiles(directory="./api/files"), name="static")
 
 
 @app.get("/")
-def read_root():
-    return {"Welcome to ": "Reflectance Datacube Processor v1"}
+def welcome():
+    return {
+        "Welcome to ": "Reflectance Datacube Processor, please add '/docs' to URL to open swagger UI"
+    }
 
 
 @app.get("/docs", include_in_schema=False)
