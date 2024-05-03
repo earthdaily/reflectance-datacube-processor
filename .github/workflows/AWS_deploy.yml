@@ -14,6 +14,7 @@ env:
   EDS_API_URL_SECRET: ${{ secrets.EDS_API_URL }}
   EDS_AUTH_URL_SECRET: ${{ secrets.EDS_AUTH_URL }}
   LAMBDA_FUNCTION: ${{ secrets.LAMBDA_FUNCTION }}
+  GATEWAY_STAGE: ${{ secrets.GATEWAY_STAGE }}
   DEPLOY_ECS: true
   DEPLOY_LAMBDA: false
 
@@ -31,13 +32,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Check if secret gateway stage exists and assign to variable
+        id: gateway-key
+        run: |
+          if [[ -n "${{ secrets.GATEWAY_STAGE }}" ]]; then
+            echo "::set-output name=key_gateway_stage::${{ secrets.GATEWAY_STAGE }}"
+          else
+            echo "::set-output name=key_gateway_stage::\"\""
+          fi
+        shell: bash
+
       - name: Create envfile
         uses: SpicyPizza/create-envfile@v2.0
         with:
           envkey_EDS_API_URL: ${{ secrets.EDS_API_URL }}
           envkey_EDS_AUTH_URL: ${{ secrets.EDS_AUTH_URL }}
           envkey_INPUT_JSON_PATH: "data/processor_input_example.json"
-          envkey_GATEWAY_STAGE: ""
+          envkey_GATEWAY_STAGE: ${{ steps.gateway-key.outputs.key_gateway_stage }}
           file_name: .env
           fail_on_empty: false
           sort_keys: false
@@ -54,6 +65,33 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build, tag, and push image to Amazon ECR
+        id: build-image-lambda
+        if: ${{ env.DEPLOY_LAMBDA == 'true' }}
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.      
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . -f Dockerfile_lambda
+          # docker tag $ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Update image to lambda funtion
+        id: lambda-function
+        if: ${{ env.DEPLOY_LAMBDA == 'true' }}
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          echo "function=$LAMBDA_FUNCTION" >> $GITHUB_OUTPUT
+          aws lambda update-function-code \
+          --function-name $LAMBDA_FUNCTION \
+          --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -67,18 +105,6 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "::set-output name=IMAGE_URI::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-
-      - name: Update image to lambda funtion
-        id: lambda-function
-        if: ${{ env.DEPLOY_LAMBDA == 'true' }}
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          echo "function=$LAMBDA_FUNCTION" >> $GITHUB_OUTPUT
-          aws lambda update-function-code \
-          --function-name $LAMBDA_FUNCTION \
-          --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Download task definition
         if: ${{ env.DEPLOY_ECS == 'true' }}
