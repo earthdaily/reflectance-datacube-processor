@@ -15,8 +15,7 @@ env:
   EDS_AUTH_URL_SECRET: ${{ secrets.EDS_AUTH_URL }}
   LAMBDA_FUNCTION: ${{ secrets.LAMBDA_FUNCTION }}
   GATEWAY_STAGE: ${{ secrets.GATEWAY_STAGE }}
-  DEPLOY_ECS: false
-  DEPLOY_LAMBDA: true
+  DEPLOY_LAMBDA: false
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -93,6 +92,7 @@ jobs:
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
+        if: ${{ env.DEPLOY_LAMBDA != 'true' }}
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
@@ -107,7 +107,7 @@ jobs:
           echo "::set-output name=IMAGE_URI::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
       - name: Download task definition
-        if: ${{ env.DEPLOY_ECS == 'true' }}
+        if: ${{ env.DEPLOY_LAMBDA != 'true' }}
         run: |
           aws ecs describe-task-definition --task-definition fastapiprocessor --query taskDefinition > task-definition.json
           echo $(cat task-definition.json | jq 'del(
@@ -123,7 +123,7 @@ jobs:
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
-        if: ${{ env.DEPLOY_ECS == 'true' }}
+        if: ${{ env.DEPLOY_LAMBDA != 'true' }}
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
@@ -131,11 +131,11 @@ jobs:
           image: ${{ steps.build-image.outputs.image }}
 
       - name: updating task-definition file
-        if: ${{ env.DEPLOY_ECS == 'true' }}
+        if: ${{ env.DEPLOY_LAMBDA != 'true' }}
         run: cat ${{ steps.task-def.outputs.task-definition }}
 
       - name: Deploy Amazon ECS task definition
-        if: ${{ env.DEPLOY_ECS == 'true' }}
+        if: ${{ env.DEPLOY_LAMBDA != 'true' }}
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
