@@ -11,6 +11,14 @@ Within code snippets, variables will be between <>. For example '<AWS_REGION>' w
 
 ## Manual setup
 
+Resources provisioning is following Amazon [IAM best practices](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html) for the AWS credentials used in GitHub Actions workflows, including:
+
+ - not storing credentials in your repository's code. You may use GitHub Actions secrets to store credentials and redact credentials from GitHub Actions workflow logs.
+- using an individual IAM user with an access key for use in GitHub Actions workflows, preferably one per repository. Do not use the AWS account root user access key.
+- granting least privilege to the credentials used in GitHub Actions workflows. Grant only the permissions required to perform the actions in your GitHub Actions workflows (see below).
+- Rotating the credentials used in GitHub Actions workflows regularly.
+- Monitoring the activity of the credentials used in GitHub Actions workflows.
+
 ### Configure OpenID Connect
 OpenID Connect (OIDC) allows your GitHub Actions workflows to access resources in Amazon Web Services (AWS), without needing to store the AWS credentials as long-lived GitHub secrets.
 
@@ -56,7 +64,47 @@ Edit the trust policy, adding the `sub` field to the validation conditions and u
 
 #### Configure role
 
-Follow the principle of the least privilege
+This action requires the following minimum set of permissions:
+
+```json
+{
+   "Version":"2012-10-17",
+   "Statement":[
+      {
+         "Sid":"RegisterTaskDefinition",
+         "Effect":"Allow",
+         "Action":[
+            "ecs:RegisterTaskDefinition"
+         ],
+         "Resource":"*"
+      },
+      {
+         "Sid":"PassRolesInTaskDefinition",
+         "Effect":"Allow",
+         "Action":[
+            "iam:PassRole"
+         ],
+         "Resource":[
+            "arn:aws:iam::<aws_account_id>:role/<task_definition_task_role_name>",
+            "arn:aws:iam::<aws_account_id>:role/<task_definition_task_execution_role_name>"
+         ]
+      },
+      {
+         "Sid":"DeployService",
+         "Effect":"Allow",
+         "Action":[
+            "ecs:UpdateService",
+            "ecs:DescribeServices"
+         ],
+         "Resource":[
+            "arn:aws:ecs:<region>:<aws_account_id>:service/<cluster_name>/<service_name>"
+         ]
+      }
+   ]
+}
+```
+
+This configuration follows the principle of the least privilege.
 
 ### Create a container registry
 First sign in to your AWS console and select Elastic Container Register and Create a new private repository. 
@@ -67,6 +115,7 @@ First sign in to your AWS console and select Elastic Container Register and Crea
 >💡You can also use AWS CLI please see [documentation](https://docs.aws.amazon.com/cli/latest/reference/ecr/create-repository.html).
 
 #### Load image to registry
+
 Use the following steps to authenticate and push an image to your repository. For additional registry authentication methods, including the Amazon ECR credential helper, see [Registry Authentication](https://docs.aws.amazon.com/AmazonECR/latest/userguide/getting-started-cli.html).
 
    1. Retrieve an authentication token and authenticate your Docker client to your registry.
@@ -94,81 +143,7 @@ docker tag processordemo:latest 489065051964.dkr.ecr.us-east-1.amazonaws.com/pro
 docker push 489065051964.dkr.ecr.us-east-1.amazonaws.com/processordemo:latest
 ```
 
-You can also create a workflow that will build and push the image to your registry. In the codebase, create a .github/workflows folder, then create an aws_ECR.yml file. Keep in mind you can name this file whatever you’d like. Below is a workflow that builds a Docker image and pushes it to the newly created ECR registry. In the env section ensure to add the region and name of the ECR registry.
-
-```yaml
-
-name: Deploy to Amazon ECS
-
-on:
-  push:
-    branches:
-      - deploy1
-
-# AWS_REGION is the name of the AWS region that should be stored as Github repository secret 
-# ECR_REPOSITORY is the name of your ECR repository that should be stored as Github repository secret 
-# ECS_SERVICE is the name of your ECS Service that should be stored as Github repository secret 
-# ECS_CLUSTER is the name of your ECS Cluster that should be stored as Github repository secret
-
-env:
-  AWS_REGION: ${{ secrets.AWS_REGION }}
-  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-  ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
-  ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
-  CONTAINER_NAME: ${{ secrets.CONTAINER_NAME }}
-  EDS_API_URL_SECRET: ${{ secrets.EDS_API_URL }}
-  EDS_AUTH_URL_SECRET: ${{ secrets.EDS_AUTH_URL }}
-
-permissions:
-  id-token: write # This is required for requesting the JWT
-  contents: read
-
-jobs:
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-    environment: production
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Create envfile
-        uses: SpicyPizza/create-envfile@v2.0
-        with:
-          envkey_EDS_API_URL: ${{ secrets.EDS_API_URL }}
-          envkey_EDS_AUTH_URL: ${{ secrets.EDS_AUTH_URL }}
-          envkey_INPUT_JSON_PATH: "data/processor_input_example.json"
-          file_name: .env
-          fail_on_empty: false
-          sort_keys: false
-
-      - name: configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::xxxxxxxxxxxx:role/GitHubActionProcessor-AssumeRoleWithAction #change to reflect your IAM role’s ARN
-          role-session-name: GitHub_to_AWS_via_gitaction_devOps
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build, tag, and push image to Amazon ECR
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          # Build a docker container and
-          # push it to ECR so that it can
-          # be deployed to ECS.      
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          # docker tag $ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-```
-
+### ECS
 
 #### Create an ECS Cluster
 
@@ -193,18 +168,34 @@ Within ECS, start by navigating to the clusters tab in ECS and create a service 
 
 ![Create ECS Service](images/ECS_create_service.png "ECS Service creation").
 
-#### Network configuration for external access
+#### VPC and Network configuration for external access
+
+A default VPC is automatically provisionned on every AWS account. It comes with a public subnet in each Availability Zone, an internet gateway, and settings to enable DNS resolution. For more information please see [here](https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html).
+
+This VPC also comes with default Security group. Please make sure to have the following configuration to enable external access to your processor. 
+
+![Security group inbound](images/VPC_securitygroup_configuration_inbound.png "Security group inbound")
+
+![Security group outbound](images/VPC_securitygroup_configuration_outbound.png "Security group outbound")
+
+#### CloudWatch
+In other to monitor and troubleshoot any issue with your processor, it is recommended to enabled [Container Insight]() while creating your ECS Cluster. 
+
+![Container Insight](images/ConteinerInsigth_configuration.png "Container Insight")
+
+For more information please see [here](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-metrics.html) 
 
 
+### Lambda
+
+
+![Create ECS Service](images/ECS_create_service.png "ECS Service creation").
 ## Script using Terraform
 
 👎
 
 ## Sizing
 In order to keep, cost under control, we strongly encourage to implement service quotas using [AWS capabilities](https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html).
-
-
-
 
 
 ## More resources 

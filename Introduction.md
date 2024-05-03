@@ -11,7 +11,7 @@ Agriculture is global and agronomy and risk management is local. The ideal bundl
 
 The processor strategy aims to empower our customers to embed their business logic with our data and analytic to create added value insights and integrate them in their business processes.
  
-This framework includeds open source components and rich documentation [here](https://github.com/earthdaily)
+This framework includes open source components and rich documentation [here](https://github.com/earthdaily)
 
 ## Reflectance datacube 
 
