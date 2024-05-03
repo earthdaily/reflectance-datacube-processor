@@ -63,7 +63,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push image to Amazon ECR
+      - name: Build, tag, and push image Lambda to Amazon ECR
         id: build-image-lambda
         if: ${{ env.DEPLOY_LAMBDA == 'true' }}
         env:
@@ -90,7 +90,7 @@ jobs:
           --function-name $LAMBDA_FUNCTION \
           --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Build, tag, and push image to Amazon ECR
+      - name: Build, tag, and push image Task to Amazon ECR
         id: build-image
         if: ${{ env.DEPLOY_LAMBDA != 'true' }}
         env:
