@@ -87,9 +87,9 @@ In case of service outage, here is the troubleshooting process:
 - Select your cluster in the group and Click *"Run query"*
 
 ![CloudWatch_LogInsight](images/CloudWatch_LogInsight.png "CloudWatch_LogInsight")
-CloudWatch_LogInsight
+
 - Run your root cause analysis based traces
-- If a source code update is required, please create a ticket [here](/User%20guide.html#support)
+- If a source code update is required, please create a ticket [here](reflectance-datacube-processor/User%20guide.html#support)
 
 To restore service leveraging a previous task definition, please fo 
 
@@ -111,7 +111,7 @@ If you are using the ECS deployment model, it will leverage the following billab
  - Simple Storage Service (S3)
 
 
-To manage running cost, you can define service limits leveraging [AWS service quotas](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-quotas.html#service-quotas-fargate). For example you can control Fargate capacity like number of vCPUs running concurrently in the current region
+To manage running cost, you can define service limits leveraging [AWS service quotas](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-quotas.html#service-quotas-fargate). For example you can control Fargate capacity like number of vCPUs running concurrently in the current region.
 
 
 ### Additional Information
