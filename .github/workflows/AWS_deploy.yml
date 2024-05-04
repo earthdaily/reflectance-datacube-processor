@@ -47,7 +47,7 @@ jobs:
         uses: SpicyPizza/create-envfile@v2.0
         with:
           envkey_EDS_API_URL: ${{ env.EDS_API_URL }}
-          envkey_EDS_AUTH_URL: ${{ env.EDS_AUTH_URL }}
+          envkey_EDS_AUTH_UR: ${{ env.EDS_AUTH_URL }}
           envkey_AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
           envkey_AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
           envkey_INPUT_JSON_PATH: "data/processor_input_example.json"
