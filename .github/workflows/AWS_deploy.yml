@@ -17,7 +17,7 @@ env:
   GATEWAY_STAGE: ${{ secrets.GATEWAY_STAGE }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  DEPLOY_LAMBDA: ${{ github.DEPLOY_LAMBDA }}
+  DEPLOY_LAMBDA: ${{ secrets.DEPLOY_LAMBDA }}
 
 permissions:
   id-token: write # This is required for requesting the JWT
