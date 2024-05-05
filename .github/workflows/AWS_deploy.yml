@@ -43,21 +43,18 @@ jobs:
           fi
         shell: bash
 
-      - name: Create envfile
-        uses: SpicyPizza/create-envfile@v2.0
-        with:
-          envkey_EDS_API_URL: ${{ env.EDS_API_URL }}
-          envkey_EDS_AUTH_UR: ${{ env.EDS_AUTH_URL }}
-          envkey_AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
-          envkey_AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          envkey_INPUT_JSON_PATH: "data/processor_input_example.json"
-          envkey_GATEWAY_STAGE: ${{ steps.gateway-key.outputs.key_gateway_stage }}
-          file_name: .env
-          fail_on_empty: false
-          sort_keys: false
-
-      - name: Set up environment
-        run: source .env
+      # - name: Create envfile
+      #   uses: SpicyPizza/create-envfile@v2.0
+      #   with:
+      #     envkey_EDS_API_URL: ${{ env.EDS_API_URL }}
+      #     envkey_EDS_AUTH_UR: ${{ env.EDS_AUTH_URL }}
+      #     envkey_AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+      #     envkey_AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+      #     envkey_INPUT_JSON_PATH: "data/processor_input_example.json"
+      #     envkey_GATEWAY_STAGE: ${{ steps.gateway-key.outputs.key_gateway_stage }}
+      #     file_name: .env
+      #     fail_on_empty: false
+      #     sort_keys: false
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -81,12 +78,12 @@ jobs:
           # push it to ECR so that it can
           # be deployed to ECS.      
           docker build \
-            --build-arg EDS_API_URL=$EDS_API_URL \
-            --build-arg EDS_AUTH_URL=$EDS_AUTH_URL \ 
-            --build-arg AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
-            --build-arg AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
-            --build-arg INPUT_JSON_PATH=$INPUT_JSON_PATH \
-            --build-arg GATEWAY_STAGE=$GATEWAY_STAGE \       
+            --build-arg EDS_API_URL=${{ env.EDS_API_URL }} \
+            --build-arg EDS_AUTH_URL=${{ env.EDS_AUTH_URL }} \ 
+            --build-arg AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID }} \
+            --build-arg AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }} \
+            --build-arg INPUT_JSON_PATH="data/processor_input_example.json" \
+            --build-arg GATEWAY_STAGE=${{ steps.gateway-key.outputs.key_gateway_stage }} \       
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . -f Dockerfile_lambda
           # docker tag $ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
