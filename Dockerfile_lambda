@@ -5,7 +5,15 @@ RUN pip cache purge
 
 # Copy function code
 COPY ./src ${LAMBDA_TASK_ROOT}
-COPY .env ${LAMBDA_TASK_ROOT}
+
+# Set up environment variables
+ENV EDS_API_URL=$EDS_API_URL
+ENV EDS_AUTH_URL=$EDS_AUTH_URL
+ENV AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+ENV INPUT_JSON_PATH=$INPUT_JSON_PATH
+ENV GATEWAY_STAGE=$GATEWAY_STAGE
+
 # Install the function's dependencies using file requirements.txt
 # from your project folder.
 COPY requirements.txt ${LAMBDA_TASK_ROOT}
