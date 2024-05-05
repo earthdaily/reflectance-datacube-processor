@@ -11,8 +11,8 @@ env:
   ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
   ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
   CONTAINER_NAME: ${{ secrets.CONTAINER_NAME }}
-  EDS_API_URL_SECRET: ${{ secrets.EDS_API_URL }}
-  EDS_AUTH_URL_SECRET: ${{ secrets.EDS_AUTH_URL }}
+  EDS_API_URL: ${{ secrets.EDS_API_URL }}
+  EDS_AUTH_URL: ${{ secrets.EDS_AUTH_URL }}
   LAMBDA_FUNCTION: ${{ secrets.LAMBDA_FUNCTION }}
   GATEWAY_STAGE: ${{ secrets.GATEWAY_STAGE }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
