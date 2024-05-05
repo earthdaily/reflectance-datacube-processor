@@ -56,7 +56,7 @@ jobs:
           fail_on_empty: false
           sort_keys: false
 
-      - name: check .env file
+      - name: check ''.env' file
         run: cat .env
 
       - name: configure aws credentials
