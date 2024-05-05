@@ -46,8 +46,8 @@ jobs:
       - name: Create envfile
         uses: SpicyPizza/create-envfile@v2.0
         with:
-          envkey_EDS_API_URL: ${{ env.EDS_API_URL }}
-          envkey_EDS_AUTH_UR: ${{ env.EDS_AUTH_URL }}
+          envkey_EDS_API_URL: "https://api.eds.earthdaily.com/archive/v1/stac/v1"
+          envkey_EDS_AUTH_UR: "https://edagro-test-earthdaily.auth.us-east-1.amazoncognito.com/oauth2/token"
           envkey_AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
           envkey_AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
           envkey_INPUT_JSON_PATH: "data/processor_input_example.json"
