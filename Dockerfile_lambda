@@ -5,6 +5,7 @@ RUN pip cache purge
 
 # Copy function code
 COPY ./src ${LAMBDA_TASK_ROOT}
+COPY .env ${LAMBDA_TASK_ROOT}
 # Install the function's dependencies using file requirements.txt
 # from your project folder.
 COPY requirements.txt ${LAMBDA_TASK_ROOT}
