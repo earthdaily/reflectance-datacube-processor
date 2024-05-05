@@ -56,6 +56,9 @@ jobs:
           fail_on_empty: false
           sort_keys: false
 
+      - name: check .env file
+        run: cat .env
+
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
