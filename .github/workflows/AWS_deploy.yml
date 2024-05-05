@@ -79,11 +79,11 @@ jobs:
           # be deployed to ECS.      
           docker build \
             --build-arg EDS_API_URL=${{ env.EDS_API_URL }} \
-            --build-arg EDS_AUTH_URL=${{ env.EDS_AUTH_URL }} \ 
+            --build-arg EDS_AUTH_URL=${{ env.EDS_AUTH_URL }} \
             --build-arg AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID }} \
             --build-arg AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }} \
             --build-arg INPUT_JSON_PATH="data/processor_input_example.json" \
-            --build-arg GATEWAY_STAGE=${{ steps.gateway-key.outputs.key_gateway_stage }} \       
+            --build-arg GATEWAY_STAGE=${{ steps.gateway-key.outputs.key_gateway_stage }} \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . -f Dockerfile_lambda
           # docker tag $ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
