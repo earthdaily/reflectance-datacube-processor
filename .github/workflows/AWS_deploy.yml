@@ -56,6 +56,9 @@ jobs:
           fail_on_empty: false
           sort_keys: false
 
+      - name: Set up environment
+        run: source .env
+
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -77,7 +80,14 @@ jobs:
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.      
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . -f Dockerfile_lambda
+          docker build \
+            --build-arg EDS_API_URL=$EDS_API_URL \
+            --build-arg EDS_AUTH_URL=$EDS_AUTH_URL \ 
+            --build-arg AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+            --build-arg AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+            --build-arg INPUT_JSON_PATH=$INPUT_JSON_PATH \
+            --build-arg GATEWAY_STAGE=$GATEWAY_STAGE \       
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . -f Dockerfile_lambda
           # docker tag $ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
