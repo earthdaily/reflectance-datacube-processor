@@ -109,7 +109,7 @@ This configuration follows the principle of the least privilege.
 ### Create a container registry
 First sign in to your AWS console and select Elastic Container Register and Create a new private repository. 
 
-![Create ECR repository](images/ECR_create_repo.png "ECR Repository creation").
+![Create ECR repository](images/ECR_create_repo.png "ECR Repository creation")
 
 
 >💡You can also use AWS CLI please see [documentation](https://docs.aws.amazon.com/cli/latest/reference/ecr/create-repository.html).
@@ -151,7 +151,7 @@ Sign in to your AWS console and select Elastic Container Service and create a ne
 
 An ECS cluster is a grouping of EC2 instances or AWS Fargate tasks on which we’ll deploy and run our containers. Pick the name you want and left the default settings.
 
-![Create ECS Cluster](images/ECS_create_cluster.png "ECS Cluster").
+![Create ECS Cluster](images/ECS_create_cluster.png "ECS Cluster")
 
 #### Create a task definition
 
@@ -166,7 +166,7 @@ Another important note is to give the correct ports (I used port 8000) that are 
 #### Create a service 
 Within ECS, start by navigating to the clusters tab in ECS and create a service using the task definition. For compute configuration, choose “Launch type” and leave the default option for Fargate. For the deployment configuration, choose “Service” and then, choose the task definition with the latest revision. Then, navigate to the Networking section and ensure public IP is chosen (You can modify this later if you have specific networking requirements). Finally, create the service.
 
-![Create ECS Service](images/ECS_create_service.png "ECS Service creation").
+![Create ECS Service](images/ECS_create_service.png "ECS Service creation")
 
 #### VPC and Network configuration for external access
 
@@ -179,20 +179,18 @@ This VPC also comes with default Security group. Please make sure to have the fo
 ![Security group outbound](images/VPC_securitygroup_configuration_outbound.png "Security group outbound")
 
 #### CloudWatch
-In order to monitor and troubleshoot any issue with your processor, it is recommended to enabled [Container Insight]() while creating your ECS Cluster. 
+In other to monitor and troubleshoot any issue with your processor, it is recommended to enabled [Container Insight]() while creating your ECS Cluster. 
 
 ![Container Insight](images/ConteinerInsigth_configuration.png "Container Insight")
 
 For more information please see [here](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-metrics.html) 
 
-
 ### Lambda
 
+![Create ECS Service](images/ECS_create_service.png "ECS Service creation")
 
-![Create ECS Service](images/ECS_create_service.png "ECS Service creation").
 ## Script using Terraform
 
-👎
 
 ## Sizing
 In order to keep, cost under control, we strongly encourage to implement service quotas using [AWS capabilities](https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html).

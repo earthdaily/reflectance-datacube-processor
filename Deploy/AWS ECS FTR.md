@@ -2,7 +2,7 @@
 layout: default
 title: AWS ECS FTR
 parent: Deployment
-nav_order: 2
+nav_order: 3
 ---
 
 # Customer-Deployed Foundational Technical Review

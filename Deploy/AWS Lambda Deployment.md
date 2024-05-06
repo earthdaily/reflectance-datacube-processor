@@ -2,11 +2,11 @@
 layout: default
 title: AWS Lambda Deployment
 parent: Deployment
-nav_order: 3
+nav_order: 2
 ---
 
 
-# AWS ECS Deployment guide
+# AWS Lambda Deployment guide
 
 The following sections will guide you through the steps to setup a GitAction workflow to deploy the Reflectance Datacube processor on [AWS Lambda](https://aws.amazon.com/fr/pm/lambda/?gclid=Cj0KCQjw0MexBhD3ARIsAEI3WHKHFIwpgJl1S8X0Brj35ffpgeqoxbbMuqzSE_5beUpN6smZBPArjosaApH_EALw_wcB&trk=e0e0d4be-47fe-4336-ab69-7eece7f3d36e&sc_channel=ps&ef_id=Cj0KCQjw0MexBhD3ARIsAEI3WHKHFIwpgJl1S8X0Brj35ffpgeqoxbbMuqzSE_5beUpN6smZBPArjosaApH_EALw_wcB:G:s&s_kwcid=AL!4422!3!652240143523!e!!g!!amazon%20lambda!19878797032!147151597893).
 
@@ -45,5 +45,5 @@ On every commit change, workflow is triggered and executed. Go to the actions se
 ## More resources
 
 Here is additional content related deployment:
-   - [Deploying to ECS with GitActions](https://docs.github.com/en/actions/deployment/deploying-to-your-cloud-provider/deploying-to-amazon-elastic-container-service)
-   - [ECS Deployments](https://medium.com/@octavio/ecs-deployments-with-github-actions-dd34beed6528)
+   - [Deploying to Lambda  with GitActions](https://github.com/int128/deploy-lambda-action)
+   - [Step by step guide for AWS Lambda with Docker ](https://medium.com/@denissedamian/step-by-step-guide-to-ci-cd-for-aws-lambda-with-docker-and-github-actions-c02a9726fd44)
