@@ -24,6 +24,7 @@ RUN if [ -f .env ]; then \
     cp .env /app/.env; \
     echo "fic exist"; \
     else \
+    echo "fic doesn't exist"; \
     echo "EDS_API_URL=${EDS_API_URL}" >> .env; \
     echo "EDS_AUTH_URL=${EDS_AUTH_URL}" >> .env; \
     echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> .env; \
