@@ -20,16 +20,18 @@ RUN if [ ! -f .env ]; then \
     echo "il y passe"; \
     fi
 
-RUN if [ ! -f .env ]; then \
+RUN if [ -f .env ]; then \
+    cp .env /app/.env; \
+    echo "fic exist"; \
+    else \
     echo "EDS_API_URL=${EDS_API_URL}" >> .env; \
     echo "EDS_AUTH_URL=${EDS_AUTH_URL}" >> .env; \
     echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> .env; \
     echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> .env; \
     echo "INPUT_JSON_PATH=${INPUT_JSON_PATH}" >> .env; \
     echo "GATEWAY_STAGE=${GATEWAY_STAGE}" >> .env; \
+    echo .env; \
     fi
-
-COPY .env .
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN dos2unix /usr/local/bin/docker-entrypoint.sh
