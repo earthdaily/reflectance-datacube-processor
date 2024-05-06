@@ -23,10 +23,10 @@ ARG GATEWAY_STAGE
 
 # Check if .env exists, if it does, copy .env file
 # Otherwise, set up environment variable from build arguments
-RUN if [ -f .env ]; then \
-    cp .env /app/.env; \
-    echo "fic exist"; \
-    else \
+RUN if [ ! -f .env ]; then \
+    # cp .env /app/.env; \
+    # echo "fic exist"; \
+    # else \
     echo "fic doesn't exist"; \
     echo "EDS_API_URL=${EDS_API_URL}" >> .env; \
     echo "valeur EDS_API_URL=${EDS_API_URL}"; \
@@ -37,6 +37,8 @@ RUN if [ -f .env ]; then \
     echo "GATEWAY_STAGE=${GATEWAY_STAGE}" >> .env; \
     echo .env; \
     fi
+
+COPY .env . ||
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN dos2unix /usr/local/bin/docker-entrypoint.sh
