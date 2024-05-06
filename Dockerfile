@@ -38,7 +38,17 @@ RUN if [ ! -f .env ]; then \
     echo .env; \
     fi
 
+# Intermediate stage to copy .env file if it exists
+FROM base AS intermediate
+
+# Copy .env file into the Docker image
 COPY .env /app/ || true
+
+# Final stage
+FROM base
+
+# Copy files from the intermediate stage
+COPY --from=intermediate /app/.env /app/
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN dos2unix /usr/local/bin/docker-entrypoint.sh
