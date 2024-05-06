@@ -1,6 +1,6 @@
 ---
 layout: default
-title: AWS ECS Deployment
+title: AWS Lambda Deployment
 parent: Deployment
 nav_order: 3
 ---

@@ -5,7 +5,6 @@ parent: Deployment
 nav_order: 1
 ---
 
-
 # AWS ECS Deployment guide
 
 The following sections will guide you through the steps to setup a GitAction workflow to deploy the Reflectance Datacube processor on AWS ECS.
@@ -14,7 +13,6 @@ The following sections will guide you through the steps to setup a GitAction wor
 Before configuring the deployment workflow, set the deployment variables in the GitHub repository secrets for actions. The workflow requires these variables in order to successfully push the image.
 
 ![Github repository action secrets](../images/repo_secret.png "Github repository action secrets").
-
 
 
 | Secret  | Description   |
