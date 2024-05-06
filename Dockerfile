@@ -38,7 +38,7 @@ RUN if [ ! -f .env ]; then \
     echo .env; \
     fi
 
-COPY .env . || true
+COPY .env /app/ || true
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN dos2unix /usr/local/bin/docker-entrypoint.sh
