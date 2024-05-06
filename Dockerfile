@@ -14,6 +14,12 @@ RUN pip cache purge; exit 0
 RUN apt-get update && apt-get install -y dos2unix
 COPY ./src .
 
+# Check if .env exists, if it does, copy .env file
+RUN if [ ! -f .env ]; then \
+    cp .env /app/.env; \
+    echo "fic exist"; \
+    fi
+
 ARG EDS_API_URL
 ARG EDS_AUTH_URL
 ARG AWS_ACCESS_KEY_ID
@@ -21,12 +27,8 @@ ARG AWS_SECRET_ACCESS_KEY
 ARG INPUT_JSON_PATH
 ARG GATEWAY_STAGE
 
-# Check if .env exists, if it does, copy .env file
 # Otherwise, set up environment variable from build arguments
-RUN if [ ! -f .env ]; then \
-    # cp .env /app/.env; \
-    # echo "fic exist"; \
-    # else \
+RUN if [ -f .env ]; then \
     echo "fic doesn't exist"; \
     echo "EDS_API_URL=${EDS_API_URL}" >> .env; \
     echo "valeur EDS_API_URL=${EDS_API_URL}"; \
@@ -37,18 +39,6 @@ RUN if [ ! -f .env ]; then \
     echo "GATEWAY_STAGE=${GATEWAY_STAGE}" >> .env; \
     echo .env; \
     fi
-
-# Intermediate stage to copy .env file if it exists
-FROM base AS intermediate
-
-# Copy .env file into the Docker image
-COPY .env /app/ || true
-
-# Final stage
-FROM base
-
-# Copy files from the intermediate stage
-COPY --from=intermediate /app/.env /app/
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN dos2unix /usr/local/bin/docker-entrypoint.sh
