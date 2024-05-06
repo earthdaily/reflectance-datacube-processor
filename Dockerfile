@@ -26,6 +26,7 @@ RUN if [ -f .env ]; then \
     else \
     echo "fic doesn't exist"; \
     echo "EDS_API_URL=${EDS_API_URL}" >> .env; \
+    echo "valeur EDS_API_URL=${EDS_API_URL}"; \
     echo "EDS_AUTH_URL=${EDS_AUTH_URL}" >> .env; \
     echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> .env; \
     echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> .env; \
