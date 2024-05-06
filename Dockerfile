@@ -17,6 +17,10 @@ COPY ./src .
 # Check if .env exists, if it does, copy .env file
 # Otherwise, set up environment variable from build arguments
 RUN if [ ! -f .env ]; then \
+    echo "il y passe"; \
+    fi
+
+RUN if [ ! -f .env ]; then \
     echo "EDS_API_URL=${EDS_API_URL}" >> .env; \
     echo "EDS_AUTH_URL=${EDS_AUTH_URL}" >> .env; \
     echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> .env; \
