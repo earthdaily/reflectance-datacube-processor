@@ -14,12 +14,15 @@ RUN pip cache purge; exit 0
 RUN apt-get update && apt-get install -y dos2unix
 COPY ./src .
 
+ARG EDS_API_URL
+ARG EDS_AUTH_URL
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+ARG INPUT_JSON_PATH
+ARG GATEWAY_STAGE
+
 # Check if .env exists, if it does, copy .env file
 # Otherwise, set up environment variable from build arguments
-RUN if [ ! -f .env ]; then \
-    echo "il y passe"; \
-    fi
-
 RUN if [ -f .env ]; then \
     cp .env /app/.env; \
     echo "fic exist"; \
