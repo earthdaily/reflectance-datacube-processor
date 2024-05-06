@@ -179,7 +179,7 @@ This VPC also comes with default Security group. Please make sure to have the fo
 ![Security group outbound](images/VPC_securitygroup_configuration_outbound.png "Security group outbound")
 
 #### CloudWatch
-In other to monitor and troubleshoot any issue with your processor, it is recommended to enabled [Container Insight]() while creating your ECS Cluster. 
+In order to monitor and troubleshoot any issue with your processor, it is recommended to enabled [Container Insight]() while creating your ECS Cluster. 
 
 ![Container Insight](images/ConteinerInsigth_configuration.png "Container Insight")
 
