@@ -25,6 +25,7 @@ RUN if [ -f .env ]; then \
     echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> .env; \
     echo "INPUT_JSON_PATH=${INPUT_JSON_PATH}" >> .env; \
     echo "GATEWAY_STAGE=${GATEWAY_STAGE}" >> .env; \
+    cp .env /app/.env; \
     fi
 
 COPY docker-entrypoint.sh /usr/local/bin/
