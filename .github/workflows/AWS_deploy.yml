@@ -65,8 +65,6 @@ jobs:
           # push it to ECR so that it can
           # be deployed to ECS.      
           docker build \
-            --build-arg EDS_API_URL=${{ env.EDS_API_URL }} \
-            --build-arg EDS_AUTH_URL=${{ env.EDS_AUTH_URL }} \
             --build-arg AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID }} \
             --build-arg AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }} \
             --build-arg INPUT_JSON_PATH="data/processor_input_example.json" \
@@ -87,6 +85,9 @@ jobs:
           aws lambda update-function-code \
           --function-name $LAMBDA_FUNCTION \
           --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          aws lambda update-function-configuration \
+          --function-name $LAMBDA_FUNCTION \
+           --environment "Variables={EDS_API_URL=${{ env.EDS_API_URL }},EDS_AUTH_URL=${{ env.EDS_AUTH_URL }}}"         
 
       - name: Build, tag, and push image Task to Amazon ECR
         id: build-image
