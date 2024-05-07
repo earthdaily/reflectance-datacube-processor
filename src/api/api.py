@@ -54,8 +54,7 @@ app.mount("/static", StaticFiles(directory="./api/files"), name="static")
 @app.get("/")
 def welcome():
     return {
-        "Welcome to ": "Reflectance Datacube Processor, please add '/docs' to URL to open swagger UI",
-        "Token URL": tokenUrl
+        "Welcome to ": "Reflectance Datacube Processor, please add '/docs' to URL to open swagger UI"
     }
 
 
