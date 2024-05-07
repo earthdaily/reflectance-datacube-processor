@@ -87,7 +87,6 @@ jobs:
           | while read -r line; do echo "$line"
 
       - name: Update lambda funtion configuration
-        id: lambda-function
         if: ${{ env.DEPLOY_LAMBDA == 'true' }}
         run: |
           aws lambda update-function-configuration \
