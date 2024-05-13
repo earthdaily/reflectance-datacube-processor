@@ -87,7 +87,7 @@ jobs:
           --function-name $LAMBDA_FUNCTION \
           --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      # - name: Update lambda funtion configuration
+      # - name: Update lambda funtion  configuration
       #   id: lambda-function-config
       #   if: ${{ env.DEPLOY_LAMBDA == 'true' }}
       #   run: |
