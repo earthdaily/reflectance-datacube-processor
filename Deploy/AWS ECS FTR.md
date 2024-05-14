@@ -1,6 +1,6 @@
 ---
 layout: default
-title: AWS ECS FTR
+title: AWS Customer Hosted FTR
 parent: Deployment
 nav_order: 3
 ---
