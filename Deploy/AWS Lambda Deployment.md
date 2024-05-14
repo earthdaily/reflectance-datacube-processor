@@ -10,6 +10,16 @@ nav_order: 1
 
 The following sections will guide you through the steps to setup a GitAction workflow to deploy the Reflectance Datacube processor on [AWS Lambda](https://aws.amazon.com/fr/pm/lambda/?gclid=Cj0KCQjw0MexBhD3ARIsAEI3WHKHFIwpgJl1S8X0Brj35ffpgeqoxbbMuqzSE_5beUpN6smZBPArjosaApH_EALw_wcB&trk=e0e0d4be-47fe-4336-ab69-7eece7f3d36e&sc_channel=ps&ef_id=Cj0KCQjw0MexBhD3ARIsAEI3WHKHFIwpgJl1S8X0Brj35ffpgeqoxbbMuqzSE_5beUpN6smZBPArjosaApH_EALw_wcB:G:s&s_kwcid=AL!4422!3!652240143523!e!!g!!amazon%20lambda!19878797032!147151597893).
 
+Before starting the deployment configuration, please make sure to check the [prerequisite section](Prerequisite.html).
+
+Infrastructure setup is detailed on the [provisioning section](Provisioning.html).
+
+## Clone repository
+
+Please clone the Reflectance Datacube Processor on your Github account. 
+
+Detailed process is available [here](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+
 ## Github repo configuration
 Before configuring the deployment workflow, set the deployment variables in the GitHub repository secrets for actions. The workflow requires these variables in order to successfully push the image.
 

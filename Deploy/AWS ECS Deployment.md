@@ -2,12 +2,23 @@
 layout: default
 title: AWS ECS Deployment
 parent: Deployment
-nav_order: 1
+nav_order: 2
 ---
 
 # AWS ECS Deployment guide
 
 The following sections will guide you through the steps to setup a GitAction workflow to deploy the Reflectance Datacube processor on AWS ECS.
+
+Before starting the deployment configuration, please make sure to check the [prerequisite section](Prerequisite.html).
+
+Infrastructure setup is detailed on the [provisioning section](Provisioning.html).
+
+## Clone repository
+
+Please clone the Reflectance Datacube Processor on your Github account. 
+
+Detailed process is available [here](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+
 
 ## Github repo configuration
 Before configuring the deployment workflow, set the deployment variables in the GitHub repository secrets for actions. The workflow requires these variables in order to successfully push the image.

@@ -73,7 +73,7 @@ To set up and run the project using Docker, follow these steps:
 
 This URL will open the Swagger UI documentation, click on the "Try it out" button under each POST endpoint and enter the request parameters and body.
 
-![Reflectance Datacube API](images/ReflectanceDataCube_API.png "Reflectance Datacube API").
+![Reflectance Datacube API](images/ReflectanceDataCube_API.png "Reflectance Datacube API")
 
 
 #### POST /reflectiance-datacube-processor
@@ -166,9 +166,9 @@ They are described in each notebooks (the parameters not mentionned need to have
 
 ## Visualize and use Refletance datacube 
 
+Please use the following [notebooks](https://github.com/earthdaily/reflectance-datacube-processor/tree/main/notebooks) showcasing how to leverage reflectance datacube.
 
-
-
+![Notebook](images/Notebook.png "Notebook")
 ## Support
 
 If you are experiencing unexpected behaviour or error while using this service, please create an [issue in the main repository](https://github.com/earthdaily/reflectance-datacube-processor/issues).
