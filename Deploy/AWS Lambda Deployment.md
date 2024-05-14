@@ -18,22 +18,24 @@ Before configuring the deployment workflow, set the deployment variables in the 
 
 | Secret  | Description   |
 |---|---|
-|  AWS_REGION | This is the AWS region you are targeting for deployment  |
-|  CONTAINER_NAME | Name of the container |
+| AWS_REGION | This is the AWS region you are targeting for deployment  |
+| CONTAINER_NAME | Name of the container |
 | ECR_REPOSITORY  | Container registry to publish your image  |
 | ECS_CLUSTER  | ECS Cluster for container deployment   |
 | ECS_SERVICE  | ECS Service for container deployment  |
 | ECS_TASK_DEFINITION  | ECS Task definition for container deployment   |
-|  EDS_API_URL | Base URL to access EarthData Store  |
-|  EDS_AUTH_URL |  Base authentication URL to access EarthData Store |
+| EDS_API_URL | Base URL to access EarthData Store  |
+| EDS_AUTH_URL |  Base authentication URL to access EarthData Store |
+| AWS_ACCESS_KEY_ID  |  S3 Access key to push datacube assets |
+| AWS_SECRET_ACCESS_KEY |  S3 Secret Access key to push datacube assets |
+| DEPLOY_LAMBDA |  Boolean value to enable Lambda deployment (deplyoed to Lambda if True) |
 
 ## Deployment workflow
-Whithin the Github repository, in the '.github/workflows, you will find a file ECS_deploy.yml
+Whithin the Github repository, in the '.github/workflows, you will find a file AWS_deploy.yml
 
 Edit the file by adding the branch name you want to deploy.
 
 ![Deployment workflow](../images/ECSDeploy_workflow_edit2.png "Deployment workflow").
-
 
 
 ## Deployment workflow execution
@@ -47,3 +49,4 @@ On every commit change, workflow is triggered and executed. Go to the actions se
 Here is additional content related deployment:
    - [Deploying to Lambda  with GitActions](https://github.com/int128/deploy-lambda-action)
    - [Step by step guide for AWS Lambda with Docker ](https://medium.com/@denissedamian/step-by-step-guide-to-ci-cd-for-aws-lambda-with-docker-and-github-actions-c02a9726fd44)
+   - [Deployment with AWS Lambda and ECS](https://dev.to/eldritchideen/fastapi-container-deployment-with-aws-lambda-and-amazon-ecs-5a2o)
