@@ -1,7 +1,7 @@
-name: earthdaily-processor
+name: reflectance-processor
 channels:
- - conda-forge
- - defaults
+  - conda-forge
+  - defaults
 dependencies:
   - python>3.11
   - ipykernel
@@ -9,18 +9,21 @@ dependencies:
   - geojson
   - pyproj
   - zarr
-  - pip 
+  - pip
   - pip:
-    # aws
-    - boto3
-    # azure
-    - azure-storage-blob
-    - earthdaily==0.0.6
-    - jupyter
-    - matplotlib
-    - numpy 
-    - scipy
-    - geogif
-    - fastapi
-    - pydantic
-    - byoa==0.1.0a2
+      # aws
+      - boto3
+      # azure
+      - azure-storage-blob
+      - earthdaily==0.0.6
+      - jupyter
+      - matplotlib
+      - numpy
+      - scipy
+      - geogif
+      - fastapi
+      - pydantic
+      - byoa==0.1.0a2
+      - mangum
+      - cloudpathlib
+      - adlfs

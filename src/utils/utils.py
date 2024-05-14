@@ -4,6 +4,9 @@ import os
 import shutil
 import tempfile
 
+import boto3
+import cloudpathlib
+import fsspec
 import xarray
 import zarr
 from azure.storage.blob import ContainerClient
@@ -38,9 +41,7 @@ def dataset_to_zarr_format_indep_sensor(
         tempfile.gettempdir(),
         f"{start_date_str}_{end_date_str}_{fieldid}_datacube.zarr",
     )
-    logging.info(
-        "AnalyticsDatacube:save_dataset_to_temporary_zarr: path is %s", zarr_path
-    )
+    logging.info("AnalyticsDatacube:save_dataset_to_temporary_zarr: path is %s", zarr_path)
 
     if os.path.exists(zarr_path):
         # Use shutil.rmtree to recursively delete the directory
@@ -78,9 +79,7 @@ def dataset_to_zarr_format_sensor(
         tempfile.gettempdir(),
         f"{start_date_str}_{end_date_str}_{fieldid}_{sensor}_datacube.zarr",
     )
-    logging.info(
-        "AnalyticsDatacube:save_dataset_to_temporary_zarr: path is %s", zarr_path
-    )
+    logging.info("AnalyticsDatacube:save_dataset_to_temporary_zarr: path is %s", zarr_path)
 
     # save dataset and return complete zarr path
     dataset.to_zarr(zarr_path)
@@ -144,6 +143,52 @@ def open_cube_azure(image: str):
 
     # Open and return cube as xarray Dataset
     return xarray.open_zarr(store=store, consolidated=True)
+
+
+def open_datacube(
+    path: cloudpathlib.S3Path | cloudpathlib.AzureBlobPath,
+    order_id=None,
+    refresh_interval=10,
+    **kwargs,
+):
+    if order_id is not None:
+        success, status = _wait_success(order_id, refresh_interval)
+        if not success:
+            raise Exception(f"Order {order_id} failed : {status}")
+    if isinstance(path, cloudpathlib.S3Path):
+        import s3fs
+
+        credentials = path.client.sess.get_credentials()
+        aws_access_key = credentials.access_key
+        aws_secret_key = credentials.secret_key
+        token = credentials.token
+
+        s3 = s3fs.S3FileSystem(key=aws_access_key, secret=aws_secret_key, token=token)
+        store = s3fs.S3Map(root=path.as_uri(), s3=s3, check=False)
+    elif isinstance(path, cloudpathlib.AzureBlobPath):
+        from dotenv import load_dotenv
+
+        load_dotenv()
+        import adlfs
+
+        fs = adlfs.AzureBlobFileSystem(
+            account_name=path.client.service_client.account_name,
+            connection_string=None,
+            account_key=None,
+            # sas_token=path.client.service_client.url.split('?')[1])
+            sas_token=os.getenv("AZURE_SAS_CREDENTIAL"),
+        )
+        store = fs.get_mapper(path.as_uri())
+    else:
+        raise NotImplementedError("Cloud provider not supported.")
+
+    if "chunks" not in kwargs.keys():
+        kwargs["chunks"] = "auto"
+    if "consolidated" not in kwargs.keys():
+        kwargs["consolidated"] = True
+    dc = xarray.open_zarr(store, **kwargs)
+
+    return dc
 
 
 def __delete_local_directory(path: str):

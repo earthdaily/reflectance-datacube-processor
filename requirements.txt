@@ -35,3 +35,5 @@ boto3
 azure-storage-blob
 byoa==0.1.0a2
 mangum
+cloudpathlib
+adlfs
