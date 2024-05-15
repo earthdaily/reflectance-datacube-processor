@@ -32,7 +32,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 				<p>Introductory material must contain use cases for the software.</p>
 			</td>
 			<td width="546">
-				<p>This is covered in the <a href="Reflectance_processor.html">Reflectance Datacube processor</a> section.</p>
+				<p>This is covered in the <a href="../Reflectance_processor.html">Reflectance Datacube processor</a> section.</p>
 			</td>
 		</tr>
 		<tr>
