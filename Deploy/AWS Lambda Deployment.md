@@ -31,14 +31,11 @@ Before configuring the deployment workflow, set the deployment variables in the 
 | AWS_REGION | This is the AWS region you are targeting for deployment  |
 | CONTAINER_NAME | Name of the container |
 | ECR_REPOSITORY  | Container registry to publish your image  |
-| ECS_CLUSTER  | ECS Cluster for container deployment   |
-| ECS_SERVICE  | ECS Service for container deployment  |
-| ECS_TASK_DEFINITION  | ECS Task definition for container deployment   |
 | EDS_API_URL | Base URL to access EarthData Store  |
 | EDS_AUTH_URL |  Base authentication URL to access EarthData Store |
 | AWS_ACCESS_KEY_ID  |  S3 Access key to push datacube assets |
 | AWS_SECRET_ACCESS_KEY |  S3 Secret Access key to push datacube assets |
-| DEPLOY_LAMBDA |  Boolean value to enable Lambda deployment (deplyoed to Lambda if True) |
+| DEPLOY_LAMBDA |  Boolean value to enable Lambda deployment (deployed to Lambda if True) |
 
 ## Deployment workflow
 Whithin the Github repository, in the '.github/workflows, you will find a file AWS_deploy.yml
@@ -52,7 +49,7 @@ Edit the file by adding the branch name you want to deploy.
 
 On every commit change, workflow is triggered and executed. Go to the actions sections of the repository and you should see the execution steps and status.
 
-![Workflow execution](../images/workflow_execution.png "Workflow execution").
+![Workflow execution](../images/workflow_execution_lambda.png "Workflow execution").
 
 ## More resources
 
