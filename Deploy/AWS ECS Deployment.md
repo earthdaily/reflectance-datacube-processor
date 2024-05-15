@@ -19,6 +19,9 @@ Please clone the Reflectance Datacube Processor on your Github account.
 
 Detailed process is available [here](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
 
+## Ressources creation
+
+Please refer to [here](./Provisioning.html) to create the ressources needed and use the option 2: ECS.
 
 ## Github repo configuration
 Before configuring the deployment workflow, set the deployment variables in the GitHub repository secrets for actions. The workflow requires these variables in order to successfully push the image.
@@ -35,10 +38,10 @@ Before configuring the deployment workflow, set the deployment variables in the 
 | ECS_SERVICE  | ECS Service for container deployment  |
 | ECS_TASK_DEFINITION  | ECS Task definition for container deployment   |
 | EDS_API_URL | Base URL to access EarthData Store  |
-| EDS_AUTH_URL |  Base authentication URL to access EarthData Store |
+| EDS_AUTH_URL |  Base authentication URL to access EarthData Store (information regarding this information [here](./Provisioning.html#earthdaily-authentication)) |
 | AWS_ACCESS_KEY_ID  |  S3 Access key to push datacube assets |
 | AWS_SECRET_ACCESS_KEY |  S3 Secret Access key to push datacube assets |
-| DEPLOY_LAMBDA |  Boolean value to enable Lambda deployment (deplyoed to ECS if False) |
+| DEPLOY_LAMBDA |  Boolean value to enable Lambda deployment (deplyoed to ECS if false) |
 
 ## Deployment workflow
 Whithin the Github repository, in the '.github/workflows, you will find a file AWS_deploy.yml
@@ -139,14 +142,6 @@ jobs:
           aws lambda update-function-code \
           --function-name $LAMBDA_FUNCTION \
           --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
-      # - name: Update lambda funtion  configuration
-      #   id: lambda-function-config
-      #   if: ${{ env.DEPLOY_LAMBDA == 'true' }}
-      #   run: |
-      #     aws lambda update-function-configuration \
-      #     --function-name $LAMBDA_FUNCTION \
-      #      --environment "Variables={EDS_API_URL=${{ env.EDS_API_URL }},EDS_AUTH_URL=${{ env.EDS_AUTH_URL }}}"
 
       - name: Build, tag, and push image Task to Amazon ECR
         id: build-image
