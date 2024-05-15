@@ -32,7 +32,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 				<p>Introductory material must contain use cases for the software.</p>
 			</td>
 			<td width="546">
-				<p>This is covered in the <a href="Reflectance_processor.html">Reflectance Datacube processor</a> section.</p>
+				<p>This is covered in the <a href="../Reflectance_processor.html">Reflectance Datacube processor</a> section.</p>
 			</td>
 		</tr>
 		<tr>
@@ -43,7 +43,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 				<p>Introductory material contains an overview of a typical customer deployment, including lists of all resources that are set up when the deployment is complete.</p>
 			</td>
 			<td width="546">
-				<p>This is covered in the <a href="Reflectance_processor.html">Reflectance Datacube processor</a> section on the architecture diagram.</p>
+				<p>This is covered in the <a href="../Reflectance_processor.html">Reflectance Datacube processor</a> section on the architecture diagram.</p>
 			</td>
 		</tr>
 		<tr>
@@ -65,7 +65,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 				<p>Introductory material contains the expected amount of time to complete the deployment.</p>
 			</td>
 			<td width="546">
-				<p>Code packaging and publication to ECS is usually completed in less than 5 min. More info available in the <a href="Deploy/AWS%20ECS%20Deployment.html">ECS deployment section</a></p>
+				<p>Code packaging and publication to ECS is usually completed in less than 5 min. More info available in the <a href="AWS%20ECS%20Deployment.html">ECS deployment section</a></p>
 			</td>
 		</tr>
 		<tr>
@@ -105,7 +105,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>All technical prerequisites and requirements to complete the deployment process are listed (e.g. required OS, database type and storage requirements).</p>
 </td>
 <td width="546">
-<p>This is covered in the <a href="Prerequisite.html">Prerequisites</a> section.</p>
+<p>This is covered in the <a href="../Prerequisite.html">Prerequisites</a> section.</p>
 </td>
 </tr>
 <tr>
@@ -116,7 +116,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>The deployment guide lists all prerequisite skills or specialized knowledge (for example, familiarity with AWS, specific AWS services, or a scripting or programming language).</p>
 </td>
 <td width="546">
-<p>This is covered in the <a href="Prerequisite.html">Prerequisites</a> section.</p>
+<p>This is covered in the <a href="../Prerequisite.html">Prerequisites</a> section.</p>
 </td>
 </tr>
 <tr>
@@ -156,7 +156,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>Architecture diagrams must include all AWS services and resources deployed by the solution and illustrate how the services and resources connect with each other in a typical customer environment.</p>
 </td>
 <td width="546">
-<p>This is covered in the <a href="Reflectance_processor.html#architecture">Reflectance Datacube processor section</a></p>
+<p>This is covered in the <a href="../Reflectance_processor.html#architecture">Reflectance Datacube processor section</a></p>
 </td>
 </tr>
 <tr>
@@ -167,7 +167,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>Architecture diagrams use official AWS Architecture Icons.</p>
 </td>
 <td width="546">
-<p><a href="Reflectance_processor.html#architecture">Reflectance Datacube processor section</a> includes a diagram with official AWS Icon coming from <a href="https://aws.amazon.com/fr/architecture/icons/">here</a></p>
+<p><a href="../Reflectance_processor.html#architecture">Reflectance Datacube processor section</a> includes a diagram with official AWS Icon coming from <a href="https://aws.amazon.com/fr/architecture/icons/">here</a></p>
 </td>
 </tr>
 <tr>
@@ -178,7 +178,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>Network diagrams demonstrate virtual private clouds (VPCs) and subnets.</p>
 </td>
 <td width="546">
-<p><a href="https://earthdailyagro-my.sharepoint.com/personal/vincent_lelandais_earthdaily_com/Documents/Reflectance_processor.html#architecture">Reflectance Datacube processor section</a> includes a diagram with VPC</p>
+<p><a href="../Reflectance_processor.html#architecture">Reflectance Datacube processor section</a> includes a diagram with VPC</p>
 </td>
 </tr>
 <tr>
@@ -189,7 +189,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>Architecture diagrams show integration points, including third-party assets/APIs and on-premises/hybrid assets.</p>
 </td>
 <td width="546">
-<p><a href="https://earthdailyagro-my.sharepoint.com/personal/vincent_lelandais_earthdaily_com/Documents/Reflectance_processor.html#architecture">Reflectance Datacube processor section</a> includes a diagram with link to EarthPlatform (third party data infrastructure running on AWS)</p>
+<p><a href="../Reflectance_processor.html#architecture">Reflectance Datacube processor section</a> includes a diagram with link to EarthPlatform (third party data infrastructure running on AWS)</p>
 </td>
 </tr>
 </tbody>
@@ -219,7 +219,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>The application does not require the use of AWS account root privileges for deployment or operation.</p>
 </td>
 <td width="546">
-<p>As detailed in the <a href="Prerequisite.html#aws">prerequisites section</a>, access to AWS ressoures is based on OIDC with specific role and specific trust relationship.</p>
+<p>As detailed in the <a href="../Prerequisite.html#aws">prerequisites section</a>, access to AWS ressoures is based on OIDC with specific role and specific trust relationship.</p>
 </td>
 </tr>
 <tr>
@@ -230,7 +230,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>The deployment guide provides prescriptive guidance on following the policy of least privilege for all access granted as part of the deployment.</p>
 </td>
 <td width="546">
-<p>As defined in the <a href="Provisioning.html#configure-openid-connect">provisioning section</a>, deployment and execution is based on a specific role enforcing the least privilege principle.</p>
+<p>As defined in the <a href="../Provisioning.html#configure-openid-connect">provisioning section</a>, deployment and execution is based on a specific role enforcing the least privilege principle.</p>
 </td>
 </tr>
 <tr>
@@ -252,7 +252,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>The deployment guide describes the purpose of each AWS Identity and Access Management (IAM) role and IAM policy the user is instructed to create.</p>
 </td>
 <td width="546">
-<p>The deployment guide includes a specific chapter on <a href="Provisioning.html#configure-openid-connect">IAM configuration and OIDC setup.</a></p>
+<p>The deployment guide includes a specific chapter on <a href="../Provisioning.html#configure-openid-connect">IAM configuration and OIDC setup.</a></p>
 </td>
 </tr>
 <tr>
@@ -263,7 +263,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>The deployment guide provides clear instruction on maintaining any stored secrets such as database credentials stored in AWS Secrets Manager.</p>
 </td>
 <td width="546">
-<p>The deployment guide is not leveraging AWS Secrets Manager, but Github repository secrets as detailed <a href="Deploy/AWS%20ECS%20Deployment.html#github-repo-configuration">here</a>.</p>
+<p>The deployment guide is not leveraging AWS Secrets Manager, but Github repository secrets as detailed <a href="AWS%20ECS%20Deployment.html#github-repo-configuration">here</a>.</p>
 </td>
 </tr>
 <tr>
@@ -336,7 +336,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>The deployment guide includes a list of billable services and guidance on whether each service is mandatory or optional.</p>
 </td>
 <td width="546">
-<p><a href="6.Lifecycle_management.html#costs">This is detailed in the lifecycle management sections.</a></p>
+<p><a href="../Lifecycle_management.html#costs">This is detailed in the lifecycle management sections.</a></p>
 </td>
 </tr>
 <tr>
@@ -347,7 +347,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>The deployment guide includes the cost model and licensing costs.</p>
 </td>
 <td width="546">
-<p><a href=".Lifecycle_management.html#costs">This is detailed in the lifecycle management sections.</a></p>
+<p><a href="../Lifecycle_management.html#costs">This is detailed in the lifecycle management sections.</a></p>
 </td>
 </tr>
 </tbody>
@@ -377,7 +377,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>The deployment guide provides step-by-step instructions for deploying the workload on AWS according to the typical deployment architecture.</p>
 </td>
 <td width="280">
-<p>The deployment guide includes step by step procedure to <a href="Provisioning.html">provision AWS resources</a> and a <a href="Deploy/AWS%20ECS%20Deployment.html">script to automatically deploy assets to AWS</a></p>
+<p>The deployment guide includes step by step procedure to <a href="../Provisioning.html">provision AWS resources</a> and a <a href="AWS%20ECS%20Deployment.html">script to automatically deploy assets to AWS</a></p>
 </td>
 </tr>
 <tr>
@@ -388,7 +388,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>The deployment guide contains prescriptive guidance for testing and troubleshooting.</p>
 </td>
 <td width="280">
-<p>The deployment guide contains a <a href="User%20guide.html">user guide section.</a></p>
+<p>The deployment guide contains a <a href="../User%20guide.html">user guide section.</a></p>
 </td>
 </tr>
 </tbody>
@@ -417,7 +417,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>The deployment guide provides step-by-step instructions for deploying the workload on AWS according to the typical deployment architecture.</p>
 </td>
 <td width="280">
-<p>The deployment guide includes step by step procedure to <a href="Provisioning.html">provision AWS resources</a> and a <a href="Deploy/AWS%20ECS%20Deployment.html">script to automatically deploy assets to AWS</a></p>
+<p>The deployment guide includes step by step procedure to <a href="../Provisioning.html">provision AWS resources</a> and a <a href="AWS%20ECS%20Deployment.html">script to automatically deploy assets to AWS</a></p>
 </td>
 </tr>
 <tr>
@@ -428,7 +428,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>The deployment guide contains prescriptive guidance for testing and troubleshooting.</p>
 </td>
 <td width="280">
-<p>The deployment guide contains a <a href="User%20guide.html">user guide section.</a></p>
+<p>The deployment guide contains a <a href="../User%20guide.html">user guide section.</a></p>
 </td>
 </tr>
 </tbody>
@@ -457,7 +457,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>The deployment guide provides step-by-step instructions for how to assess and monitor the health and proper function of the application.</p>
 </td>
 <td width="546">
-<p>This is detailed in the <a href="Lifecycle_management.html#backup-and-recovery">lifecycle management</a> section.</p>
+<p>This is detailed in the <a href="../Lifecycle_management.html#backup-and-recovery">lifecycle management</a> section.</p>
 </td>
 </tr>
 </tbody>
@@ -486,7 +486,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>Identify the data stores and the configurations to be backed up. If any of the data stores are proprietary, provide step-by-step instructions for backup and recovery.</p>
 </td>
 <td width="546">
-<p>This is detailed in the <a href="Lifecycle_management.html#backup-and-recovery">lifecycle management</a> section.</p>
+<p>This is detailed in the <a href="../Lifecycle_management.html#backup-and-recovery">lifecycle management</a> section.</p>
 </td>
 </tr>
 </tbody>
@@ -548,7 +548,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>The deployment guide provides prescriptive guidance on managing AWS service limits.</p>
 </td>
 <td width="546">
-<p>&nbsp;This is detailed in the <a href="Lifecycle_management.html#backup-and-recovery">lifecycle management</a> section.</p>
+<p>&nbsp;This is detailed in the <a href="../Lifecycle_management.html#backup-and-recovery">lifecycle management</a> section.</p>
 </td>
 </tr>
 </tbody>
@@ -628,7 +628,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>The deployment guide provides details on how to receive support.</p>
 </td>
 <td width="546">
-<p>User support is described <a href="User%20guide.html#support">here</a></p>
+<p>User support is described <a href="../User%20guide.html#support">here</a></p>
 </td>
 </tr>
 <tr>
