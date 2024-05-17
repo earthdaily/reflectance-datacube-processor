@@ -371,26 +371,16 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 </tr>
 <tr>
 <td width="84">
-<p>DAS-001</p>
+<p>SIZ-001</p>
 </td>
 <td width="260">
-<p>The deployment guide provides step-by-step instructions for deploying the workload on AWS according to the typical deployment architecture.</p>
+<p>Either provide scripts to provision required resources or provide guidance for type and size selection for resources.</p>
 </td>
 <td width="280">
-<p>The deployment guide includes step by step procedure to <a href="../Provisioning.html">provision AWS resources</a> and a <a href="AWS%20ECS%20Deployment.html">script to automatically deploy assets to AWS</a></p>
+<p>The deployment guide includes step by step procedure to <a href="../Provisioning.html">provision AWS resources</a> and a <a href="../Provisioning.html#automatic-setup-using-terraform-script">script to automatically deploy assets to AWS</a></p>
 </td>
 </tr>
-<tr>
-<td width="84">
-<p>DAS-004</p>
-</td>
-<td width="260">
-<p>The deployment guide contains prescriptive guidance for testing and troubleshooting.</p>
-</td>
-<td width="280">
-<p>The deployment guide contains a <a href="../User%20guide.html">user guide section.</a></p>
-</td>
-</tr>
+
 </tbody>
 </table>
 
