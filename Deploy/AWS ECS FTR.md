@@ -567,7 +567,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>The deployment guide provides step-by-step instructions on handling fault conditions.</p>
 </td>
 <td width="546">
-<p>&nbsp;</p>
+<p>This is detailed <a href="../Lifecycle_management.html#emergency-maintenance">lifecycle management</a> section.</p>
 </td>
 </tr>
 <tr>
@@ -578,7 +578,7 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 <p>The deployment guide provides step-by-step instructions on how to recover the software.</p>
 </td>
 <td width="546">
-<p>&nbsp;</p>
+<p>This is detailed <a href="../Lifecycle_management.html#backup-and-recovery">lifecycle management</a> section.</p>
 </td>
 </tr>
 </tbody>
@@ -597,17 +597,6 @@ This is the summary of the Reflectance Processor FTR for ECSreview based on [AWS
 </td>
 <td width="546">
 <p><strong>Content</strong></p>
-</td>
-</tr>
-<tr>
-<td width="96">
-<p><strong>&nbsp;</strong></p>
-</td>
-<td width="528">
-<p><strong>&nbsp;</strong></p>
-</td>
-<td width="546">
-<p><strong>&nbsp;</strong></p>
 </td>
 </tr>
 <tr>
