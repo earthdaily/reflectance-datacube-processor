@@ -143,19 +143,25 @@ docker tag processordemo:latest 489065051964.dkr.ecr.us-east-1.amazonaws.com/pro
 docker push 489065051964.dkr.ecr.us-east-1.amazonaws.com/processordemo:latest
 ```
 
-### Option 1: Lambda
+## Option 1: Lambda
 
 In the AWS console and select Lambda and Create a function. 
 ![Create Lambda](images/Lambda.png "Lambda Function creation")
+
+Please select image previously loaded.
+
 ![Create Lambda](images/Lambda_select_image.png "Lambda Function creation")
-In the advanced setting, Enable function URL
+
+Within the advanced setting section, select *Enable function URL*
 ![Create Lambda](images/Lambda_function.png "Lambda Function creation")
 
 Then in the AWS console and select API Gateway and Create a REST API.
+
 ![Create API](images/Api.png "Lambda Function creation")
 
 Once done, create a method.
 ![Create Method](images/API_Method.png "Lambda Function creation")
+
 ![Create Method2](images/API_Method2.png "Lambda Function creation")
 
 Once done, create a ressource.
@@ -168,9 +174,9 @@ Once done, you can deploy the API Gateway.
 >❗Note: keep the name of the stage it will be used if you use the API Gateway URL instead of the Function URL.
 
 
-### Option 2: ECS
+## Option 2: ECS
 
-#### Create an ECS Cluster
+### Create an ECS Cluster
 
 Sign in to your AWS console and select Elastic Container Service and create a new Cluster.
 
@@ -178,7 +184,7 @@ An ECS cluster is a grouping of EC2 instances or AWS Fargate tasks on which we�
 
 ![Create ECS Cluster](images/ECS_create_cluster.png "ECS Cluster")
 
-#### Create a task definition
+### Create a task definition
 
 A task definition defines the containers and resources required for the application to run. 
 
@@ -188,12 +194,12 @@ The name given will be needed later in the GitHub Actions workflow so keep it in
 
 Another important note is to give the correct ports (I used port 8000) that are required for the application.
 
-#### Create a service 
+### Create a service 
 Within ECS, start by navigating to the clusters tab in ECS and create a service using the task definition. For compute configuration, choose “Launch type” and leave the default option for Fargate. For the deployment configuration, choose “Service” and then, choose the task definition with the latest revision. Then, navigate to the Networking section and ensure public IP is chosen (You can modify this later if you have specific networking requirements). Finally, create the service.
 
 ![Create ECS Service](images/ECS_create_service.png "ECS Service creation")
 
-#### VPC and Network configuration for external access
+### VPC and Network configuration for external access
 
 A default VPC is automatically provisionned on every AWS account. It comes with a public subnet in each Availability Zone, an internet gateway, and settings to enable DNS resolution. For more information please see [here](https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html).
 
@@ -203,7 +209,7 @@ This VPC also comes with default Security group. Please make sure to have the fo
 
 ![Security group outbound](images/VPC_securitygroup_configuration_outbound.png "Security group outbound")
 
-#### CloudWatch
+### CloudWatch
 In other to monitor and troubleshoot any issue with your processor, it is recommended to enabled [Container Insight]() while creating your ECS Cluster. 
 
 ![Container Insight](images/ConteinerInsigth_configuration.png "Container Insight")
@@ -216,6 +222,8 @@ For more information please see [here](https://docs.aws.amazon.com/AmazonECS/lat
 This script will create the AWS ressources
 
 ### Option 1: Lambda deployment.
+
+Here is the script for Lambda resource provisioning, it is also available in the Github repository.
 
 ```tf
 terraform {
@@ -451,4 +459,9 @@ In order to keep, cost under control, we strongly encourage to implement service
 
 ## More resources 
 
-To learn the basic concepts of how GitHub uses OpenID Connect (OIDC), and its architecture and benefits, see "About security hardening with OpenID Connect."
+The following link might provide interesting information:
+- [Security hardening with OpenbID Connect](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect) 
+- [Self-Service Provisioning of Terraform]https://aws.amazon.com/fr/blogs/aws/new-self-service-provisioning-of-terraform-open-source-configurations-with-aws-service-catalog/)
+- [AWS Provisioning with Terraform]https://medium.com/avmconsulting-blog/provisioning-aws-infrastructure-with-terraform-6ab885fb3fcb)
+
+

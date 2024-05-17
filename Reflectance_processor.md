@@ -57,4 +57,4 @@ This is the reference architecture for a deployment on ECS.
 
 This is the reference architecture for a deployment on Lambda. 
 
-![Lambda Architecture](images/lambda_Architecture.png "Lambda Architecture")
+![Lambda Architecture](images/Lambda_architecture.png "Lambda Architecture")

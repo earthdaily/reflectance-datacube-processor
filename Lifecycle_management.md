@@ -11,7 +11,7 @@ nav_order: 8
 
 ### Run ECR image locally
 
-Please make sure to have docker and Python installed locally (see [Pre requisites](https://earthdaily.github.io/reflectance-datacube-processor/2.%20Prerequisite.html))
+Please make sure to have docker and Python installed locally (see [Prerequisites](./Prerequisite.html)
 
 Open terminal and get [AWS CLI](https://pypi.org/project/awscli/)
 
