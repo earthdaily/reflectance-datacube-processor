@@ -98,7 +98,9 @@ If you need to restore service leveraging a previous task definition, please go 
 ## Backup and recovery
 For backup,please be sure to keep the various images of your service in the configured ECR repository. We recommend that you tag your images using the git SHA for the git commit that was used to build the image.
 
-ECR repo will enable restoration of any version of your service.
+ECR repo will enable restoration of any version of your service. 
+
+You can also get source code and redeploy a service from the [main repository](https://github.com/earthdaily/reflectance-datacube-processor).
 
 ## Costs
 
@@ -121,7 +123,9 @@ To manage running cost, you can define service limits leveraging [AWS service qu
 For any additional information, please contact our [support team](Api.Support@geosys.com)
 
 The following link might provide interesting information:
-- ...
+- [Earthdaily Github](https://github.com/earthdaily) provides additional content on data and analytics
+- [Earthdaily constellation introduction](https://earthdaily.com/constellation/)
+
 
 
 

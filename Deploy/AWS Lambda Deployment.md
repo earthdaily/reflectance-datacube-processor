@@ -22,7 +22,7 @@ Detailed process is available [here](https://docs.github.com/en/repositories/cre
 
 ## Ressources creation
 
-Please refer to [here](./Provisioning.html) to create the ressources needed and use the option 1: Lambda.
+Please refer to [here](../Provisioning.html#option-1-lambda) to create the ressources needed and use the option 1: Lambda.
 
 ## Github repo configuration
 Before configuring the deployment workflow, set the deployment variables in the GitHub repository secrets for actions. The workflow requires these variables in order to successfully push the image.
@@ -36,7 +36,7 @@ Before configuring the deployment workflow, set the deployment variables in the 
 | CONTAINER_NAME | Name of the container |
 | ECR_REPOSITORY  | Container registry to publish your image  |
 | EDS_API_URL | Base URL to access EarthData Store  |
-| EDS_AUTH_URL |  Base authentication URL to access EarthData Store (information regarding this information [here](./Provisioning.html#earthdaily-authentication)) |
+| EDS_AUTH_URL |  Base authentication URL to access EarthData Store (information regarding this information [here](../Prerequisite.html) |
 | AWS_ACCESS_KEY_ID  |  S3 Access key to push datacube assets |
 | AWS_SECRET_ACCESS_KEY |  S3 Secret Access key to push datacube assets |
 | DEPLOY_LAMBDA |  Boolean value to enable Lambda deployment (deployed to Lambda if true) |
