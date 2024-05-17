@@ -9,9 +9,9 @@ nav_order: 2
 
 The following sections will guide you through the steps to setup a GitAction workflow to deploy the Reflectance Datacube processor on AWS ECS.
 
-Before starting the deployment configuration, please make sure to check the [prerequisite section](Prerequisite.html).
+Before starting the deployment configuration, please make sure to check the [prerequisite section](../Prerequisite.html).
 
-Infrastructure setup is detailed on the [provisioning section](Provisioning.html).
+Infrastructure setup is detailed on the [provisioning section](../Provisioning.html).
 
 ## Clone repository
 
@@ -21,7 +21,7 @@ Detailed process is available [here](https://docs.github.com/en/repositories/cre
 
 ## Ressources creation
 
-Please refer to [here](./Provisioning.html) to create the ressources needed and use the option 2: ECS.
+Please refer to [here](../Provisioning.html#option-2-ecs) to create the ressources needed and use the option 2: ECS.
 
 ## Github repo configuration
 Before configuring the deployment workflow, set the deployment variables in the GitHub repository secrets for actions. The workflow requires these variables in order to successfully push the image.
@@ -38,10 +38,10 @@ Before configuring the deployment workflow, set the deployment variables in the 
 | ECS_SERVICE  | ECS Service for container deployment  |
 | ECS_TASK_DEFINITION  | ECS Task definition for container deployment   |
 | EDS_API_URL | Base URL to access EarthData Store  |
-| EDS_AUTH_URL |  Base authentication URL to access EarthData Store (information regarding this information [here](./Provisioning.html#earthdaily-authentication)) |
+| EDS_AUTH_URL |  Base authentication URL to access EarthData Store (information regarding this information [here](./Provisioning.html) |
 | AWS_ACCESS_KEY_ID  |  S3 Access key to push datacube assets |
 | AWS_SECRET_ACCESS_KEY |  S3 Secret Access key to push datacube assets |
-| DEPLOY_LAMBDA |  Boolean value to enable Lambda deployment (deplyoed to ECS if false) |
+| DEPLOY_LAMBDA |  Boolean value to enable Lambda deployment (deployed to ECS if false) |
 
 ## Deployment workflow
 Whithin the Github repository, in the '.github/workflows, you will find a file AWS_deploy.yml
