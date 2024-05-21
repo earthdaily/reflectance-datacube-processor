@@ -33,7 +33,7 @@ Before configuring the deployment workflow, set the deployment variables in the 
 | Secret  | Description   |
 |---|---|
 | AWS_REGION | This is the AWS region you are targeting for deployment  |
-| CONTAINER_NAME | Name of the container |
+| CONTAINER_NAME | Name of the task container |
 | ECR_REPOSITORY  | Container registry to publish your image  |
 | EDS_API_URL | Base URL to access EarthData Store  |
 | EDS_AUTH_URL |  Base authentication URL to access EarthData Store (information regarding this information [here](../Prerequisite.html) |

@@ -111,6 +111,68 @@ First sign in to your AWS console and select Elastic Container Register and Crea
 
 ![Create ECR repository](images/ECR_create_repo.png "ECR Repository creation")
 
+You can also use the Terraform script below:
+```tf
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "5.48.0"
+    }
+  }
+}
+
+############################## activate and specify where your config file is stored for sso connection ##############################
+/*
+provider "aws" {
+  region              = "us-east-1" # Specify your desired AWS region
+  shared_config_files = ["C:/Users/xxx/.aws/config"]   
+  profile             = "PowerUserAccess-dev" # Specify the profile name from your AWS credentials file
+}
+*/
+
+
+############################## activate if you use secret id and secret key ##############################
+provider "aws" {
+  region              = "us-east-1" # Specify your desired AWS region
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_key
+}
+
+variable "aws_access_key" {
+  description = "AWS Access Key"
+  type        = string
+}
+
+variable "aws_secret_key" {
+  description = "AWS Secret Key"
+  type        = string
+}
+
+
+
+variable "ecr_repository_name" {
+  description = "Name of the ECR repository"
+  default     = "ecr-p3-aws-github"
+}
+
+
+# Create ECR repository
+resource "aws_ecr_repository" "create_repo" {
+  name                 = var.ecr_repository_name
+  image_tag_mutability = "MUTABLE" # Ensure that existing images cannot be overwritten
+  image_scanning_configuration {
+    scan_on_push = false # Disable image scanning
+  }
+
+  # Repository is private by default
+}
+```
+>❗Note: if you are using a secret_id/secret_key as authentification method, please use the file aws_credentials.tfvars (in the terraform folder). Below the command to apply terraform script using credentials file:
+
+```cmd
+terraform apply -var-file="aws_credentials.tfvars"
+```
 
 >💡You can also use AWS CLI please see [documentation](https://docs.aws.amazon.com/cli/latest/reference/ecr/create-repository.html).
 
@@ -122,7 +184,7 @@ Use the following steps to authenticate and push an image to your repository. Fo
     Use the AWS CLI:
 
 ```yaml
-aws ecr get-login-password --region **us-east-1** | docker login --username AWS --password-stdin 489065051964.dkr.ecr.us-east-1.amazonaws.com
+aws ecr get-login-password --region **us-east-1** | docker login --username AWS --password-stdin xxx.dkr.ecr.us-east-1.amazonaws.com
 ```
 
 >Note: If you receive an error using the AWS CLI, make sure that you have the latest version of the AWS CLI and Docker installed.
@@ -134,13 +196,13 @@ docker build -t processordemo .
   3. After the build completes, tag your image so you can push the image to this repository:
 
 ```yaml
-docker tag processordemo:latest 489065051964.dkr.ecr.us-east-1.amazonaws.com/processordemo:latest
+docker tag processordemo:latest xxx.dkr.ecr.us-east-1.amazonaws.com/processordemo:latest
 ```
 
   4. Run the following command to push this image to your newly created AWS repository:
 
 ```yaml
-docker push 489065051964.dkr.ecr.us-east-1.amazonaws.com/processordemo:latest
+docker push xxx.dkr.ecr.us-east-1.amazonaws.com/processordemo:latest
 ```
 
 ## Option 1: Lambda
@@ -154,25 +216,6 @@ Please select image previously loaded.
 
 Within the advanced setting section, select *Enable function URL*
 ![Create Lambda](images/Lambda_function.png "Lambda Function creation")
-
-Then in the AWS console and select API Gateway and Create a REST API.
-
-![Create API](images/Api.png "Lambda Function creation")
-
-Once done, create a method.
-![Create Method](images/API_Method.png "Lambda Function creation")
-
-![Create Method2](images/API_Method2.png "Lambda Function creation")
-
-Once done, create a ressource.
-![Create ressource](images/API_ressource.png "Lambda Function creation")
-![Create ressource2](images/API_ressource2.png "Lambda Function creation")
-
-Once done, you can deploy the API Gateway.
-![Deploy](images/API_deploy.png "Lambda Function creation")
-
->❗Note: keep the name of the stage it will be used if you use the API Gateway URL instead of the Function URL.
-
 
 ## Option 2: ECS
 
@@ -235,13 +278,35 @@ terraform {
   }
 }
 
-########## specify where your config file is stored for sso connection ##########
+############################## activate and specify where your config file is stored for sso connection ##############################
+/*
 provider "aws" {
-  region              = "us-east-2" # Specify your desired AWS region
+  region              = "us-east-1" # Specify your desired AWS region
   shared_config_files = ["C:/Users/xxx/.aws/config"]   
   profile             = "PowerUserAccess-dev" # Specify the profile name from your AWS credentials file
 }
+*/
 
+
+############################## activate if you use secret id and secret key ##############################
+provider "aws" {
+  region              = "us-east-1" # Specify your desired AWS region
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_key
+}
+
+variable "aws_access_key" {
+  description = "AWS Access Key"
+  type        = string
+}
+
+variable "aws_secret_key" {
+  description = "AWS Secret Key"
+  type        = string
+}
+
+
+############################## specify your repository name ##############################
 variable "ecr_repository_name" {
   description = "Name of the ECR repository"
   default     = "ecr-p3-aws-github"
@@ -252,43 +317,31 @@ variable "lambda_function_name" {
   default     = "lambda-p3-aws-github"
 }
 
-variable "api_gateway_name" {
-  description = "Name of the API Gateway"
-  default     = "api-p3-aws-github"
-}
-
-########## specify your account # ##########
+############################## specify your account # ##############################
 variable "account_number" {
   description = "# AWS account"
-  default     = "xxxxxx"
+  default     = "xxx"
 }
 
 variable "region_east" {
   description = "AWS region"
-  default     = "us-east-2"
+  default     = "us-east-1"
 }
 
-# Create ECR repository
-resource "aws_ecr_repository" "create_repo" {
-  name                 = var.ecr_repository_name
-  image_tag_mutability = "MUTABLE" # Ensure that existing images cannot be overwritten
-  image_scanning_configuration {
-    scan_on_push = false # Disable image scanning
-  }
 
-  # Repository is private by default
-}
-
-########## specify the name of the ECR docker registry image ##########
+############################## specify the name of the ECR docker registry image ##############################
 # Create Lambda function
 resource "aws_lambda_function" "create_lambda" {
   function_name = var.lambda_function_name
   package_type  = "Image"
-  image_uri     = "${var.account_number}.dkr.ecr.$(var.region_east).amazonaws.com/${var.ecr_repository_name}:latest"
+  image_uri     = "${var.account_number}.dkr.ecr.${var.region_east}.amazonaws.com/${var.ecr_repository_name}:latest"
   role          = aws_iam_role.lambda_role.arn
+  memory_size   = 512
+  timeout       = 120
 }
 
 
+############################## activate if the role doesn't exist ##############################
 resource "aws_iam_role" "lambda_role" {
   name = "lambda-role"
 
@@ -303,33 +356,9 @@ resource "aws_iam_role" "lambda_role" {
     }]
   })
 
-  // Attach policies including AWSLambda_FullAccess
-  inline_policy {
-    name = "lambda-policy"
-    policy = jsonencode({
-      Version = "2012-10-17",
-      Statement = [
-        {
-          Effect    = "Allow",
-          Action    = "lambda:*",
-          Resource  = "*"
-        },
-        {
-          Effect    = "Allow",
-          Action    = "iam:PassRole",
-          Resource  = "*",
-          Condition = {
-            StringEquals = {
-              "iam:PassedToService" = "lambda.amazonaws.com"
-            }
-          }
-        }
-      ]
-    })
-  }
-
-  // Attach AWSLambda_FullAccess managed policy
-  managed_policy_arns = ["arn:aws:iam::aws:policy/AWSLambda_FullAccess"]
+############################## upddate arn for the AWSLambdaBasicExecutionRole policy ##############################
+  // Attach AWSLambdaBasicExecutionRole managed policy
+  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"]
 }
 
 
@@ -341,7 +370,7 @@ resource "aws_lambda_function_url" "test_latest" {
 
 # IAM policy document for ECR access with conditions
 resource "aws_ecr_repository_policy" "ecr_policy_attachment" {
-  repository = aws_ecr_repository.create_repo.name
+  repository = var.ecr_repository_name
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -367,90 +396,279 @@ resource "aws_ecr_repository_policy" "ecr_policy_attachment" {
     ]
   })
 }
+```
+>❗Note: if you are using a secret_id/secret_key as authentification method, please use the file aws_credentials.tfvars (in the terraform folder). Below the command to apply terraform script using credentials file:
 
+```cmd
+terraform apply -var-file="aws_credentials.tfvars"
+```
 
-// API Gateway
-resource "aws_api_gateway_rest_api" "create_api" {
-  name = var.api_gateway_name
+### Option 2: ECS deployment.
 
-  endpoint_configuration {
-    types = ["REGIONAL"]
+Here is the script for Lambda resource provisioning, it is also available in the Github repository.
+
+```tf
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "5.48.0"
+    }
   }
 }
 
-// Root Resource
-resource "aws_api_gateway_resource" "root" {
-  rest_api_id = aws_api_gateway_rest_api.create_api.id
-  parent_id   = aws_api_gateway_rest_api.create_api.root_resource_id
-  path_part   = "{proxy+}"
+############################## activate and specify where your config file is stored for sso connection ##############################
+/*
+provider "aws" {
+  region              = "us-east-1" # Specify your desired AWS region
+  shared_config_files = ["C:/Users/xxx/.aws/config"]   
+  profile             = "PowerUserAccess-dev" # Specify the profile name from your AWS credentials file
+}
+*/
+
+
+############################## activate if you use secret id and secret key ##############################
+provider "aws" {
+  region              = "us-east-1" # Specify your desired AWS region
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_key
 }
 
-// ANY Method for Root Resource
-resource "aws_api_gateway_method" "any_method_root" {
-  rest_api_id = aws_api_gateway_rest_api.create_api.id
-  resource_id = aws_api_gateway_rest_api.create_api.root_resource_id
-  http_method = "ANY"
-  authorization = "NONE"
+variable "aws_access_key" {
+  description = "AWS Access Key"
+  type        = string
 }
 
-// ANY Method for Proxy Resource
-resource "aws_api_gateway_method" "any_method_proxy" {
-  rest_api_id = aws_api_gateway_rest_api.create_api.id
-  resource_id = aws_api_gateway_resource.root.id
-  http_method = "ANY"
-  authorization = "NONE"
+variable "aws_secret_key" {
+  description = "AWS Secret Key"
+  type        = string
 }
 
-// Integration for ANY Method on Root Resource
-resource "aws_api_gateway_integration" "any_integration_root" {
-  rest_api_id             = aws_api_gateway_rest_api.create_api.id
-  resource_id             = aws_api_gateway_rest_api.create_api.root_resource_id
-  http_method             = aws_api_gateway_method.any_method_root.http_method
-  integration_http_method = "ANY"
-  type                    = "AWS"
-  uri                     = aws_lambda_function.create_lambda.invoke_arn
+
+############################## specify your repository name ##############################
+variable "ecr_repository_name" {
+  description = "Name of the ECR repository"
+  default     = "ecr-p3-aws-github"
 }
 
-// Integration for ANY Method on Proxy Resource
-resource "aws_api_gateway_integration" "any_integration_proxy" {
-  rest_api_id             = aws_api_gateway_rest_api.create_api.id
-  resource_id             = aws_api_gateway_resource.root.id
-  http_method             = aws_api_gateway_method.any_method_proxy.http_method
-  integration_http_method = "ANY"
-  type                    = "AWS"
-  uri                     = aws_lambda_function.create_lambda.invoke_arn
+############################## specify your account # ##############################
+variable "account_number" {
+  description = "# AWS account"
+  default     = "xxx"
 }
 
-// Lambda Permission for API Gateway trigger
-resource "aws_lambda_permission" "api_gateway_trigger" {
-  statement_id  = "AllowAPIGatewayInvoke"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.create_lambda.arn
-  principal     = "apigateway.amazonaws.com"
-
-  source_arn = "${aws_api_gateway_rest_api.create_api.execution_arn}/*/*"
+variable "region_east" {
+  description = "AWS region"
+  default     = "us-east-1"
 }
 
-// Lambda Permission for API Gateway trigger on {proxy+} resource
-resource "aws_lambda_permission" "api_gateway_trigger_proxy" {
-  statement_id  = "AllowAPIGatewayInvokeProxy"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.create_lambda.arn
-  principal     = "apigateway.amazonaws.com"
-
-  source_arn = "${aws_api_gateway_rest_api.create_api.execution_arn}/*/*/*"
+variable "ecs_cluster_name" {
+  description = "Name of the ECS cluster"
+  default     = "ecs-cluster-p3-aws-github"
 }
 
-// Deployment
-resource "aws_api_gateway_deployment" "deployment" {
-  rest_api_id = aws_api_gateway_rest_api.create_api.id
-  stage_name  = "v1"
+variable "ecs_task_name" {
+  description = "Name of the task definition"
+  default     = "ecs-task-p3-aws-github"
+}
 
-  depends_on = [
-    aws_api_gateway_integration.any_integration_root,
-    aws_api_gateway_integration.any_integration_proxy,
+variable "ecs_service_name" {
+  description = "Name of the service"
+  default     = "ecs-service-p3-aws-github"
+}
+
+
+resource "aws_vpc" "vpc_us_east_1" {
+  cidr_block = "10.6.0.0/16"
+
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+
+  tags = {
+      Name = "vpc-p3-aws-github"
+  }
+}
+
+resource "aws_subnet" "us_east_subnet1" {
+  vpc_id = aws_vpc.vpc_us_east_1.id
+  cidr_block = "10.6.4.0/24"
+
+  tags = {
+      Name = "subnet-p3-aws-github-1"
+  }
+}
+
+resource "aws_subnet" "us_east_subnet2" {
+  vpc_id = aws_vpc.vpc_us_east_1.id
+  cidr_block = "10.6.5.0/24"
+
+  tags = {
+      Name = "subnet-p3-aws-github-2"
+  }
+}
+
+resource "aws_internet_gateway" "internet_gateway" {
+  vpc_id = aws_vpc.vpc_us_east_1.id
+  tags = {
+    Name = "internet-gtw-p3-aws-github"
+  }
+}
+
+resource "aws_route_table" "route_table" { 
+  vpc_id = aws_vpc.vpc_us_east_1.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.internet_gateway.id
+  }
+    tags = {
+      Name = "rt-p3-aws-github"
+    }
+}
+
+resource "aws_route_table_association" "subnet_route" {
+  subnet_id      = aws_subnet.us_east_subnet1.id
+  route_table_id = aws_route_table.route_table.id
+}
+
+resource "aws_route_table_association" "subnet2_route" {
+  subnet_id      = aws_subnet.us_east_subnet2.id
+  route_table_id = aws_route_table.route_table.id
+}
+
+resource "aws_security_group" "security_group" {
+  name   = "p3-aws-github-sg"
+  vpc_id = aws_vpc.vpc_us_east_1.id
+  description = "Shared security group."
+
+  ingress {
+    description = "Allow HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Allow HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group_rule" "allow_all_internal" {
+  type              = "ingress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  security_group_id = aws_security_group.security_group.id
+  source_security_group_id = aws_security_group.security_group.id
+}
+
+/*
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "ecsTaskExecutionRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "ecs-tasks.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+
+  managed_policy_arns = [
+    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+    "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
   ]
 }
+*/
+
+resource "aws_ecs_cluster" "ecs_cluster" {
+  name     = var.ecs_cluster_name
+
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
+}
+
+
+############################## specify the name of the ECR docker registry image ##############################
+resource "aws_ecs_task_definition" "ecs_task_definition" {
+  family              = var.ecs_task_name
+  network_mode        = "awsvpc"
+  execution_role_arn  = "arn:aws:iam::${var.account_number}:role/ecsTaskExecutionRole"
+  cpu                 = "256"
+  memory              = "512"
+  requires_compatibilities = ["FARGATE"]
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
+  container_definitions = jsonencode([
+    {
+      name      = "${var.ecs_task_name}"
+      #image     = "${var.account_number}.dkr.ecr.${var.region_east}.amazonaws.com/${var.ecr_repository_name}:latest"
+      image = "489065051964.dkr.ecr.us-east-1.amazonaws.com/ecr-p3-aws-github:782eb61ab99c5376ca485681772df91211fc5bfc"
+      cpu       = 256
+      memory    = 512
+      essential = true
+      portMappings = [
+        {
+          containerPort = 80
+          hostPort      = 80
+          protocol      = "tcp"
+        }
+      ]
+      log_configuration = {
+        log_driver = "awslogs"
+        options = {
+          "awslogs-group" = "/ecs/my-service"
+          "awslogs-region" = "${var.region_east}"
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    }
+  ])
+}
+
+
+resource "aws_ecs_service" "ecs_service" {
+  name            = var.ecs_service_name
+  cluster         = aws_ecs_cluster.ecs_cluster.id
+  task_definition = aws_ecs_task_definition.ecs_task_definition.arn
+  desired_count   = 1
+  launch_type = "FARGATE"
+
+  network_configuration {
+    subnets         = [aws_subnet.us_east_subnet1.id, aws_subnet.us_east_subnet2.id]
+    security_groups = [aws_security_group.security_group.id]
+    assign_public_ip = true
+  }
+
+  triggers = {
+    redeployment = timestamp()
+  }
+}
+
+```
+>❗Note: if you are using a secret_id/secret_key as authentification method, please use the file aws_credentials.tfvars (in the terraform folder). Below the command to apply terraform script using credentials file:
+
+```cmd
+terraform apply -var-file="aws_credentials.tfvars"
 ```
 
 ## Sizing
