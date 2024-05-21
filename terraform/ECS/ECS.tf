@@ -52,6 +52,21 @@ variable "region_east" {
   default     = "us-east-1"
 }
 
+variable "ecs_cluster_name" {
+  description = "Name of the ECS cluster"
+  default     = "ecs-cluster-p3-aws-github"
+}
+
+variable "ecs_task_name" {
+  description = "Name of the task definition"
+  default     = "ecs-task-p3-aws-github"
+}
+
+variable "ecs_service_name" {
+  description = "Name of the service"
+  default     = "ecs-service-p3-aws-github"
+}
+
 
 resource "aws_vpc" "vpc_us_east_1" {
   cidr_block = "10.6.0.0/16"
@@ -172,7 +187,7 @@ resource "aws_iam_role" "ecs_task_execution_role" {
 */
 
 resource "aws_ecs_cluster" "ecs_cluster" {
-  name     = "ecs-cluster-p3-aws-github"
+  name     = var.ecs_cluster_name
 
   setting {
     name  = "containerInsights"
@@ -183,7 +198,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 
 ############################## specify the name of the ECR docker registry image ##############################
 resource "aws_ecs_task_definition" "ecs_task_definition" {
-  family              = "ecs-task-p3-aws-github"
+  family              = var.ecs_task_name
   network_mode        = "awsvpc"
   execution_role_arn  = "arn:aws:iam::${var.account_number}:role/ecsTaskExecutionRole"
   cpu                 = "256"
@@ -195,8 +210,9 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   }
   container_definitions = jsonencode([
     {
-      name      = "dockergs"
-      image     = "${var.account_number}.dkr.ecr.${var.region_east}.amazonaws.com/${var.ecr_repository_name}:latest"
+      name      = "${var.ecs_task_name}"
+      #image     = "${var.account_number}.dkr.ecr.${var.region_east}.amazonaws.com/${var.ecr_repository_name}:latest"
+      image = "489065051964.dkr.ecr.us-east-1.amazonaws.com/ecr-p3-aws-github:782eb61ab99c5376ca485681772df91211fc5bfc"
       cpu       = 256
       memory    = 512
       essential = true
@@ -221,7 +237,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 
 
 resource "aws_ecs_service" "ecs_service" {
-  name            = "ecs-service-p3-aws-github"
+  name            = var.ecs_service_name
   cluster         = aws_ecs_cluster.ecs_cluster.id
   task_definition = aws_ecs_task_definition.ecs_task_definition.arn
   desired_count   = 1
