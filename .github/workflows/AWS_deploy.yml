@@ -10,6 +10,7 @@ env:
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
   ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
   ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
+  ECS_TASK_DEFINITION: ${{ secrets.ECS_TASK_DEFINITION }}
   CONTAINER_NAME: ${{ secrets.CONTAINER_NAME }}
   EDS_API_URL: ${{ secrets.EDS_API_URL }}
   EDS_AUTH_URL: ${{ secrets.EDS_AUTH_URL }}
@@ -121,7 +122,7 @@ jobs:
       - name: Download task definition
         if: ${{ env.DEPLOY_LAMBDA != 'true' }}
         run: |
-          aws ecs describe-task-definition --task-definition fastapiprocessor --query taskDefinition > task-definition.json
+          aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
           echo $(cat task-definition.json | jq 'del(
                     .taskDefinitionArn,
                     .requiresAttributes,
