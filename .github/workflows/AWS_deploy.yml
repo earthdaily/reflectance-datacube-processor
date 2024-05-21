@@ -122,8 +122,7 @@ jobs:
       - name: Download task definition
         if: ${{ env.DEPLOY_LAMBDA != 'true' }}
         run: |
-          # aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
-          aws ecs describe-task-definition --task-definition ecs-task-p3-aws-github --query taskDefinition > task-definition.json
+          aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
           echo $(cat task-definition.json | jq 'del(
                     .taskDefinitionArn,
                     .requiresAttributes,
