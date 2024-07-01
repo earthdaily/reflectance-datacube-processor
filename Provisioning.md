@@ -679,7 +679,8 @@ In order to keep, cost under control, we strongly encourage to implement service
 
 The following link might provide interesting information:
 - [Security hardening with OpenbID Connect](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect) 
-- [Self-Service Provisioning of Terraform]https://aws.amazon.com/fr/blogs/aws/new-self-service-provisioning-of-terraform-open-source-configurations-with-aws-service-catalog/)
-- [AWS Provisioning with Terraform]https://medium.com/avmconsulting-blog/provisioning-aws-infrastructure-with-terraform-6ab885fb3fcb)
+- [Self-Service Provisioning of Terraform](https://aws.amazon.com/fr/blogs/aws/new-self-service-provisioning-of-terraform-open-source-configurations-with-aws-service-catalog/)
+- [AWS Provisioning with Terraform](https://medium.com/avmconsulting-blog/provisioning-aws-infrastructure-with-terraform-6ab885fb3fcb)
+- [No long term AWS credentials in your pipeline](https://aws.plainenglish.io/no-long-term-aws-credentials-in-your-pipeline-secure-github-actions-0420127b89ea) 
 
 
